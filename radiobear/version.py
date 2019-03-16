@@ -59,18 +59,3 @@ MAJOR = _version_major
 MINOR = _version_minor
 MICRO = _version_micro
 VERSION = __version__
-PACKAGES = ['radio-bear', 'radio-bear.constituents', 'radio-bear.mcmc', 'radio-bear.tweaks']
-SCRIPTS = [p for p in glob.glob('scripts/*') if not p.endswith('~')]
-PACKAGE_DATA = {
-    'radio-bear': [
-        pjoin('data', 'Jupiter', '*.dat'),
-        pjoin('data', 'Jupiter', 'jupiter.*'),
-        pjoin('data', 'Saturn', '*.dat'),
-        pjoin('data', 'Saturn', 'saturn.*'),
-        pjoin('data', 'Uranus', '*.dat'),
-        pjoin('data', 'Uranus', 'uranus.*'),
-        pjoin('data', 'Nepturn', '*.dat'),
-        pjoin('data', 'Nepturn', 'neptune.*'),
-    ]
-}
-REQUIRES = ["numpy", "matplotlib"]

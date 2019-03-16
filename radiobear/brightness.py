@@ -150,7 +150,6 @@ class Brightness():
             plt.title('Integrated weighting function')
             plt.xlabel('Frequency [GHz]')
             plt.figure('radtran')
-            plt.subplot(121)
             for i, f in enumerate(freqs):
                 if normW4plot:
                     wplot = self.W[i] / np.max(self.W[i])
