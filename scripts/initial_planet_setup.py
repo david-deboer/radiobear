@@ -21,3 +21,8 @@ for planet in planets_to_setup:
         init_location = os.path.join(planet_path, pf)
         final_location = os.path.join(planet, pf)
         shutil.copy(init_location, final_location)
+
+other_directories = ['Logs', 'Output', 'Scratch']
+for other in other_directories:
+    if not os.path.isdir(other):
+        os.mkdir(other)

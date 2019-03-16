@@ -52,7 +52,7 @@ class Alpha:
         self.set_state(set_mode='init', **kwargs)
         self.log = utils.setupLogFile(log)
         self.freqs = None
-        self.constituentsAreAt = 'constituents'
+        self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
 
         # get config
         if isinstance(config, six.string_types):
@@ -128,7 +128,7 @@ class Alpha:
                 self.absorptionModule[c] = sys.modules[absorber]
                 self.constituent[c] = absorber
             except ImportError:
-                s = "WARNING:  CAN'T LOAD " + absorber + '\n'
+                s = "WARNING:  CAN'T LOAD " + absorber + '.  '
                 print(s * 3)
                 utils.log(self.log, "Can't load " + absorber, True)
         self.ordered_constituents = sorted(self.constituent.keys())

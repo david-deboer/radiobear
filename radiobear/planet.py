@@ -184,8 +184,6 @@ class Planet:
         set_mode:  'set' or 'init'. If set, checks list.
         """
         for k, v in six.iteritems(kwargs):
-            if isinstance(v, six.string_types):
-                v = v.lower()
             if k in self.state_vars:
                 setattr(self, k, v)
                 if set_mode == 'set':

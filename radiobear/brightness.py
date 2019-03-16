@@ -194,12 +194,12 @@ class Brightness():
         del taus, Tbs, Ws
         return self.Tb
 
-    def savertm(self, tag=None, path='Output'):
+    def savertm(self, tag=None):
         if tag is None:
             filename = None
         else:
             filename = 'alpha_' + tag + '.out'
-        self.saveAlpha(filename, path)
+        self.saveAlpha(filename, self.output_directory)
         if tag is None:
             filename = None
         else:
