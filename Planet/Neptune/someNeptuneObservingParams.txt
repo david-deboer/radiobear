@@ -1,0 +1,13 @@
+This was removed from __init__ in planet.py:
+            #  ## Some convenience values for the specific Neptune observations
+            self.fvla_old = [4.86, 8.46, 14.94, 22.46, 43.34]
+            self.fvla_new = [1.5, 3.0, 6.0, 10., 15., 22., 33., 45.]
+            self.fvla = [3.0, 6.0, 10.0, 15.0, 33.0]
+            anglecap = 13.24
+            bvalcap = [0.5, 0.6, 0.7, 0.8, 0.9, 0.925, 0.95]
+            self.bvla = []
+            for bval in bvalcap:
+                self.bvla.append([-bval * math.sin(utils.d2r(anglecap)), -bval * math.cos(utils.d2r(anglecap))])
+
+removed from run in planet.py
+	b = 0.04175 is a good value for Neptune images (don't remember why at the moment...)

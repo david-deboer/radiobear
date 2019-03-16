@@ -1,0 +1,52 @@
+# Format:  token  value [value...]  #comment
+# Currently tokens have to match exactly (but can be upper or lower)
+# Order doesn't matter but the last one read will be in effect.  
+# Parameters not included take the hard-coded default value in config.json
+###########################################################################
+# These are the parameters that need to be set/checked since they determine
+# everything.
+#
+#
+### gas data
+gasfile saturn.paulSolar
+constituents Z T P H2 HE CH4 NH3 H2O H2S SOLN OTHER PH3 CO CO13 HCN DZ
+alpha nh3:nh3_dbs_sjs h2s:h2s_ddb h2o:h2o_bk ph3:ph3_jh h2:h2_jj_ddb
+### cloud data
+cloudfile saturn.paulclSolar
+clouds Z T P SOLN H2O NH4SH NH3 H2S CH4 AR PH3 DZ
+### other data, tweak and regrid
+tweakFile SaturnNoTweak
+regridtype 1000
+pmin 0.01
+pmax 5000.0
+#==========================================================================
+###########################################################################
+# These parameters get written into the header of the image file, if you
+# are in "image" mode and trying to match specific observational parameters
+#
+### observations
+#--- vanilla
+distance 9.6 AU
+orientation 0.0 0.0  # deg
+#==========================================================================
+### gravity values
+p_ref    1.0      bars
+Req      60268.0  km
+Rpol     54364.0  km
+RJ       60268.0  km
+GM       3.7931272e7
+Jn       0.0 0.0 1.6332e-2 0.0 -9.19e-4 0.0 1.04e-4
+omega    1.6378499e-4
+zonal    Saturn/zonalSaturn.dat
+gtype    ellipse
+limb     shape
+#
+### alpha
+doppler 0
+h2state e
+water 1.0E-4
+ice 1.0E-4
+nh4sh 1.0E-4
+nh3ice 1.0E-4
+h2sice 1.0E-4
+ch4  1.0E-4

@@ -1,0 +1,6 @@
+2012-07-30 ddb
+ported over Joanna's simple version
+should also implement from Imke's code (line 1462)
+C     H2 OPACITIES ARE CALCULATED FOLLOWING THE PAPER "ANALYSIS OF              C     THE SHAPE OF THE FAR-INFRARED SPECTRA OF H2-H2 AND H2-HE                  C     COLLISIONS,BY COHEN AND BIRNBAUM,APRIL 1981.                              C     A RELATED PAPER IS GIVEN BY BIRNBAUM AND COHEN, CANADIAN                  C     JOURNAL OF PHYSICS,VOL 54,PAGE 593,1976.                                  C     THIS WORK IS NBSIR 80-2175(R).                                            C     A AND B COEFFICIENTS IN THE TRAFTON TRADITION ARE CALCULATED.             C     SEE TRAFTON, ASTROPHYSICAL JOURNAL,V 147,PAGE 765,1967.                   
+2012-11-13 ddb
+changed from partial pressure to mixing ratio

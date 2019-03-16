@@ -1,0 +1,5 @@
+2012-07-12 ddb
+brought over H2S.C code from my thesis code and ported to Python.  Tested with ta
+
+2012-11-13
+changed from partial pressure to mixing ratio

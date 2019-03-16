@@ -1,0 +1,51 @@
+# Format:  token  value [value...]  #comment
+# Currently tokens have to match exactly (but can be upper or lower)
+# Order doesn't matter but the last one read will be in effect.  
+# Parameters not included take the hard-coded default value in config.json
+###########################################################################
+# These are the parameters that need to be set/checked since they determine
+# everything.
+#
+### gas data
+gasfile uranus.paul10xsolar_wet.dat
+constituents Z T P H2 HE CH4 NH3 H2O H2S SOLN OTHER PH3 CO CO13 HCN DZ
+alpha nh3:nh3_dbs_sjs h2s:h2s_ddb h2o:h2o_bk ph3:ph3_jh h2:h2_jj_ddb
+### cloud data
+#cloudfile jupiter.paulclSolar
+cloudfile  uranus.cloud10xsolar_wet.dat
+clouds Z T P SOLN H2O NH4SH NH3 H2S CH4 AR PH3 DZ
+### other data, tweak and regrid
+tweakFile UranusNoTweak
+regridtype 1000
+pmin 0.01
+pmax 5000.0
+#==========================================================================
+###########################################################################
+# These parameters get written into the header of the image file, if you
+# are in "image" mode and trying to match specific observational parameters
+#
+#
+### observations
+#--- vanilla
+distance 19.2 AU
+orientation 0.0 0.0 deg
+#==========================================================================
+### gravity values
+p_ref    1.0      bars
+Req      25559.0  km
+Rpol     24973.0  km
+RJ       25559.0  km
+GM       5.794e6
+Jn       0.0 0.0 3343.43e-6 0.0 0.0 0.0 0.0
+omega    1.0124e-4
+zonal    Uranus/zonalUranus.dat
+gtype    ellipse
+### alpha
+doppler 0
+h2state e
+water 1.0E-4
+ice 1.0E-4
+nh4sh 1.0E-4
+nh3ice 1.0E-4
+h2sice 1.0E-4
+ch4  1.0E-4

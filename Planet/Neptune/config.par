@@ -1,0 +1,68 @@
+# Format:  token  value [value...]  #comment
+# Currently tokens have to match exactly (but can be upper or lower)
+# Order doesn't matter but the last one read will be in effect.  
+# Parameters not included take the hard-coded default value in config.json
+###########################################################################
+### gas data
+gasfile neptune.paulCO_cloud21_fletcher_best_wet_30S
+constituents Z T P H2 HE CH4 NH3 H2O H2S SOLN OTHER PH3 CO CO13 HCN DZ
+alpha nh3:nh3_dbs_sjs h2s:h2s_ddb h2o:h2o_bk ph3:ph3_jh h2:h2_jj_ddb
+### cloud data
+cloudfile nepcloud_CO.cloud21_fletcher_best_wet_30S
+clouds Z T P SOLN H2O NH4SH NH3 H2S CH4 AR PH3 DZ
+### tweak and regrid
+#tweakmodule Neptune_add_ph3
+tweakmodule errantTweak
+#scalemodule calc_scale_initial
+#scalefilename Scratch/scale.dat
+regridtype 1500
+pmin 0.01
+pmax 1900
+#==========================================================================
+###########################################################################
+# These parameters get written into the header of the image file, if you
+# are in "image" mode and trying to match specific observational parameters
+#
+### observations
+#--- vanilla
+#distance 29.3 AU
+#orientation 0.0 0.0 deg
+#--- C band
+#distance  29.2596  AU
+#orientation  346.9155  -29.15 deg
+#--- X band
+#distance  29.2699  AU
+#orientation  346.8988  -29.16 deg
+#--- Ku (U) band
+#distance  29.2804  AU
+#orientation  346.8824  -29.16 deg
+#--- K band
+#distance  29.6703  AU
+#orientation  348.8221  -28.98 deg
+#--- Q band
+#distance  29.6861  AU
+#orientation  348.8274  -28.97 deg
+# "average"
+distance  29.4  AU
+orientation  347.67    -29.08 deg
+#==========================================================================
+### gravity values
+p_ref    1.0      bars
+Req      24766.0  km
+Rpol     24342.0  km
+RJ       24766.0  km
+GM       0.6835096e7
+Jn       0.0 0.0 0.3539e-2 0.0 -0.28e-4 0.0 0.0
+omega    1.08338255e-4
+zonal    Neptune/zonalNeptune.dat
+gtype    ellipse
+#
+### alpha
+doppler 0
+h2state e
+water 1.0E-4
+ice 1.0E-4
+nh4sh 1.0E-4
+nh3ice 1.0E-4
+h2sice 1.0E-4
+ch4  1.0E-4
