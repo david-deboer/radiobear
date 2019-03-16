@@ -8,27 +8,29 @@ from __future__ import absolute_import, division, print_function
 import os
 import glob
 import io
-import json
 from setuptools import setup
 
-from Planet import version
+from radiobear import version
 
 with io.open('README.md', 'r', encoding='utf-8') as readme_file:
     readme = readme_file.read()
 
 setup_args = {
-    'name': "radioBEAR",
+    'name': "radiobear",
     'description': "radioBEAR:  radio version BErkeley Atmosphere Radiative transfer",
     'long_description': readme,
-    'url': "https://github.com/david-deboer/radioBEAR",
+    'url': "https://github.com/david-deboer/radiobear",
     'license': "BSD",
     'author': "David DeBoer",
     'author_email': "ddeboer@berkeley.edu",
     'version': version.VERSION,
-    'packages': ['Planet', 'Planet.Constituents', 'Planet.Jupiter', 'Planet.Saturn', 'Planet.Uranus', 'Planet.Neptune'],
+    'packages': ['radiobear', 'radiobear.Jupiter', 'radiobear.Saturn', 'radiobear.Uranus', 'radiobear.Neptune',
+                 'radiobear.Constituents.clouds', 'radiobear.Constituents.co', 'radiobear.Constituents.h2',
+                 'radiobear.Constituents.h2o', 'radiobear.Constituents.h2s', 'radiobear.Constituents.nh3',
+                 'radiobear.Constituents.ph3'],
     'scripts': glob.glob('scripts/*'),
     'include_package_data': True,
-    'install_requires': ["six", "numpy"],
+    'install_requires': ["six", "numpy", "matplotlib", "scipy"],
     'classifiers': ["Development Status :: 4 - Beta",
                     "Environment :: Console",
                     "Intended Audience :: Science/Research",

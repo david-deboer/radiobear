@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 from . import utils
 import json
 import six
+import os.path
 
 
 def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none': None}):
@@ -19,6 +20,9 @@ def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none'
     return val
 
 
+default_config_file = os.path.join(os.path.dirname(__file__), 'default_config.json')
+
+
 class planetConfig:
     def __init__(self, planet, configFile, log=None, printHelp=False):
         """reads in config file"""
@@ -28,7 +32,7 @@ class planetConfig:
         self.path = planet
         self.logFile = utils.setupLogFile(log)
 
-        with open('config.json', 'r') as f:
+        with open(default_config_file, 'r') as f:
             config_data = json.load(f)
         self.toks = config_data['toks']
 
