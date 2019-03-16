@@ -20,6 +20,10 @@ processingUnits = {'GHz': ['GHz', 'Hz', 'kHz', 'MHz'],
                    'mpersec2': ['mpersec2', 'cmpersec2']}
 
 
+def get_location_for_planet_setup():
+    return os.path.dirname(__file__)
+
+
 def proc_unit(supplied_unit):
     proc_unit = None
     for proc, units in six.iteritems(processingUnits):
