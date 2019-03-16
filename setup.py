@@ -1,32 +1,42 @@
-from __future__ import print_function, division, absolute_import
+#! /usr/bin/env python
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2019 David DeBoer
+# Licensed under the 2-clause BSD license.
+
+from __future__ import absolute_import, division, print_function
+
 import os
-from setuptools import setup, find_packages
-PACKAGES = find_packages()
+import glob
+import io
+import json
+from setuptools import setup
 
-# Get version and release info, which is all stored in shablona/version.py
-ver_file = os.path.join('radio-bear', 'version.py')
-with open(ver_file) as f:
-    exec(f.read())
+from Planet import version
 
+with io.open('README.md', 'r', encoding='utf-8') as readme_file:
+    readme = readme_file.read()
 
-setup_args = dict(name=NAME,
-                  maintainer=MAINTAINER,
-                  maintainer_email=MAINTAINER_EMAIL,
-                  description=DESCRIPTION,
-                  long_description=LONG_DESCRIPTION,
-                  url=URL,
-                  download_url=DOWNLOAD_URL,
-                  license=LICENSE,
-                  classifiers=CLASSIFIERS,
-                  author=AUTHOR,
-                  author_email=AUTHOR_EMAIL,
-                  platforms=PLATFORMS,
-                  version=VERSION,
-                  packages=PACKAGES,
-                  # package_data=PACKAGE_DATA,
-                  scripts=SCRIPTS,
-                  requires=REQUIRES)
-
+setup_args = {
+    'name': "radioBEAR",
+    'description': "radioBEAR:  radio version BErkeley Atmosphere Radiative transfer",
+    'long_description': readme,
+    'url': "https://github.com/david-deboer/radioBEAR",
+    'license': "BSD",
+    'author': "David DeBoer",
+    'author_email': "ddeboer@berkeley.edu",
+    'version': version.version,
+    'packages': ['Planet', 'Constituents', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Image', 'mcmc'],
+    'scripts': glob.glob('scripts/*'),
+    'include_package_data': True,
+    'install_requires': ["six", "numpy"],
+    'classifiers': ["Development Status :: 4 - Beta",
+                    "Environment :: Console",
+                    "Intended Audience :: Science/Research",
+                    "License :: OSI Approved :: MIT License",
+                    "Operating System :: OS Independent",
+                    "Programming Language :: Python",
+                    "Topic :: Scientific/Engineering"]
+}
 
 if __name__ == '__main__':
     setup(**setup_args)
