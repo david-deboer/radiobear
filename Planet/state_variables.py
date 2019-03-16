@@ -11,7 +11,9 @@ def init_state_variables(mode, **kwargs):
                   'generate_alpha': False,
                   'use_existing_alpha': False,
                   'scale_existing_alpha': False,
-                  'output_type': 'frequency'  # or 'wavelength'
+                  'output_type': 'frequency',  # or 'wavelength'
+                  'log_directory': 'Logs',
+                  'output_directory': 'Output'
                   }
 
     if mode == 'batch':

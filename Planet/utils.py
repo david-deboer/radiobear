@@ -81,9 +81,12 @@ def invertDictionary(dic):
 
 
 def setupLogFile(log):
-    try:
+    if isinstance(log, six.string_types):
+        log_directory = os.path.dirname(log)
+        if not os.path.isdir(log_directory):
+            os.mkdir(log_directory)
         logfp = open(log, 'a')
-    except TypeError:
+    else:
         logfp = log
     return logfp
 

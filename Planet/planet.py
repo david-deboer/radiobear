@@ -50,7 +50,7 @@ class Planet:
         #  ##Set up log file
         if self.write_log_file:
             runStart = datetime.datetime.now()
-            self.logFile = 'Logs/{}_{}.log'.format(self.planet, runStart.strftime("%Y%m%d_%H%M"))
+            self.logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M"))
             self.log = utils.setupLogFile(self.logFile)
             utils.log(self.log, self.planet + ' start ' + str(runStart), self.verbose)
         else:

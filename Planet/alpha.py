@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from . import utils
 from . import config as pcfg
-from . import import state_variables
+from . import state_variables
 import six
 
 

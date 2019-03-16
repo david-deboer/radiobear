@@ -1,4 +1,4 @@
-"""Version definition for radio-BEAR."""
+"""Version definition for radioBEAR."""
 from os.path import join as pjoin
 import glob
 

@@ -1,5 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2018 the HERA Collaboration
+# Copyright 2019 David DeBoer
 # Licensed under the 2-clause BSD license.
 
 from . import alpha
@@ -14,8 +14,7 @@ from . import regrid
 from . import shape
 from . import state_variables
 from . import utils
-from . import constituents
-from . import mcmc
-from . import tweaks
+from . import version
+from . import Constituents
 
-__version__ = version.version
+__version__ = version.VERSION
