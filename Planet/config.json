@@ -1,0 +1,404 @@
+{
+    "toks": {
+        "constituents": {
+            "name": "C",
+            "unit": "None",
+            "help": "This 'C'onstituent dictionary has atm layer gas data.   Needs to correspond to datafile if not computing but can have extra at end",
+            "default": {
+                "Jupiter": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
+                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15},
+                "Saturn": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
+                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15},
+                "Uranus": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
+                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15},
+                "Neptune": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
+                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15}
+            }
+        },
+        "alpha": {
+            "name": "constituent_alpha",
+            "unit": "None",
+            "help": "This dictionary sets which absoprtion formalisms to use",
+            "default": {
+                "Jupiter": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
+                "Saturn": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
+                "Uranus": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
+                "Neptune": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"}
+            }
+        },
+        "gasfile": {
+            "name": "gasFile",
+            "unit": "None",
+            "help": "atmospheric constituent file - column order set by C",
+            "default": {
+                "Jupiter": "jupiter.paulSolar",
+                "Saturn": "saturn.Solar",
+                "Uranus": "uranus.paul10xsolar_wet.dat",
+                "Neptune": "neptune.paulCO_cloud21_fletcher_best_dry"
+            }
+        },
+        "gastype": {
+            "name": "gasType",
+            "unit": "None",
+            "help": "read vs compute -- normally read (currently can't compute)",
+            "default": {
+                "Jupiter": "read",
+                "Saturn": "read",
+                "Uranus": "read",
+                "Neptune": "read"
+            }
+        },
+        "clouds": {
+            "name": "Cl",
+            "unit": "None",
+            "help": "This 'Cl'oud dictionary has the cloud parameters.  Needs to correspond to datafile if not computing, but can have extra at end",
+            "default": {
+                "Jupiter": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
+                "Saturn": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
+                "Uranus": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
+                "Neptune": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11}
+            }
+        },
+        "cloudfile": {
+            "name": "cloudFile",
+            "unit": "None",
+            "help": "atmospheric cloud file - column order set by Cl",
+            "default": {
+                "Jupiter": "jupiter.paulclSolar",
+                "Saturn": "saturn.clSolar",
+                "Uranus": "uranus.cloud10xsolar_wet.dat",
+                "Neptune": "nepcloud_CO.cloud21_fletcher_best_dry"
+            }
+        },
+        "cloudtype": {
+            "name": "cloudType",
+            "unit": "None",
+            "help": "read vs compute -- normally read (currently can't compute)",
+            "default": {
+                "Jupiter": "read",
+                "Saturn": "read",
+                "Uranus": "read",
+                "Neptune": "read"
+            }
+        },
+        "other": {
+            "name": "LP",
+            "unit": "None",
+            "help": "This dictionary has other parameters.",
+            "default": {
+                "Jupiter": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
+                "Saturn": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
+                "Uranus": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
+                "Neptune": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10}
+            }
+        },
+        "othertype": {
+            "name": "otherType",
+            "unit": "None",
+            "help": "read vs compute -- normally compute (currently can't read)",
+            "default": {
+                "Jupiter": "compute",
+                "Saturn": "compute",
+                "Uranus": "compute",
+                "Neptune": "compute"
+            }
+        },
+        "req": {
+            "name": "Req",
+            "unit": "km",
+            "help": "equatorial radius at p_ref",
+            "default": {
+                "Jupiter": 71492.0,
+                "Saturn": 60268.0,
+                "Uranus": 25559.0,
+                "Neptune": 24766.0
+            }
+        },
+        "rpol": {
+            "name": "Rpol",
+            "unit": "km",
+            "help": "polar radius at p_ref",
+            "default": {
+                "Jupiter": 66854.0,
+                "Saturn": 54364.0,
+                "Uranus": 25559.0,
+                "Neptune": 24342.0
+            }
+        },
+        "p_ref": {
+            "name": "p_ref",
+            "unit": "bars",
+            "help": "the pressure where the radii are specified (Req/Rpol)",
+            "default": {
+                "Jupiter": 1.0,
+                "Saturn": 1.0,
+                "Uranus": 1.0,
+                "Neptune": 1.0
+            }
+        },
+        "pmin": {
+            "name": "pmin",
+            "unit": "bars",
+            "help": "pmin that is used in the regrid; 0 uses file min",
+            "default": {
+                "Jupiter": 0,
+                "Saturn": 0,
+                "Uranus": 0,
+                "Neptune": 0
+            }
+        },
+        "pmax": {
+            "name": "pmax",
+            "unit": "bars",
+            "help": "pmax that is used in the regrid; -1 uses file max",
+            "default": {
+                "Jupiter": -1,
+                "Saturn": -1,
+                "Uranus": -1,
+                "Neptune": -1
+            }
+        },
+        "distance": {
+            "name": "distance",
+            "unit": "AU",
+            "help": "distance to the planet",
+            "default": {
+                "Jupiter": 5.2,
+                "Saturn": 9.6,
+                "Uranus": 19.2,
+                "Neptune": 29.7
+            }
+        },
+        "orientation": {
+            "name": "orientation",
+            "unit": "degrees",
+            "help": "position angle and sub-earth latitude (planetographic)",
+            "default": {
+                "Jupiter": [3.12, 0.0],
+                "Saturn": [0.0, 0.0],
+                "Uranus": [0.0, 0.0],
+                "Neptune": [348.8274, -28.97]
+            }
+        },
+        "gm": {
+            "name": "GM_ref",
+            "unit": "km3/s2",
+            "help": "GM at radius RJ",
+            "default": {
+                "Jupiter": 12.6686538e7,
+                "Saturn": 3.7931272e7,
+                "Uranus": 5.794e6,
+                "Neptune": 0.6835096e7
+            }
+        },
+        "omega": {
+            "name": "omega_m",
+            "unit": "rad/s",
+            "help": "rotation velocity",
+            "default": {
+                "Jupiter": 1.7585e-4,
+                "Saturn": 1.6378499e-4,
+                "Uranus": 1.0124e4,
+                "Neptune": 1.01237195e-4
+            }
+        },
+        "jn": {
+            "name": "Jn",
+            "unit": "...",
+            "help": "gravity terms",
+            "default": {
+                "Jupiter": [0.0, 0.0, 1.4697e-2, 0.0, -5.84e-4, 0.0, 0.31e-4],
+                "Saturn": [0.0, 0.0, 1.6332e-2, 0.0, -9.19e-4, 0.0, 1.04e-4],
+                "Uranus": [0.0, 0.0, 3343.43e-6, 0.0, 0.0, 0.0, 0.0],
+                "Neptune": [0.0, 0.0, 0.3539e-2, 0.0, -0.28e-4, 0.0, 0.0]
+            }
+        },
+        "rj": {
+            "name": "RJ",
+            "unit": "km",
+            "help": "radius for gravity terms (usually Req)",
+            "default": {
+                "Jupiter": 71492.0,
+                "Saturn": 60268.0,
+                "Uranus": 25559.0,
+                "Neptune": 24766.0
+            }
+        },
+        "gtype": {
+            "name": "gtype",
+            "unit": "None",
+            "help": "type for planet shape [ellipse/reference/gravity/sphere]",
+            "default": {
+                "Jupiter": "ellipse",
+                "Saturn": "ellipse",
+                "Uranus": "ellipse",
+                "Neptune": "ellipse"
+            }
+        },
+        "zonal": {
+            "name": "zonal",
+            "unit": "None",
+            "help": "file with zonal winds",
+            "default": {
+                "Jupiter": "Jupiter/zonalJupiter.dat",
+                "Saturn": "Saturn/zonalSaturn.dat",
+                "Uranus": "Uranus/zonalUranus.dat",
+                "Neptune": "Neptune/zonalNeptune.dat"
+            }
+        },
+        "regridtype": {
+            "name": "regridType",
+            "unit": "None",
+            "help": "instructions or file to regrid data (see regrid.py) (string/int)",
+            "default": {
+                "Jupiter": "grid.dat",
+                "Saturn": "grid.dat",
+                "Uranus": "grid.dat",
+                "Neptune": "grid.dat"
+            }
+        },
+        "limb": {
+            "name": "limb",
+            "unit": "None",
+            "help": "limb type - used in compute_ds to test limb darkening [shape/sec]",
+            "default": {
+                "Jupiter": "shape",
+                "Saturn": "shape",
+                "Uranus": "shape",
+                "Neptune": "shape"
+            }
+        },
+        "h2state": {
+            "name": "h2state",
+            "unit": "None",
+            "help": "hydrogen state [e or n]",
+            "default": {
+                "Jupiter": "e",
+                "Saturn": "e",
+                "Uranus": "e",
+                "Neptune": "e"
+            }
+        },
+        "doppler": {
+            "name": "Doppler",
+            "unit": "None",
+            "help": "use Doppler or not",
+            "default": {
+                "Jupiter": "False",
+                "Saturn": "False",
+                "Uranus": "False",
+                "Neptune": "False"
+            }
+        },
+        "tweakmodule": {
+            "name": "tweakmodule",
+            "unit": "None",
+            "help": "module that tweaks the read atmosphere",
+            "default": {
+                "Jupiter": "JupiterTweak",
+                "Saturn": "SaturnNoTweak",
+                "Uranus": "UranusNoTweak",
+                "Neptune": "NeptuneTweak"
+            }
+        },
+        "scalemodule": {
+            "name": "scalemodule",
+            "unit": "None",
+            "help": "module used to linearly scale absorption profiles",
+            "default": {
+                "Jupiter": "calc_scale",
+                "Saturn": "calc_scale",
+                "Uranus": "calc_scale",
+                "Neptune": "calc_scale"
+            }
+        },
+        "scalefilename": {
+            "name": "scale_file_name",
+            "unit": "None",
+            "help": "name of scale data file to use for scale_existing_data",
+            "default": {
+                "Jupiter": "Scratch/scale.dat",
+                "Saturn": "Scratch/scale.dat",
+                "Uranus": "Scratch/scale.dat",
+                "Neptune": "Scratch/scale.dat"
+            }
+        },
+        "water": {
+            "name": "water_p",
+            "unit": "um",
+            "help": "water particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "ice": {
+            "name": "ice_p",
+            "unit": "um",
+            "help": "ice particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "h2sice": {
+            "name": "h2sice_p",
+            "unit": "um",
+            "help": "h2s-ice particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "nh3ice": {
+            "name": "nh3ice_p",
+            "unit": "um",
+            "help": "ammonia-ice particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "nh4sh": {
+            "name": "nh4sh_p",
+            "unit": "um",
+            "help": "nh4sh particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "ch4": {
+            "name": "ch4_p",
+            "unit": "um",
+            "help": "methane particle size",
+            "default": {
+                "Jupiter": "",
+                "Saturn": "",
+                "Uranus": "",
+                "Neptune": ""
+            }
+        },
+        "h2newset": {
+            "name": "h2newset",
+            "unit": "None",
+            "help": "related to h2_orton - can be deprecated?",
+            "default": {
+                "Jupiter": "True",
+                "Saturn": "True",
+                "Uranus": "True",
+                "Neptune": "True"
+            }
+        }
+    }
+}

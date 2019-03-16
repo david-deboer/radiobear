@@ -1,0 +1,44 @@
+How to run emcee with Dave's RT code: pyplanet
+
+--- v0.1.1 ---
+
+1. Set up your data/reference file. This needs to be in a three column format: freq (GHz) | T_b (K) | T_error (K). For an example, see emceeTest/refSpectrum.dat
+
+2. Open mcmc/emcee_input.py - This is where you will define the planet, reference files, and parameters that mcmc will read and wor with. The most important thing is to make sure freqs contains the same freqs that are in your data/reference file. 1 or more parameters may be defined. Make sure these parameter names are in ALL-CAPS, as that is how they are called in planet/atmosphere.  This also defines the config file to use.
+
+3. Check the parameters in the config file that you specified in emcee_input.py
+
+4. To run a new instance of mcmc, in a python terminal enter:
+
+############
+
+import mcmc.emcee_atm as mc
+mc.run_emcee_spectrum_new()
+
+############
+
+5. To append to an existing run, in a python terminal enter:
+
+############
+
+import mcmc.emcee_atm as mc
+mc.run_emcee_spectrum_append(nsteps = 100)
+
+############
+
+6. These is some minimal functionality available for post-mcmc run statistics and plotting. To plot the burnin and get the best values, run something like this in a python terminal. plot_burnin will plot each walkers' journey as they sample parameter space at each step. best_fit will return the best fit for each parameter and the 1-sigma errors.
+
+############
+
+import mcmc.emcee_atm as mc
+
+samplef = './emceeTest/out.dat'
+param_labels = ['H2S']
+burnin_cut = 100 # cuts off the first n samples, when burnin is happening
+outobj = mc.mcOutput(samplef, param_labels, burnin_cut)
+outobj.plot_burnin()
+outobj.print_best_fit()
+outobj.cornerplot()
+
+#############
+
