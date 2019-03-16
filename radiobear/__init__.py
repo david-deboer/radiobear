@@ -13,6 +13,7 @@ from . import raypath
 from . import regrid
 from . import shape
 from . import state_variables
+from . import chemistry
 from . import utils
 from . import version
 from . import Constituents

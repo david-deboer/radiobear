@@ -297,6 +297,8 @@ class Atmosphere:
             return 0
 
         # Import tweakmodule
+        print("======>{}".format(self.config.path))
+        print("0-0-0     "{}.format(self.config.tweakmodule))
         sys.path.append(self.config.path)
         try:
             __import__(self.config.tweakmodule)
