@@ -7,9 +7,9 @@ import scipy.special as ss
 import sys
 import six
 import os.path
-import utils
-import raypath as ray
-import state_variables
+from . import utils
+from . import raypath as ray
+from . import state_variables
 
 
 class Brightness():

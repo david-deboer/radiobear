@@ -1,8 +1,8 @@
 from __future__ import absolute_import, division, print_function
 from scipy.interpolate import interp1d
 import numpy as np
-import atmosphere
-import chemistry
+from . import atmosphere
+from . import chemistry
 import six
 import os.path
 

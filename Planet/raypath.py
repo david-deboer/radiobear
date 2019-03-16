@@ -4,9 +4,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-import atmosphere
-import shape
-import utils
+from . import atmosphere
+from . import shape
+from . import utils
 
 raypathdir = {'egress': -1, 'ingress': 1, 'tangent': 0}
 # Vectors

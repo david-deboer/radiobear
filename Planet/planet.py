@@ -4,14 +4,14 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
-import atmosphere as atm
-import config as pcfg
-import alpha
-import brightness as bright
-import data_handling
-import utils
-import fileIO
-import state_variables
+from . import atmosphere as atm
+from . import config as pcfg
+from . import alpha
+from . import brightness as bright
+from . import data_handling
+from . import utils
+from . import fileIO
+from . import state_variables
 import os
 import six
 

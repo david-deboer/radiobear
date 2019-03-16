@@ -2,17 +2,17 @@ from __future__ import absolute_import, division, print_function
 import math
 import matplotlib.pyplot as plt
 import numpy as np
-import utils
 import sys
 import os
 import six
 
 # ##local imports
-import config as pcfg
-import raypath as ray
-import chemistry
-import regrid
-import state_variables
+from . import utils
+from . import config as pcfg
+from . import raypath as ray
+from . import chemistry
+from . import regrid
+from . import state_variables
 
 
 class Atmosphere:

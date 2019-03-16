@@ -5,8 +5,8 @@ import six
 import scipy.special as scisp
 import matplotlib.pyplot as plt
 import matplotlib.colors as clr
-import utils as u
-import atmosphere
+from . import utils as u
+from . import atmosphere
 _X = 0
 _Y = 1
 _Z = 2

@@ -3,9 +3,9 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 import numpy as np
-import utils
-import config as pcfg
-import state_variables
+from . import utils
+from . import config as pcfg
+from . import import state_variables
 import six
 
 
