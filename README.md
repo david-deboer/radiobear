@@ -7,8 +7,16 @@ planetary atmosphere code to calculate the brightness temperature of planetary
 atmospheres in the meter-millimeter-wave regions.
 
 
-Before you start:
+Installing:
+1. Download radioBEAR from github
+2. From the top-level 'radiobear' directory, install ('pip install .')
+3. Create/move to your working directory (so, outside of the radiobear installation)
+4. Initialize your working directory with various directories/planet files
+      - from within your working directory type `initial_planet_setup.py`
+5. If you have other .par, tweak, atmosphere, etc files, move them from where they were into the appropriate planet folder.
 
+
+Before you start:
 1. Set up your **config file**
     1. Nearly all of the parameters are set within this configuration file
     2. The defaults are set in config.json, which also sets up which parameters are contained within the config
@@ -24,8 +32,8 @@ Before you start:
 
 Within a python environment here is an example:
 ```
-> import planet
-> j = planet.Planet('jupiter',config='config_testing.par')
+> import radiobear as rb
+> j = rb.planet.Planet('jupiter',config='config_testing.par')
 > catch_data = j.run(freqs='1:100:5', b='disc')
 ```
 time-stamped data file is written to Output and log file to Logs
