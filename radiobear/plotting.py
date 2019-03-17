@@ -85,8 +85,12 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
 def plot_raypath_stuff(b, ray):
     plt.figure('raypath-r')
     plt.plot(ray.r4ds, ray.ds)
+    plt.xlabel('Radius [km]')
+    plt.ylabel('Step [km]')
     plt.figure('raypath-P')
     plt.semilogy(ray.ds, ray.P4ds)
+    plt.xlabel('Step [km]')
+    plt.ylabel('Pressure [bar]')
     plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
     plt.figure('Observer')
     plt.plot(b[0], b[1], 'ko')
