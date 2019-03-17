@@ -55,7 +55,7 @@ class Alpha:
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
 
         # get config
-        if isinstance(config, six.string_types):
+        if config is None or isinstance(config, six.string_types):
             config = pcfg.planetConfig(self.planet, configFile=config, log=log)
         self.config = config
 
@@ -78,14 +78,14 @@ class Alpha:
             self.start_generate_alpha()
 
     def start_generate_alpha(self):
-        np.savez('Scratch/constituents', alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
-        self.fp_gen_alpha = open('Scratch/absorb.dat', 'w')
+        np.savez('{}/constituents'.format(self.scratch_directory), alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
+        self.fp_gen_alpha = open('{}/absorb.dat'.format(self.scratch_directory), 'w')
 
     def complete_generate_alpha(self):
         self.fp_gen_alpha.close()
         data = []
         n_freqs = len(self.freqs)
-        with open('Scratch/absorb.dat', 'r') as fp:
+        with open('{}/absorb.dat'.format(self.scratch_directory), 'r') as fp:
             for i, line in enumerate(fp):
                 if not i % n_freqs:
                     if i:
@@ -95,14 +95,14 @@ class Alpha:
                 layer.append(v)
             data.append(layer)
         data = np.array(data)
-        np.save('Scratch/absorb', data)
-        os.remove('Scratch/absorb.dat')
-        np.save('Scratch/freqs', self.freqs)
+        np.save('{}/absorb'.format(self.scratch_directory), data)
+        os.remove('{}/absorb.dat'.format(self.scratch_directory))
+        np.save('{}/freqs'.format(self.scratch_directory), self.freqs)
 
     def existing_alpha_setup(self):
         if self.alpha_data is None:
-            self.alpha_data = np.load('Scratch/absorb.npy')
-            condata = np.load('Scratch/constituents.npz')
+            self.alpha_data = np.load('{}/absorb.npy'.format(self.scratch_directory))
+            condata = np.load('{}/constituents.npz'.format(self.scratch_directory))
             self.ordered_constituents = condata['alpha_sort']
         if self.scale_existing_alpha:
             self.scale_constituent_columns, self.scale_constituent_values = read_scalefile(self.config.scale_file_name)
@@ -211,8 +211,6 @@ class Alpha:
         set_mode:  'set' or 'init', if set, checks list
         """
         for k, v in six.iteritems(kwargs):
-            if isinstance(v, six.string_types):
-                v = v.lower()
             if k in self.state_vars:
                 setattr(self, k, v)
                 if set_mode == 'set':

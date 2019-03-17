@@ -1,6 +1,5 @@
 from __future__ import print_function, absolute_import, division
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
 import os
 import numpy as np
 import six

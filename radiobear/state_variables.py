@@ -13,7 +13,8 @@ def init_state_variables(mode, **kwargs):
                   'scale_existing_alpha': False,
                   'output_type': 'frequency',  # or 'wavelength'
                   'log_directory': 'Logs',
-                  'output_directory': 'Output'
+                  'output_directory': 'Output',
+                  'scratch_directory': 'Scratch'
                   }
 
     if mode == 'batch':
