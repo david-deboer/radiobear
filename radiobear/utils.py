@@ -1,5 +1,4 @@
 from __future__ import print_function, absolute_import, division
-import matplotlib.pyplot as plt
 import os
 import numpy as np
 import six
@@ -150,9 +149,10 @@ def get_expected_number_of_entries(fp):
 
 
 def bang():
+    from . import plot_modules
     files = ls(show=False, returnList=True)
     for f in files:
-        plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
+        plot_modules.plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
 
 
 def writeWavel(fn=None, outputFile=None, directory='Output'):
@@ -198,25 +198,3 @@ def concatdat(files, directory='Output'):
         f.append(bf[i])
         wavel.append(cwavel[i])
     return TB, f, wavel
-
-
-def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='!'):
-    try:
-        fp = open(fn, 'r')
-    except IOError:
-        print(fn, ' not found')
-        return 0
-    data = []
-    for line in fp:
-        if comline in line[0:5]:
-            continue
-        dline = line.split(delimiter)
-        if len(dline) < max(cols):
-            continue
-        drow = []
-        for c in cols:
-            drow.append(float(dline[c]))
-        data.append(drow)
-    data = np.array(data)
-    plt.semilogx(data[:, 0], data[:, 1], color=color, marker=marker)
-    plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
