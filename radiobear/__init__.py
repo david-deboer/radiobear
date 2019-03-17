@@ -15,6 +15,7 @@ from . import shape
 from . import state_variables
 from . import chemistry
 from . import utils
+from . import plot_modules
 from . import version
 from . import Constituents
 

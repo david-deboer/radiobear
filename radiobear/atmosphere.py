@@ -1,5 +1,4 @@
 from __future__ import absolute_import, division, print_function
-import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import os
@@ -29,6 +28,9 @@ class Atmosphere:
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
         self.logFile = utils.setupLogFile(log)
+        if self.plot:
+            from . import plot_modules
+            self.plt = plot_modules.atmplt(self)
 
         if isinstance(config, six.string_types):
             config = os.path.join(self.planet, config)
@@ -116,10 +118,10 @@ class Atmosphere:
 
         # ## Plot data
         if self.plot:
-            self.plotTP()
-            self.plotGas()
-            self.plotCloud()
-            self.plotProp()
+            self.plt.plotTP()
+            self.plt.plotGas()
+            self.plt.plotCloud()
+            self.plt.plotProp()
 
         return self.nAtm
 
@@ -314,27 +316,13 @@ class Atmosphere:
             print("Warning - scale file doesn't match atmosphere.  Not applying.")
             return None
 
-        if plot_diff:
-            color_seq = ['b', 'k', 'r', 'm', 'c']
-            clr = {}
-            plt.figure('Scale difference')
-            for i, gas in enumerate(col):
-                if gas.lower() != 'p':
-                    clr[gas] = color_seq[i]
-                    present, g = self.is_present(self.gas[self.config.C[gas.upper()]])
-                    plt.loglog(g, self.gas[self.config.C['P']], color=clr[gas], linestyle='--', label=gas + ' before')
-
         for i in range(self.nAtm):
             for gas in col:
                 if gas.lower() != 'p':
                     self.gas[self.config.C[gas.upper()]][i] *= scale_info[gas][i]
 
         if plot_diff:
-            for i, gas in enumerate(col):
-                if gas.lower() != 'p':
-                    present, g = self.is_present(self.gas[self.config.C[gas.upper()]])
-                    plt.loglog(g, self.gas[self.config.C['P']], color=clr[gas], linestyle='-', label=gas + ' after')
-            self.frame_plot('Fractional Abundance')
+            self.plt.plot_diff()
 
     def computeProp(self):
         """This module computes derived atmospheric properties (makes self.layerProperty)"""
@@ -412,58 +400,3 @@ class Atmosphere:
         v = [tiny if x <= tiny else x for x in c]
         present = bool(len(np.where(np.array(v) > tiny)[0]))
         return present, v
-
-    def frame_plot(self, xlabel, show_legend=True):
-        v = list(plt.axis())
-        if v[0] < 1E-10:
-            v[0] = 1E-10
-        v[2] = 100.0 * np.ceil(self.gas[self.config.C['P']][-1] / 100.0)
-        v[3] = 1.0E-7 * np.ceil(self.gas[self.config.C['P']][0] / 1E-7)
-        plt.axis(v)
-        plt.ylabel('P [bars]')
-        plt.xlabel(xlabel)
-        if show_legend:
-            plt.legend()
-
-    def plotTP(self, plot='auto'):
-        """Plot the T-P profile"""
-        if plot == 'auto':
-            plt.figure(self.planet + ': T-P')
-        plt.title(self.planet + ':  T-P profile')
-        plt.loglog(self.gas[self.config.C['T']], self.gas[self.config.C['P']], label='T')
-        self.frame_plot('T [K]', show_legend=False)
-
-    def plotCloud(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
-        """Plots the clouds"""
-        if plot == 'auto':
-            plt.figure(self.planet + ': clouds')
-        plt.title(self.planet + ': clouds')
-        for cloud in self.config.Cl:
-            present, cl = self.is_present(self.cloud[self.config.Cl[cloud]])
-            if cloud in dontPlot or not present:
-                continue
-            plt.loglog(cl, self.cloud[self.config.Cl['P']], label=cloud)
-        self.frame_plot(r'Density [g/cm$^3$]')
-
-    def plotGas(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
-        """Plots the constituents"""
-        if plot == 'auto':
-            plt.figure(self.planet + ': gas')
-        plt.title(self.planet + ': gas')
-        for gas in self.config.C:
-            present, g = self.is_present(self.gas[self.config.C[gas]])
-            if gas in dontPlot or not present:
-                continue
-            plt.loglog(g, self.gas[self.config.C['P']], label=gas)
-        self.frame_plot('Fractional Abundance')
-
-    def plotProp(self, dontPlot=['Z', 'P', 'T'], plot='auto'):
-        if plot == 'auto':
-            plt.figure(self.planet + ': Properties')
-        plt.title(self.planet + ': other')
-        for other in self.config.LP:
-            present, g = self.is_present(self.layerProperty[self.config.LP[other]])
-            if other in dontPlot or not present:
-                continue
-            plt.loglog(g, self.gas[self.config.C['P']], label=other)
-        self.frame_plot('Property Value')
