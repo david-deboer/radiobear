@@ -6,6 +6,8 @@ Radio BErkeley Atmospheric Radiative-transfer (RadioBEAR)
 planetary atmosphere code to calculate the brightness temperature of planetary
 atmospheres in the meter-millimeter-wave regions.
 
+KNOWN ISSUES:
+- For some matplotlib installs, the `plot_bright` plots sometimes cause the terminal to freeze.  
 
 Installing:
 1. Download radioBEAR from github
