@@ -82,16 +82,15 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
     plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
 
 
-def plot_raypath_stuff(r=None, b=None, ray=None):
-    if ray is None:
-        plt.figure('observer')
-        plt.plot(r * b[0], r * b[1], '.', color='k')
-    else:
-        plt.figure('raypath-r')
-        plt.plot(ray.r4ds, ray.ds)
-        plt.figure('raypath-P')
-        plt.semilogy(ray.ds, ray.P4ds)
-        plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
+def plot_raypath_stuff(b, ray):
+    plt.figure('raypath-r')
+    plt.plot(ray.r4ds, ray.ds)
+    plt.figure('raypath-P')
+    plt.semilogy(ray.ds, ray.P4ds)
+    plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
+    plt.figure('Observer')
+    plt.plot(b[0], b[1], 'ko')
+    plt.axis([-1.2, 1.2, -1.2, 1.2])
 
 
 class shape_plots:
