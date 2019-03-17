@@ -1,6 +1,6 @@
 from __future__ import print_function, absolute_import, division
 
-import chemistry
+from radiobear import chemistry
 
 
 def get_value(p, t, q, c, v):

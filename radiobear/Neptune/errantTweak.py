@@ -1,5 +1,6 @@
-import chemistry
+from radiobear import chemistry
 import matplotlib.pyplot as plt
+
 
 def modify(gas, cloud, C, Cl):
 

@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-import chemistry
+from radiobear import chemistry
 
 
 def modify(gas, cloud, C, Cl):
