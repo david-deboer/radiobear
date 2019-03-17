@@ -81,7 +81,7 @@ radiobear.planet.Planet state variables and defaults
 	use_existing_alpha:  False.  # reuse the generated file
 	scale_existing_alpha:  False # scale and use the generated file
 	normalize_weighting:  True.  # normalize to 1
-	output_type:  frequency.     # frequency or wavelenth
+	output_type:  frequency.     # frequency or wavelength
 	log_directory:  Logs.        # sub-directory for logs
 	output_directory:  Output.   # sub-directory for output
 	scratch_directory:  Scratch. # sub-directory for eg. Absorption etc.
