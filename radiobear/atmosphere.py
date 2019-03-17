@@ -300,7 +300,7 @@ class Atmosphere:
         utils.log(self.logFile, '====================================================================', False)
         tp.close()
 
-    def scaleAtm(self, scale_info='Scratch/scale.dat', plot_diff=True):
+    def scaleAtm(self, scale_info='Scratch/scale.dat', plot_diff=False):
         """
         This is a built-in tweak module.
         """
