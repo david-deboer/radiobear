@@ -2,8 +2,6 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import six
 import scipy.special as scisp
-import matplotlib.pyplot as plt
-import matplotlib.colors as clr
 from . import utils as u
 from . import atmosphere
 _X = 0
@@ -247,26 +245,6 @@ class Shape:
                 self.__calcEllipse(planet, r, pclat, delta_lng)
 
         return self.rmag
-
-    def plotShapes(self, planet, r, lat=90.0, delta_lng=0.0, gtypes=['ellipse', 'sphere', 'reference', 'gravity'], latstep='default'):
-        colors = ['k', 'r', 'g', 'b', 'y', 'm', 'c']
-        plt.figure('Shapes')
-        for i, gtype in enumerate(gtypes):
-            self.saveShape = [['oui']]
-            rmag = self.calcShape(planet, r, pclat=90.0, delta_lng=delta_lng, gtype=gtype, latstep=latstep)
-            del self.saveShape[0]  # remove nonsense first term
-            self.saveShape = np.array(self.saveShape)
-            if gtype != 'gravity':
-                self.saveShape = np.flipud(self.saveShape)
-            _y = []
-            _z = []
-            for v in self.saveShape:
-                _y.append(v[_Y])
-                _z.append(v[_Z])
-            plt.plot(_z, _y, color=colors[self.colorCounter % len(colors)], label=gtype)
-            self.colorCounter += 1
-            plt.axis('image')
-            plt.legend()
 
 
 def rotX(x, V):
