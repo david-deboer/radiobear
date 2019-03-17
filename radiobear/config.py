@@ -49,7 +49,7 @@ class planetConfig:
         utils.log(self.logFile, pars, False)
 
     def setConfig(self, configFile):
-        """Reads in config files and updates after default set in __init__.  These are all shown in showConfig"""
+        """Reads in config files and updates after default set in __init__.  These are all shown in display()"""
         if configFile is None:
             print('Config file not provided.  Using defaults.')
             return 0
