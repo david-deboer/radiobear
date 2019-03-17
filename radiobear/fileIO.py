@@ -6,9 +6,9 @@ import six
 
 
 class FileIO(object):
-    def __init__(self, outputType):
+    def __init__(self, outputType, output_directory):
         self.outputType = outputType
-        self.directory = 'Output'
+        self.directory = output_directory
 
     def write(self, outputFile, outType, freqs, freqUnit, b, Tb, header):
         with open(outputFile, 'w') as fp:

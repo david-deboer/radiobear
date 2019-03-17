@@ -80,7 +80,7 @@ class Planet:
         self.data_return = data_handling.DataReturn()
 
         # ## Create fileIO class
-        self.fIO = fileIO.FileIO(self.output_type)
+        self.fIO = fileIO.FileIO(self.output_type, self.output_directory)
 
     def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
@@ -160,7 +160,7 @@ class Planet:
 
         #  ##Write output files
         if self.write_output_files:
-            outputFile = 'Output/{}_{}{}_{}.dat'.format(self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M"))
+            outputFile = '{}}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M"))
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
