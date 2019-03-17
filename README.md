@@ -71,19 +71,19 @@ options for b:
 output of <>.state() (kwargs)
 
 radiobear.planet.Planet state variables and defaults
-	batch_mode:  False           # run in batch_mode
-	initialize:  True            # initialize run when class instantiated
-	write_output_files:  True    #
-	write_log_file:  True.       #
-	plot:  None                  # will set both plot_atm and plot_bright, only used when class set up
-	plot_atm:  False             # plot the atmosphere data
-	plot_bright:  True           # plot the radiative transfer data
-	verbose:  True               #
-	generate_alpha:  False       # generate an absorption profile file
-	use_existing_alpha:  False.  # reuse the generated file
-	scale_existing_alpha:  False # scale and use the generated file
-	normalize_weighting:  True.  # normalize to 1
-	output_type:  frequency.     # frequency or wavelength
-	log_directory:  Logs.        # sub-directory for logs
-	output_directory:  Output.   # sub-directory for output
-	scratch_directory:  Scratch. # sub-directory for eg. Absorption etc.
+ - batch_mode:  False           # run in batch_mode
+ - initialize:  True            # initialize run when class instantiated
+ - write_output_files:  True    #
+ - write_log_file:  True.       #
+ - plot:  None                  # will set both plot_atm and plot_bright, only used when class set up
+ - plot_atm:  False             # plot the atmosphere data
+ - plot_bright:  True           # plot the radiative transfer data
+ - verbose:  True               #
+ - generate_alpha:  False       # generate an absorption profile file
+ - use_existing_alpha:  False.  # reuse the generated file
+ - scale_existing_alpha:  False # scale and use the generated file
+ - normalize_weighting:  True.  # normalize to 1
+ - output_type:  frequency.     # frequency or wavelength
+ - log_directory:  Logs.        # sub-directory for logs
+ - output_directory:  Output.   # sub-directory for output
+ - scratch_directory:  Scratch. # sub-directory for eg. Absorption etc.
