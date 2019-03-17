@@ -138,7 +138,7 @@ class bright_plots:
     def __init__(self, pltcls):
         self.pltcls = pltcls
 
-    def plot_W(self, freqs, integrated_W, normW4plot):
+    def plot_W(self, freqs, normW4plot):
         # ####-----Weigthing functions
         plt.figure('INT_W')
         plt.plot(freqs, integrated_W)
@@ -191,21 +191,6 @@ class bright_plots:
 class atm_plots:
     def __init__(self, pltcls):
         self.pltcls = pltcls
-
-    def plot_diff(self):
-        color_seq = ['b', 'k', 'r', 'm', 'c']
-        clr = {}
-        plt.figure('Scale difference')
-        for i, gas in enumerate(col):
-            if gas.lower() != 'p':
-                clr[gas] = color_seq[i]
-                present, g = self.pltcls.is_present(self.pltcls.gas[self.pltcls.config.C[gas.upper()]])
-                plt.loglog(g, self.pltcls.gas[self.pltcls.config.C['P']], color=clr[gas], linestyle='--', label=gas + ' before')
-        for i, gas in enumerate(col):
-            if gas.lower() != 'p':
-                present, g = self.pltcls.is_present(self.pltcls.gas[self.pltcls.config.C[gas.upper()]])
-                plt.loglog(g, self.pltcls.gas[self.pltcls.config.C['P']], color=clr[gas], linestyle='-', label=gas + ' after')
-        self.frame_plot('Fractional Abundance')
 
     def frame_plot(self, xlabel, show_legend=True):
         v = list(plt.axis())

@@ -137,7 +137,7 @@ class Alpha:
         for k in self.constituent:
             self.log.add('\t' + k + ':  ' + self.constituent[k], self.verbose)
 
-    def getAlpha(self, freqs, layer, atm, units='invcm', plot=None):
+    def getAlpha(self, freqs, layer, atm, units='invcm'):
         """This is a wrapper to get the absorption coefficient, either from calculating from formalisms
            or reading from file"""
         if self.freqs is None and self.generate_alpha:
@@ -146,26 +146,26 @@ class Alpha:
             if len(self.alpha_data) != len(atm.gas[0]):
                 raise ValueError("Absorption and atmosphere don't agree")
         if self.use_existing_alpha:
-            return self.get_alpha_from_file(freqs, layer, units, plot)
+            return self.get_alpha_from_file(freqs, layer, units)
         elif self.scale_existing_alpha:
             for c in self.scale_constituent_values:
                 if len(self.scale_constituent_values[c]) != len(atm.gas[0]):
                     raise ValueError("Scaling and atmosphere don't agree")
-            return self.scale_alpha_from_file(freqs, layer, units, plot)
+            return self.scale_alpha_from_file(freqs, layer, units)
         else:
             P = atm.gas[atm.config.C['P']][layer]
             T = atm.gas[atm.config.C['T']][layer]
             gas = atm.gas[:, layer]
             cloud = atm.cloud[:, layer]
-            return self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C, cloud, atm.config.Cl, units, plot)
+            return self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C, cloud, atm.config.Cl, units)
 
-    def get_alpha_from_file(self, freqs, layer, units='invcm', plot=None):
+    def get_alpha_from_file(self, freqs, layer, units='invcm'):
         totalAbsorption = np.zeros_like(freqs)
         for i in range(len(freqs)):
             totalAbsorption[i] = self.alpha_data[layer, i, -1]
         return totalAbsorption
 
-    def scale_alpha_from_file(self, freqs, layer, units='invcm', plot=None):
+    def scale_alpha_from_file(self, freqs, layer, units='invcm'):
         totalAbsorption = np.zeros_like(freqs)
         for i in range(len(freqs)):
             for j in range(self.alpha_data.shape[2] - 1):
@@ -176,7 +176,7 @@ class Alpha:
                 totalAbsorption[i] += new_value
         return totalAbsorption
 
-    def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm', plot=None):
+    def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
         """This gets the total absoprtion coefficient from gas.  It assumes the correct frequency units, but maybe should correct that.
            Returns total absorption at that layer."""
         absorb = []

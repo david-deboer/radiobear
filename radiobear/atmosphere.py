@@ -29,9 +29,6 @@ class Atmosphere:
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
         self.log = logging.setup(log)
-        if self.plot:
-            from . import plotting
-            self.plt = plotting.atm_plots(self)
 
         if isinstance(config, six.string_types):
             config = os.path.join(self.planet, config)
@@ -116,13 +113,6 @@ class Atmosphere:
         angularDiameter = 2.0 * np.arctan(self.layerProperty[self.config.LP['R']][0] / self.config.distance)
         if self.verbose == 'loud':
             print('angular radius = {} arcsec'.format(utils.r2asec(angularDiameter / 2.0)))
-
-        # ## Plot data
-        if self.plot:
-            self.plt.plotTP()
-            self.plt.plotGas()
-            self.plt.plotCloud()
-            self.plt.plotProp()
 
         return self.nAtm
 
@@ -303,7 +293,7 @@ class Atmosphere:
         self.log.add('====================================================================', False)
         tp.close()
 
-    def scaleAtm(self, scale_info='Scratch/scale.dat', plot_diff=False):
+    def scaleAtm(self, scale_info='Scratch/scale.dat'):
         """
         This is a built-in tweak module.
         """
@@ -321,9 +311,6 @@ class Atmosphere:
             for gas in col:
                 if gas.lower() != 'p':
                     self.gas[self.config.C[gas.upper()]][i] *= scale_info[gas][i]
-
-        if plot_diff:
-            self.plt.plot_diff()
 
     def computeProp(self):
         """This module computes derived atmospheric properties (makes self.layerProperty)"""

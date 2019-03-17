@@ -21,9 +21,6 @@ class Brightness():
         state_variables.set_state(self, set_mode='init', **kwargs)
         self.log = logging.setup(log)
         self.layerAlpha = None
-        if self.plot:
-            from . import plotting
-            self.plt = plotting.bright_plots(self)
 
     def resetLayers(self):
         self.layerAlpha = None
@@ -42,14 +39,14 @@ class Brightness():
     def state(self):
         state_variables.show_state(self)
 
-    def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0, discAverage=False, normW4plot=True):
+    def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0, discAverage=False):
         """This computes the brightness temperature along one ray path"""
 
         if self.layerAlpha is None:
             self.layerAbsorption(freqs, atm, alpha)
         # get path lengths (ds_layer) vs layer number (num_layer) - currently frequency independent refractivity
         print_meta = (self.verbose == 'loud')
-        travel = ray.compute_ds(atm, b, orientation, gtype=None, verbose=print_meta, plot=self.plot)
+        travel = ray.compute_ds(atm, b, orientation, gtype=None, verbose=print_meta)
         self.travel = travel
         if travel.ds is None:
             print('Off planet')
@@ -125,11 +122,7 @@ class Brightness():
         self.Tb_lyr = np.array(self.Tb_lyr).transpose()
         self.P = np.array(self.P)
         self.z = np.array(self.z)
-
-        if self.plot:
-            self.plt.plot_W(freqs, integrated_W, normW4plot)
-            self.plt.plot_Alpha(freqs)
-            self.plt.plot_Tb(freqs)
+        self.integrated_W = np.array(integrated_W)
 
         del taus, Tbs, Ws
         return self.Tb

@@ -167,12 +167,23 @@ class Planet:
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
-
-        #  ##Plot if profile
-        if self.plot and self.outType == 'profile':
+        ###---###
+        if self.plot:
             from . import plotting
-            plt = plotting.planet_plots(self)
-            plt.plot_profile(b)
+            atmplt = plotting.atm_plots(self.atm)
+            atmplt.plotTP()
+            atmplt.plotGas()
+            atmplt.plotCloud()
+            atmplt.plotProp()
+            plotting.plot_raypath_stuff(r=np.array(r), ray=path)
+            brtplt = plotting.bright_plots(self.bright)
+            brtplt.plot_W(freqs, normW4plot)
+            brtplt.plot_Alpha(freqs)
+            brtplt.plot_Tb(freqs)
+
+            if self.outType == 'profile':
+                plt = plotting.planet_plots(self)
+                plt.plot_profile(b)
 
         return self.data_return
 

@@ -113,7 +113,7 @@ def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
     return edge, b  # same vector but in P and Q coordinate systems
 
 
-def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
+def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     """Computes the path length through the atmosphere given:
             b = impact parameter (fractional distance to outer edge at that latitude in observer's coordinates)
             orientation = position angle of the planet [0]='tip', [1]='subearth latitude' """
@@ -274,9 +274,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
             dsmuappend = ds[i] / (r4ds[i] - r4ds[i + 1])
         dsmu.append(dsmuappend)
     path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler, tip=tip, rotate=rotate, rNorm=rNorm)
-    if plot:
-        from . import plotting
-        plotting.plot_raypath_stuff(r=np.array(r), ray=path)
+
     del s, r, n, ds, layer4ds, r4ds, P4ds, geoid, req, nr
     return path
 
@@ -310,12 +308,9 @@ def layersTest(rmin=100.0, rmax=20000.0, nlyr=100):
     return mid
 
 
-def testPath(b=0.5, rmin=12000.0, rmax=20000.0, nlyr=50, verbose=False, plot=True):
+def testPath(b=0.5, rmin=12000.0, rmax=20000.0, nlyr=50, verbose=False):
     # make layers
-    import matplotlib.pyplot as plt
     mid = layersTest(rmin=rmin, rmax=rmax, nlyr=nlyr)
     n = refractTest(mid)
-    ds = compute_ds(b, mid, n, verbose=verbose, plot=plot)
-    plt.figure('ds')
-    plt.plot(mid, ds)
+    ds = compute_ds(b, mid, n, verbose=verbose)
     return mid, ds
