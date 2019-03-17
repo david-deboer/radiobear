@@ -6,6 +6,7 @@ import numpy as np
 from . import utils
 from . import config as pcfg
 from . import state_variables
+from . import logging
 import six
 
 
@@ -50,13 +51,13 @@ class Alpha:
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
         state_variables.set_state(self, set_mode='init', **kwargs)
-        self.log = utils.setupLogFile(log)
+        self.log = logging.Log(log)
         self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
 
         # get config
         if config is None or isinstance(config, six.string_types):
-            config = pcfg.planetConfig(self.planet, configFile=config, log=log)
+            config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
 
         # copy config back into otherPar
@@ -113,7 +114,7 @@ class Alpha:
     def formalisms(self):
         # Get possible constituents
         s = 'Reading in absorption modules from ' + self.constituentsAreAt + '\n'
-        utils.log(self.log, s, self.verbose)
+        self.log.log(s, self.verbose)
         # Import used ones - note this dynamically imports the absorption modules.
         self.constituent = {}
         self.absorptionModule = {}
@@ -130,11 +131,11 @@ class Alpha:
             except ImportError:
                 s = "WARNING:  CAN'T LOAD " + absorber + '.  '
                 print(s * 3)
-                utils.log(self.log, "Can't load " + absorber, True)
+                self.log.log("Can't load " + absorber, True)
         self.ordered_constituents = sorted(self.constituent.keys())
-        utils.log(self.log, 'Using modules:', self.verbose)
+        self.log.log('Using modules:', self.verbose)
         for k in self.constituent:
-            utils.log(self.log, '\t' + k + ':  ' + self.constituent[k], self.verbose)
+            self.log.log('\t' + k + ':  ' + self.constituent[k], self.verbose)
 
     def getAlpha(self, freqs, layer, atm, units='invcm', plot=None):
         """This is a wrapper to get the absorption coefficient, either from calculating from formalisms

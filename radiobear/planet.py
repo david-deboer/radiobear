@@ -10,6 +10,7 @@ from . import data_handling
 from . import utils
 from . import fileIO
 from . import state_variables
+from . import logging
 import os
 import six
 
@@ -48,9 +49,9 @@ class Planet:
         #  ##Set up log file
         if self.write_log_file:
             runStart = datetime.datetime.now()
-            self.logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M"))
-            self.log = utils.setupLogFile(self.logFile)
-            utils.log(self.log, self.planet + ' start ' + str(runStart), self.verbose)
+            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M"))
+            self.log = logging.Log(logFile)
+            self.log.log(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
 

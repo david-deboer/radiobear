@@ -8,6 +8,7 @@ import os.path
 from . import utils
 from . import raypath as ray
 from . import state_variables
+from . import logging
 
 
 class Brightness():
@@ -18,7 +19,7 @@ class Brightness():
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
         state_variables.set_state(self, set_mode='init', **kwargs)
-        self.log = utils.setupLogFile(log)
+        self.log = logging.Log(log)
         self.layerAlpha = None
         if self.plot:
             from . import plotting
@@ -31,7 +32,7 @@ class Brightness():
         self.freqs = freqs
         numLayers = len(atm.gas[0])
         layerAlp = []
-        utils.log(self.log, '{} layers'.format(numLayers), self.verbose)
+        self.log.log('{} layers'.format(numLayers), self.verbose)
         for layer in range(numLayers):
             layerAlp.append(alpha.getAlpha(freqs, layer, atm, units=utils.alphaUnit))
             if self.verbose == 'loud':

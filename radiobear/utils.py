@@ -82,29 +82,6 @@ def invertDictionary(dic):
     return e, sk
 
 
-def setupLogFile(log):
-    if isinstance(log, six.string_types):
-        log_directory = os.path.dirname(log)
-        if not os.path.isdir(log_directory):
-            os.mkdir(log_directory)
-        logfp = open(log, 'a')
-    else:
-        logfp = log
-    return logfp
-
-
-def log(logfp, msg, printOut=True):
-    if logfp:
-        logfp.write(msg + '\n')
-        if printOut:
-            print(msg)
-
-
-def close(logfp):
-    if logfp:
-        logfp.close()
-
-
 def ls(directory='Output', tag='dat', show=True, returnList=False):
     """Generates file list for plotTB and writeWavel"""
     filelist = os.listdir(directory)

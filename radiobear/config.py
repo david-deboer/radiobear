@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 from . import utils
+from . import logging
 import json
 import six
 import os.path
@@ -30,7 +31,7 @@ class planetConfig:
         self.planet = planet
         self.filename = configFile
         self.path = planet
-        self.logFile = utils.setupLogFile(log)
+        self.log = logging.Log(log)
 
         with open(default_config_file, 'r') as f:
             config_data = json.load(f)
@@ -44,9 +45,9 @@ class planetConfig:
             setattr(self, self.toks[tok]['name'], val)
         self.setConfig(configFile)
         pars = self.show()
-        utils.log(self.logFile, planet, False)
-        utils.log(self.logFile, configFile, False)
-        utils.log(self.logFile, pars, False)
+        self.log.log(planet, False)
+        self.log.log(configFile, False)
+        self.log.log(pars, False)
 
     def setConfig(self, configFile):
         """Reads in config files and updates after default set in __init__.  These are all shown in display()"""

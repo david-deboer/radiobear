@@ -11,6 +11,7 @@ from . import raypath as ray
 from . import chemistry
 from . import regrid
 from . import state_variables
+from . import logging
 
 
 class Atmosphere:
@@ -27,14 +28,14 @@ class Atmosphere:
         state_variables.set_state(self, set_mode='init', **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
-        self.logFile = utils.setupLogFile(log)
+        self.log = logging.Log(log)
         if self.plot:
             from . import plotting
             self.plt = plotting.atm_plots(self)
 
         if isinstance(config, six.string_types):
             config = os.path.join(self.planet, config)
-            config = pcfg.planetConfig(self.planet, configFile=config, log=log)
+            config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
 
         # ##Create function dictionaries
@@ -49,9 +50,9 @@ class Atmosphere:
             print('Planet ' + self.planet)
             self.config.display()
         if self.config.gasType == 'read':  # this assumes that cloudType is then also 'read'
-            utils.log(self.logFile, '\tReading from: ' + self.config.filename, self.verbose)
-            utils.log(self.logFile, '\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
-            utils.log(self.logFile, '\tCloud file:  ' + self.config.cloudFile, self.verbose)
+            self.log.log('\tReading from: ' + self.config.filename, self.verbose)
+            self.log.log('\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
+            self.log.log('\tCloud file:  ' + self.config.cloudFile, self.verbose)
 
     def state(self):
         state_variables.show_state(self)
@@ -284,7 +285,7 @@ class Atmosphere:
             __import__(self.config.tweakmodule)
             tweakModule = sys.modules[self.config.tweakmodule]
         except SyntaxError:
-            utils.log(self.logFile, "Syntax Error:  check " + self.config.tweakmodule, True)
+            self.log.log("Syntax Error:  check " + self.config.tweakmodule, True)
             raise ValueError("Error in tweakmodule")
 
         # Run module then log
@@ -293,13 +294,13 @@ class Atmosphere:
             print('---tweakComment')
             print(self.tweakComment)
             print('---')
-        utils.log(self.logFile, self.tweakComment, False)
+        self.log.log(self.tweakComment, False)
         tf = os.path.join(self.config.path, self.config.tweakmodule + '.py')
         tp = open(tf, 'r')
         dt = tp.read()
-        utils.log(self.logFile, '======================' + tf + '=====================', False)
-        utils.log(self.logFile, dt, False)
-        utils.log(self.logFile, '====================================================================', False)
+        self.log.log('======================' + tf + '=====================', False)
+        self.log.log(dt, False)
+        self.log.log('====================================================================', False)
         tp.close()
 
     def scaleAtm(self, scale_info='Scratch/scale.dat', plot_diff=False):
