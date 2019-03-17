@@ -59,7 +59,6 @@ def plotTB(fn=None, xaxis='Frequency', xlog=False, justFreq=False, directory='Ou
     return len(b)
 
 
-
 def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='!'):
     try:
         fp = open(fn, 'r')
@@ -78,6 +77,7 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
             drow.append(float(dline[c]))
         data.append(drow)
     data = np.array(data)
+    plt.figure('ObsData')
     plt.semilogx(data[:, 0], data[:, 1], color=color, marker=marker)
     plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
 
