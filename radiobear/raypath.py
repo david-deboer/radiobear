@@ -1,6 +1,5 @@
 # Implements full 3-D refractive path with geoid gravity
 from __future__ import absolute_import, division, print_function
-import matplotlib.pyplot as plt
 import numpy as np
 import sys
 from . import atmosphere
@@ -15,7 +14,6 @@ _Z = 2
 xHat = np.array([1.0, 0.0, 0.0])
 yHat = np.array([0.0, 1.0, 0.0])
 zHat = np.array([0.0, 0.0, 1.0])
-plotExist = False
 
 
 class Ray:
@@ -152,8 +150,6 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
     if verbose:
         print(' within {:.2f} m'.format(abs(r1 - r2) * 100.0))
         geoid.printShort()
-    if plot:
-        plotStuff(atm=atm, r=rNorm, b=b, gtype=gtype, delta_lng=delta_lng, geoid=geoid, tip=tip, rotate=rotate)
 
     # initialize - everything below is in planetocentric coordinates, so need to rotate s-vector
     start = np.array([0.0, 0.0, -1.0])
@@ -279,27 +275,10 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
         dsmu.append(dsmuappend)
     path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler, tip=tip, rotate=rotate, rNorm=rNorm)
     if plot:
-        plt.figure('test_ds')
-        plt.plot(dsmu)
-        plt.plot([0, 1499], [1.0 / mu, 1.0 / mu])
-        plotStuff(r=np.array(r), ray=path)
+        from . import plot_modules
+        plot_modules.plot_raypath_stuff(r=np.array(r), ray=path)
     del s, r, n, ds, layer4ds, r4ds, P4ds, geoid, req, nr
     return path
-
-
-def plotStuff(atm=None, r=None, b=None, gtype=None, delta_lng=None, geoid=None, ray=None, tip=None, rotate=None):
-    global plotExist
-    if ray is None:
-        if not plotExist:
-            plotExist = True
-        plt.figure('observer')
-        plt.plot(r * b[0], r * b[1], '.', color='k')
-    else:
-        plt.figure('raypath-r')
-        plt.plot(ray.r4ds, ray.ds)
-        plt.figure('raypath-P')
-        plt.semilogy(ray.ds, ray.P4ds)
-        plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
 
 
 # ##Test functions
@@ -333,6 +312,7 @@ def layersTest(rmin=100.0, rmax=20000.0, nlyr=100):
 
 def testPath(b=0.5, rmin=12000.0, rmax=20000.0, nlyr=50, verbose=False, plot=True):
     # make layers
+    import matplotlib.pyplot as plt
     mid = layersTest(rmin=rmin, rmax=rmax, nlyr=nlyr)
     n = refractTest(mid)
     ds = compute_ds(b, mid, n, verbose=verbose, plot=plot)

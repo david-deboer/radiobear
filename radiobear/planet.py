@@ -1,6 +1,5 @@
 #  This is the 'executive' class for planets
 from __future__ import absolute_import, division, print_function
-import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 from . import atmosphere as atm
@@ -170,14 +169,9 @@ class Planet:
 
         #  ##Plot if profile
         if self.plot and self.outType == 'profile':
-            plt.figure("Profile")
-            Tbtr = np.transpose(self.Tb)
-            for j in range(len(freqs)):
-                frqs = ('%.2f %s' % (self.freqs[j], self.freqUnit))
-                plt.plot(bs, Tbtr[j], label=frqs)
-            plt.legend()
-            plt.xlabel('b')
-            plt.ylabel('$T_B$ [K]')
+            from . import plot_modules
+            plt = plot_modules.planet_plots(self)
+            plt.plot_profile(b)
 
         return self.data_return
 

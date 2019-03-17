@@ -1,8 +1,90 @@
 import matplotlib.pyplot as plt
+import numpy as np
+
+
+def plot_raypath_stuff(r=None, b=None, ray=None):
+    if ray is None:
+        plt.figure('observer')
+        plt.plot(r * b[0], r * b[1], '.', color='k')
+    else:
+        plt.figure('raypath-r')
+        plt.plot(ray.r4ds, ray.ds)
+        plt.figure('raypath-P')
+        plt.semilogy(ray.ds, ray.P4ds)
+        plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
+
+
+class planet_plots:
+    def __init__(self, pltcls):
+        self.pltcls = pltcls
+
+    def plot_profiles(self, b):
+        plt.figure("Profile")
+        Tbtr = np.transpose(self.pltcls.Tb)
+        for j in range(len(self.pltcls.freqs)):
+            frqs = ('%.2f %s' % (self.pltcls.freqs[j], self.pltcls.freqUnit))
+            plt.plot(b, Tbtr[j], label=frqs)
+        plt.legend()
+        plt.xlabel('b')
+        plt.ylabel('$T_B$ [K]')
+
+
+class bright_plots:
+    def __init__(self, pltcls):
+        self.pltcls = pltcls
+
+    def plot_W(self, freqs, integrated_W, normW4plot):
+        # ####-----Weigthing functions
+        plt.figure('INT_W')
+        plt.plot(freqs, integrated_W)
+        plt.title('Integrated weighting function')
+        plt.xlabel('Frequency [GHz]')
+        plt.figure('radtran')
+        for i, f in enumerate(freqs):
+            if normW4plot:
+                wplot = self.pltcls.W[i] / np.max(self.pltcls.W[i])
+            else:
+                wplot = self.pltcls.W[i]
+            if self.pltcls.output_type == 'frequency':
+                label = (r'{:.1f} GHz').format(f)
+            else:
+                label = (r'{:.1f} cm').format(30.0 / f)
+            plt.semilogy(wplot, self.pltcls.P, label=label, linewidth=3)
+        plt.legend()
+        plt.axis(ymin=100.0 * np.ceil(np.max(self.pltcls.P) / 100.0), ymax=1.0E-7 * np.ceil(np.min(self.pltcls.P) / 1E-7))
+        plt.ylabel('P [bars]')
+
+    def plot_Alpha(self, freqs):
+        # ####-----Alpha
+        plt.figure('alpha')
+        for i, f in enumerate(freqs):
+            if self.pltcls.output_type == 'frequency':
+                label = (r'$\alpha$: {:.1f} GHz').format(f)
+            else:
+                label = (r'{:.1f} cm').format(30.0 / f)
+            pl = list(self.pltcls.layerAlpha[i])
+            del pl[0]
+            plt.loglog(pl, self.pltcls.P, label=label)
+        plt.legend()
+        v = list(plt.axis())
+        v[2] = 100.0 * np.ceil(np.max(self.pltcls.P) / 100.0)
+        v[3] = 1.0E-7 * np.ceil(np.min(self.pltcls.P) / 1E-7)
+        plt.axis(v)
+        plt.ylabel('P [bars]')
+
+    def plot_Tb(self, freqs):
+        # ####-----Brightness temperature
+        plt.figure('brightness')
+        lt = '-'
+        if (len(self.pltcls.Tb) == 1):
+            lt = 'o'
+        plt.plot(freqs, self.pltcls.Tb, lt)
+        plt.xlabel('Frequency [GHz]')
+        plt.ylabel('Brightness temperature [K]')
 
 
 class atm_plots:
-    def _init__(self, pltcls):
+    def __init__(self, pltcls):
         self.pltcls = pltcls
 
     def plot_diff(self):

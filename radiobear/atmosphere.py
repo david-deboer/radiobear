@@ -30,7 +30,7 @@ class Atmosphere:
         self.logFile = utils.setupLogFile(log)
         if self.plot:
             from . import plot_modules
-            self.plt = plot_modules.atmplt(self)
+            self.plt = plot_modules.atm_plots(self)
 
         if isinstance(config, six.string_types):
             config = os.path.join(self.planet, config)

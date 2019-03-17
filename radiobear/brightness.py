@@ -1,6 +1,5 @@
 # ## This is the file to calculate the radiometric properties of the planets
 from __future__ import absolute_import, division, print_function
-import matplotlib.pyplot as plt
 import numpy as np
 import scipy.special as ss
 import sys
@@ -21,6 +20,9 @@ class Brightness():
         state_variables.set_state(self, set_mode='init', **kwargs)
         self.log = utils.setupLogFile(log)
         self.layerAlpha = None
+        if self.plot:
+            from . import plot_modules
+            self.plt = plot_modules.bright_plots(self)
 
     def resetLayers(self):
         self.layerAlpha = None
@@ -124,51 +126,9 @@ class Brightness():
         self.z = np.array(self.z)
 
         if self.plot:
-            # ####-----Weigthing functions
-            plt.figure('INT_W')
-            plt.plot(freqs, integrated_W)
-            plt.title('Integrated weighting function')
-            plt.xlabel('Frequency [GHz]')
-            plt.figure('radtran')
-            for i, f in enumerate(freqs):
-                if normW4plot:
-                    wplot = self.W[i] / np.max(self.W[i])
-                else:
-                    wplot = self.W[i]
-                if self.output_type == 'frequency':
-                    label = (r'{:.1f} GHz').format(f)
-                else:
-                    label = (r'{:.1f} cm').format(30.0 / f)
-                plt.semilogy(wplot, self.P, label=label, linewidth=3)
-            plt.legend()
-            plt.axis(ymin=100.0 * np.ceil(np.max(self.P) / 100.0), ymax=1.0E-7 * np.ceil(np.min(self.P) / 1E-7))
-            plt.ylabel('P [bars]')
-
-            # ####-----Alpha
-            plt.figure('alpha')
-            for i, f in enumerate(freqs):
-                if self.output_type == 'frequency':
-                    label = (r'$\alpha$: {:.1f} GHz').format(f)
-                else:
-                    label = (r'{:.1f} cm').format(30.0 / f)
-                pl = list(self.layerAlpha[i])
-                del pl[0]
-                plt.loglog(pl, self.P, label=label)
-            plt.legend()
-            v = list(plt.axis())
-            v[2] = 100.0 * np.ceil(np.max(self.P) / 100.0)
-            v[3] = 1.0E-7 * np.ceil(np.min(self.P) / 1E-7)
-            plt.axis(v)
-            plt.ylabel('P [bars]')
-
-            # ####-----Brightness temperature
-            plt.figure('brightness')
-            lt = '-'
-            if (len(self.Tb) == 1):
-                lt = 'o'
-            plt.plot(freqs, self.Tb, lt)
-            plt.xlabel('Frequency [GHz]')
-            plt.ylabel('Brightness temperature [K]')
+            self.plt.plot_W(freqs, integrated_W, normW4plot)
+            self.plt.plot_Alpha(freqs)
+            self.plt.plot_Tb(freqs)
 
         del taus, Tbs, Ws
         return self.Tb
