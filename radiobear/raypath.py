@@ -275,8 +275,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
         dsmu.append(dsmuappend)
     path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler, tip=tip, rotate=rotate, rNorm=rNorm)
     if plot:
-        from . import plot_modules
-        plot_modules.plot_raypath_stuff(r=np.array(r), ray=path)
+        from . import plotting
+        plotting.plot_raypath_stuff(r=np.array(r), ray=path)
     del s, r, n, ds, layer4ds, r4ds, P4ds, geoid, req, nr
     return path
 

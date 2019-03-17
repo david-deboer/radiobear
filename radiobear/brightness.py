@@ -21,8 +21,8 @@ class Brightness():
         self.log = utils.setupLogFile(log)
         self.layerAlpha = None
         if self.plot:
-            from . import plot_modules
-            self.plt = plot_modules.bright_plots(self)
+            from . import plotting
+            self.plt = plotting.bright_plots(self)
 
     def resetLayers(self):
         self.layerAlpha = None

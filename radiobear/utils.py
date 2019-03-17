@@ -149,10 +149,10 @@ def get_expected_number_of_entries(fp):
 
 
 def bang():
-    from . import plot_modules
+    from . import plotting
     files = ls(show=False, returnList=True)
     for f in files:
-        plot_modules.plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
+        plotting.plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
 
 
 def writeWavel(fn=None, outputFile=None, directory='Output'):

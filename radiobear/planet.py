@@ -169,8 +169,8 @@ class Planet:
 
         #  ##Plot if profile
         if self.plot and self.outType == 'profile':
-            from . import plot_modules
-            plt = plot_modules.planet_plots(self)
+            from . import plotting
+            plt = plotting.planet_plots(self)
             plt.plot_profile(b)
 
         return self.data_return
