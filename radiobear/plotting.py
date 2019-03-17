@@ -131,7 +131,7 @@ class planet_plots:
             plt.plot(b, Tbtr[j], label=frqs)
         plt.legend()
         plt.xlabel('b')
-        plt.ylabel('$T_B$ [K]')
+        plt.ylabel('T_B [K]')
 
 
 class bright_plots:
@@ -151,9 +151,9 @@ class bright_plots:
             else:
                 wplot = self.pltcls.W[i]
             if self.pltcls.output_type == 'frequency':
-                label = (r'{:.1f} GHz').format(f)
+                label = ('{:.1f} GHz').format(f)
             else:
-                label = (r'{:.1f} cm').format(30.0 / f)
+                label = ('{:.1f} cm').format(30.0 / f)
             plt.semilogy(wplot, self.pltcls.P, label=label, linewidth=3)
         plt.legend()
         plt.axis(ymin=100.0 * np.ceil(np.max(self.pltcls.P) / 100.0), ymax=1.0E-7 * np.ceil(np.min(self.pltcls.P) / 1E-7))
@@ -164,9 +164,9 @@ class bright_plots:
         plt.figure('alpha')
         for i, f in enumerate(freqs):
             if self.pltcls.output_type == 'frequency':
-                label = (r'$\alpha$: {:.1f} GHz').format(f)
+                label = ('a: {:.1f} GHz').format(f)
             else:
-                label = (r'{:.1f} cm').format(30.0 / f)
+                label = ('{:.1f} cm').format(30.0 / f)
             pl = list(self.pltcls.layerAlpha[i])
             del pl[0]
             plt.loglog(pl, self.pltcls.P, label=label)
@@ -237,7 +237,7 @@ class atm_plots:
             if cloud in dontPlot or not present:
                 continue
             plt.loglog(cl, self.pltcls.cloud[self.pltcls.config.Cl['P']], label=cloud)
-        self.frame_plot(r'Density [g/cm$^3$]')
+        self.frame_plot('Density [g/cm^3]')
 
     def plotGas(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
         """Plots the constituents"""
