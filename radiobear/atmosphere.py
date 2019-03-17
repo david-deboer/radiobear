@@ -26,7 +26,7 @@ class Atmosphere:
         self.planet = planet.capitalize()
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
-        self.set_state(set_mode='init', **kwargs)
+        state_variables.set_state(self, set_mode='init', **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
         self.logFile = utils.setupLogFile(log)
@@ -51,6 +51,9 @@ class Atmosphere:
             utils.log(self.logFile, '\tReading from: ' + self.config.filename, self.verbose)
             utils.log(self.logFile, '\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
             utils.log(self.logFile, '\tCloud file:  ' + self.config.cloudFile, self.verbose)
+
+    def state(self):
+        state_variables.show_state(self)
 
     def run(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None, otherType=None, tweak=True):
         """This is the standard pipeline"""
@@ -120,26 +123,6 @@ class Atmosphere:
             self.plotProp()
 
         return self.nAtm
-
-    def set_state(self, set_mode='set', **kwargs):
-        """
-        set_mode:  'set' or 'init', if set, checks list
-        """
-        for k, v in six.iteritems(kwargs):
-            if k in self.state_vars:
-                setattr(self, k, v)
-                if set_mode == 'set':
-                    print('Setting {} to {}'.format(k, v))
-            else:
-                if set_mode == 'set':
-                    print('state_var [{}] not found.'.format(k))
-        if set_mode == 'init' and self.verbose == 'loud':
-            self.show_state()
-
-    def show_state(self):
-        print("Atmosphere state variables")
-        for k in self.state_vars:
-            print('\t{}:  {}'.format(k, getattr(self, k)))
 
     def readGas(self, gasFile=None, Cdict=None):
         """Reads gas profile file as self.gas"""

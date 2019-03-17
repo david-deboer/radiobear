@@ -65,7 +65,7 @@ options for b:
 * `b = '0.0,0.2,0.4,0.6,0.8,1.0<45'` ==> will use those values as an angle of 45deg, (default angle is 0.0)
 * `b = '0.0:1.0:0.1<45'` ==> range start:stop:step<angle                                                  >
 
-output of <>.show_state() (kwargs)
+output of <>.state() (kwargs)
 
 Planet state variables
 *	batch_mode:  False

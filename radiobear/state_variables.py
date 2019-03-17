@@ -1,4 +1,5 @@
 from __future__ import print_function, absolute_import, division
+import six
 
 
 def init_state_variables(mode, **kwargs):
@@ -53,3 +54,25 @@ def init_state_variables(mode, **kwargs):
         raise ValueError("Only one is allowed to be True")
 
     return state_vars
+
+
+def set_state(state_class, set_mode='set', **kwargs):
+    """
+    set_mode:  'set' or 'init', if set, checks list
+    """
+    for k, v in six.iteritems(kwargs):
+        if k in state_class.state_vars:
+            setattr(state_class, k, v)
+            if set_mode == 'set':
+                print('Setting {} to {}'.format(k, v))
+        else:
+            if set_mode == 'set':
+                print('state_var [{}] not found.'.format(k))
+    if set_mode == 'init' and state_class.verbose == 'loud':
+        show_state(state_class)
+
+
+def show_state(state_class):
+    print("{} state variables".format(str(state_class).strip('<').split()[0]))
+    for k in state_class.state_vars:
+        print('\t{}:  {}'.format(k, getattr(state_class, k)))

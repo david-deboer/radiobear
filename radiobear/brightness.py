@@ -19,7 +19,7 @@ class Brightness():
            It must be used with atmosphere and alpha"""
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
-        self.set_state(set_mode='init', **kwargs)
+        state_variables.set_state(self, set_mode='init', **kwargs)
         self.log = utils.setupLogFile(log)
         self.layerAlpha = None
 
@@ -37,27 +37,8 @@ class Brightness():
                 print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
         self.layerAlpha = np.array(layerAlp).transpose()
 
-    def set_state(self, set_mode='set', **kwargs):
-        """
-        set_mode:  'set' or 'init', if set, checks list
-        """
-        for k, v in six.iteritems(kwargs):
-            if isinstance(v, six.string_types):
-                v = v.lower()
-            if k in self.state_vars:
-                setattr(self, k, v)
-                if set_mode == 'set':
-                    print('Setting {} to {}'.format(k, v))
-            else:
-                if set_mode == 'set':
-                    print('state_var [{}] not found.'.format(k))
-        if set_mode == 'init' and self.verbose == 'loud':
-            self.show_state()
-
-    def show_state(self):
-        print("Brightness state variables")
-        for k in self.state_vars:
-            print('\t{}:  {}'.format(k, getattr(self, k)))
+    def state(self):
+        state_variables.show_state(self)
 
     def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0, discAverage=False, normW4plot=True):
         """This computes the brightness temperature along one ray path"""

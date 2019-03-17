@@ -43,7 +43,7 @@ class Planet:
         # Set up state_variables
         kwargs = state_variables.init_state_variables(mode.lower(), **kwargs)
         self.state_vars = kwargs.keys()
-        self.set_state(set_mode='init', **kwargs)
+        state_variables.set_state(self, set_mode='init', **kwargs)
         self.mode = mode
         self.kwargs = kwargs
 
@@ -66,6 +66,9 @@ class Planet:
 
         if self.initialize:
             self.initialize_run()
+
+    def state(self):
+        state_variables.show_state(self)
 
     def initialize_run(self):
         #  ## Create atmosphere:  attributes are self.atm.gas, self.atm.cloud and self.atm.layerProperty
@@ -160,7 +163,7 @@ class Planet:
 
         #  ##Write output files
         if self.write_output_files:
-            outputFile = '{}}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M"))
+            outputFile = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M"))
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
@@ -178,26 +181,6 @@ class Planet:
             plt.ylabel('$T_B$ [K]')
 
         return self.data_return
-
-    def set_state(self, set_mode='set', **kwargs):
-        """
-        set_mode:  'set' or 'init'. If set, checks list.
-        """
-        for k, v in six.iteritems(kwargs):
-            if k in self.state_vars:
-                setattr(self, k, v)
-                if set_mode == 'set':
-                    print('Setting {} to {}'.format(k, v))
-            else:
-                if set_mode == 'set':
-                    print('state_var [{}] not found.'.format(k))
-        if set_mode == 'init' and self.verbose:
-            self.show_state()
-
-    def show_state(self):
-        print("Planet state variables")
-        for k in self.state_vars:
-            print('\t{}:  {}'.format(k, getattr(self, k)))
 
     def set_header(self, missed_planet):
         if missed_planet:

@@ -49,7 +49,7 @@ class Alpha:
 
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
-        self.set_state(set_mode='init', **kwargs)
+        state_variables.set_state(self, set_mode='init', **kwargs)
         self.log = utils.setupLogFile(log)
         self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
@@ -206,22 +206,5 @@ class Alpha:
             s += '{}\n'.format(totalAbsorption[i])
             self.fp_gen_alpha.write(s)
 
-    def set_state(self, set_mode='set', **kwargs):
-        """
-        set_mode:  'set' or 'init', if set, checks list
-        """
-        for k, v in six.iteritems(kwargs):
-            if k in self.state_vars:
-                setattr(self, k, v)
-                if set_mode == 'set':
-                    print('Setting {} to {}'.format(k, v))
-            else:
-                if set_mode == 'set':
-                    print('state_var [{}] not found.'.format(k))
-        if set_mode == 'init' and self.verbose == 'loud':
-            self.show_state()
-
-    def show_state(self):
-        print("Alpha state variables")
-        for k in self.state_vars:
-            print('\t{}:  {}'.format(k, getattr(self, k)))
+    def state(self):
+        state_variables.show_state(self)
