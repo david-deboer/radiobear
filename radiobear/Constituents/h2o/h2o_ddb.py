@@ -4,10 +4,10 @@ import os.path
 
 # Some constants
 T0 = 300.0           # reference temperature in K
-AMU_H2O=        18.015
-R=              8.314462E7
+AMU_H2O = 18.015
+R = 8.314462E7
 
-#Set data arrays
+# Set data arrays
 f0 = []
 Ei = []
 A = []
@@ -18,19 +18,20 @@ x_H2 = []
 x_He = []
 x_H2O = []
 
-def readInputFiles(path,verbose=False):
+
+def readInputFiles(path, verbose=False):
     """If needed this reads in the data files for h2o"""
     useLinesUpTo = 10   # index number
     global nlin
     nlin = 0
     if verbose:
         print("Reading h2o lines")
-    filename = os.path.join(path,'h2od.lin')
-    ifp = open(filename,'r')
+    filename = os.path.join(path, 'h2od.lin')
+    ifp = open(filename, 'r')
     for line in ifp:
         if nlin >= useLinesUpTo:
             break
-        nlin+=1
+        nlin += 1
         data = line.split()
         if len(data) == 9:
             f0.append(float(data[0]))

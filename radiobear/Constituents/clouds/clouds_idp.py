@@ -1,5 +1,5 @@
 from __future__ import absolute_import, division, print_function
-import math
+import numpy as np
 import cmath
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
@@ -9,7 +9,7 @@ def alpha(freq, T, P, cloud, cloud_dict, otherPar, units='dBperkm', path='./', v
     alpha_cloud = []
     for f in freq:
         alpha = 0.0
-        k = (2.0 * math.pi * f / GHz)  # *otherPar['refr']  # in cm^-1
+        k = (2.0 * np.pi * f / GHz)  # *otherPar['refr']  # in cm^-1
         if 'ice' in otherPar.keys() and otherPar['ice'] > 0.0:
             fraction = cloud[cloud_dict['H2O']] / 0.9   # g/cm^3 / g/cm^3
             e = water(f, T)
@@ -81,15 +81,15 @@ def water(freq, T):
             E2 = 0.0
     else:
         E1 = 3.17
-        LF = math.log10(freqHz)
+        LF = np.log10(freqHz)
         for j in range(len(FR) - 1):
             if FR[j + 1] >= freqHz:
                 break
-        LF0 = math.log10(FR[j])
-        LF1 = math.log10(FR[j + 1])
+        LF0 = np.log10(FR[j])
+        LF1 = np.log10(FR[j + 1])
         DLF = (LF - LF0) / (LF1 - LF0)
-        X0 = math.log10(EIMAG[j])
-        X1 = math.log10(EIMAG[j + 1])
+        X0 = np.log10(EIMAG[j])
+        X1 = np.log10(EIMAG[j + 1])
         DX = X0 + DLF * (X1 - X0)
         E2 = 10.0**DX
     dielectricConstant = E1 - E2 * 1.0j

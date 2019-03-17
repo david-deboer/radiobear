@@ -1,6 +1,3 @@
-import math
-import os.path
-
 # Some constants
 coef = 3.9522E-14     # coefficient from
 T0 = 273.0            # reference temperature in K
