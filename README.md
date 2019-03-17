@@ -13,13 +13,13 @@ Installing:
 3. Create/move to your working directory (so, outside of the radiobear installation)
 4. Initialize your working directory with various directories/planet files
       - from within your working directory type `initial_planet_setup.py`
-5. If you have other .par, tweak, atmosphere, etc files, move them from where they were into the appropriate planet folder.
+5. If you have other .par, tweak, atmosphere, etc files, move them from where they were into the new planet folder.
 
 
 Before you start:
 1. Set up your **config file**
     1. Nearly all of the parameters are set within this configuration file
-    2. The defaults are set in `config.json`, which also sets up which parameters are contained within the config
+    2. The defaults are set in `default_config.json`, which also sets up which parameters are contained within the config
     3. Default name is `config.par` in each of the planet sub-directories
     4. You may use different files, just call planet with `config='filename'`, which must reside within <planet_name>
     5. The tweakmodule filename gets set within the config, which adjusts the read in atmosphere - make sure it is what you want or make it so.
