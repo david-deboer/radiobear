@@ -9,7 +9,7 @@ atmospheres in the meter-millimeter-wave regions.
 
 Installing:
 1. Download radioBEAR from github
-2. From the top-level 'radiobear' directory, install ('pip install .')
+2. From the top-level 'radiobear' directory, install (`pip install .`)
 3. Create/move to your working directory (so, outside of the radiobear installation)
 4. Initialize your working directory with various directories/planet files
       - from within your working directory type `initial_planet_setup.py`
@@ -19,7 +19,7 @@ Installing:
 Before you start:
 1. Set up your **config file**
     1. Nearly all of the parameters are set within this configuration file
-    2. The defaults are set in config.json, which also sets up which parameters are contained within the config
+    2. The defaults are set in `config.json`, which also sets up which parameters are contained within the config
     3. Default name is `config.par` in each of the planet sub-directories
     4. You may use different files, just call planet with `config='filename'`, which must reside within <planet_name>
     5. The tweakmodule filename gets set within the config, which adjusts the read in atmosphere - make sure it is what you want or make it so.
