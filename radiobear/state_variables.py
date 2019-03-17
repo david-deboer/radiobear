@@ -7,11 +7,14 @@ def init_state_variables(mode, **kwargs):
                   'initialize': True,
                   'write_output_files': True,
                   'write_log_file': True,
-                  'plot': True,
+                  'plot': None,  # Provided as a courtesy and for backward compatibility
+                  'plot_atm': True,
+                  'plot_bright': True,
                   'verbose': True,  # 0/None/False, 'normal'/True, 'loud'
                   'generate_alpha': False,
                   'use_existing_alpha': False,
                   'scale_existing_alpha': False,
+                  'normalize_weighting': True,
                   'output_type': 'frequency',  # or 'wavelength'
                   'log_directory': 'Logs',
                   'output_directory': 'Output',
@@ -20,28 +23,36 @@ def init_state_variables(mode, **kwargs):
 
     if mode == 'batch':
         state_vars['batch_mode'] = True
-        state_vars['self.plot'] = False
+        state_vars['plot_atm'] = False
+        state_vars['plot_bright'] = False
         state_vars['verbose'] = False
         state_vars['write_log_file'] = False
     elif mode == 'mcmc':
-        state_vars['plot'] = False
+        state_vars['plot_atm'] = False
+        state_vars['plot_bright'] = False
         state_vars['verbose'] = False
         state_vars['write_log_file'] = False
         state_vars['write_output_files'] = False
         state_vars['scale_existing_alpha'] = True
     elif mode == 'use_alpha':
-        state_vars['plot'] = False
+        state_vars['plot_atm'] = False
+        state_vars['plot_bright'] = False
         state_vars['verbose'] = True
         state_vars['use_existing_alpha'] = True
     elif mode == 'scale_alpha':
-        state_vars['plot'] = False
+        state_vars['plot_atm'] = False
+        state_vars['plot_bright'] = False
         state_vars['verbose'] = True
         state_vars['scale_existing_alpha'] = True
 
+    if 'plot' in kwargs.keys():
+        state_vars['plot_atm'] = kwargs['plot']
+        state_vars['plot_bright'] = kwargs['plot']
+
     # update based on provided kwargs
-    for k in kwargs:
+    for k, v in six.iteritems(kwargs):
         if k in state_vars.keys():
-            state_vars[k] = kwargs[k]
+            state_vars[k] = v
         else:
             print("'{}' keyword not found.".format(k))
             raise ValueError("Aborting since you probably wanted this keyword")

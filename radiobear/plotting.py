@@ -119,73 +119,77 @@ class shape_plots:
             plt.legend()
 
 
-class planet_plots:
-    def __init__(self, pltcls):
-        self.pltcls = pltcls
+def plot_profiles(pltcls, b):
+    plt.figure("Profile")
+    Tbtr = np.transpose(pltcls.Tb)
+    for j in range(len(pltcls.freqs)):
+        frqs = ('%.2f %s' % (pltcls.freqs[j], pltcls.freqUnit))
+        plt.plot(b, Tbtr[j], label=frqs)
+    plt.legend()
+    plt.xlabel('b')
+    plt.ylabel('T_B [K]')
 
-    def plot_profiles(self, b):
-        plt.figure("Profile")
-        Tbtr = np.transpose(self.pltcls.Tb)
-        for j in range(len(self.pltcls.freqs)):
-            frqs = ('%.2f %s' % (self.pltcls.freqs[j], self.pltcls.freqUnit))
-            plt.plot(b, Tbtr[j], label=frqs)
+
+def frame_plot(P, xlabel, show_legend=True):
+    v = list(plt.axis())
+    if v[0] < 1E-10:
+        v[0] = 1E-10
+    v[2] = 100.0 * np.ceil(P[-1] / 100.0)
+    v[3] = 1.0E-7 * np.ceil(P[0] / 1E-7)
+    plt.axis(v)
+    plt.ylabel('P [bars]')
+    plt.xlabel(xlabel)
+    if show_legend:
         plt.legend()
-        plt.xlabel('b')
-        plt.ylabel('T_B [K]')
 
 
-class bright_plots:
-    def __init__(self, pltcls):
-        self.pltcls = pltcls
+def plot_intW(freqs, int_W):
+    # ####-----Weigthing functions
+    plt.figure('INT_W')
+    lt = '-'
+    if len(freqs) == 1:
+        lt = 'o'
+    plt.plot(freqs, int_W, lt)
+    plt.title('Integrated weighting function')
+    plt.xlabel('Frequency [GHz]')
 
-    def plot_W(self, freqs, normW4plot):
-        # ####-----Weigthing functions
-        plt.figure('INT_W')
-        plt.plot(freqs, integrated_W)
-        plt.title('Integrated weighting function')
-        plt.xlabel('Frequency [GHz]')
-        plt.figure('radtran')
-        for i, f in enumerate(freqs):
-            if normW4plot:
-                wplot = self.pltcls.W[i] / np.max(self.pltcls.W[i])
-            else:
-                wplot = self.pltcls.W[i]
-            if self.pltcls.output_type == 'frequency':
-                label = ('{:.1f} GHz').format(f)
-            else:
-                label = ('{:.1f} cm').format(30.0 / f)
-            plt.semilogy(wplot, self.pltcls.P, label=label, linewidth=3)
-        plt.legend()
-        plt.axis(ymin=100.0 * np.ceil(np.max(self.pltcls.P) / 100.0), ymax=1.0E-7 * np.ceil(np.min(self.pltcls.P) / 1E-7))
-        plt.ylabel('P [bars]')
 
-    def plot_Alpha(self, freqs):
-        # ####-----Alpha
-        plt.figure('alpha')
-        for i, f in enumerate(freqs):
-            if self.pltcls.output_type == 'frequency':
-                label = ('a: {:.1f} GHz').format(f)
-            else:
-                label = ('{:.1f} cm').format(30.0 / f)
-            pl = list(self.pltcls.layerAlpha[i])
-            del pl[0]
-            plt.loglog(pl, self.pltcls.P, label=label)
-        plt.legend()
-        v = list(plt.axis())
-        v[2] = 100.0 * np.ceil(np.max(self.pltcls.P) / 100.0)
-        v[3] = 1.0E-7 * np.ceil(np.min(self.pltcls.P) / 1E-7)
-        plt.axis(v)
-        plt.ylabel('P [bars]')
+def plot_W(freqs, bright, normW4plot):
+    plt.figure('radtran')
+    for i, f in enumerate(freqs):
+        norm = 1.0
+        if normW4plot:
+            norm = np.max(bright.W[i])
+        wplot = bright.W[i] / norm
+        if bright.output_type == 'frequency':
+            label = ('{:.1f} GHz').format(f)
+        else:
+            label = ('{:.1f} cm').format(30.0 / f)
+        plt.semilogy(wplot, bright.P, label=label, linewidth=3)
+    frame_plot(bright.P, 'W', True)
 
-    def plot_Tb(self, freqs):
-        # ####-----Brightness temperature
-        plt.figure('brightness')
-        lt = '-'
-        if (len(self.pltcls.Tb) == 1):
-            lt = 'o'
-        plt.plot(freqs, self.pltcls.Tb, lt)
-        plt.xlabel('Frequency [GHz]')
-        plt.ylabel('Brightness temperature [K]')
+
+def plot_Alpha(freqs, bright):
+    # ####-----Alpha
+    plt.figure('alpha')
+    for i, f in enumerate(freqs):
+        if bright.output_type == 'frequency':
+            label = ('a: {:.1f} GHz').format(f)
+        else:
+            label = ('{:.1f} cm').format(30.0 / f)
+        plt.loglog(bright.layerAlpha[i][1:], bright.P, label=label)
+    frame_plot(bright.P, 'dB/km', True)
+
+
+def plot_Tb(freqs, Tb):
+    # ####-----Brightness temperature
+    plt.figure('brightness')
+    lt = '-'
+    if (len(Tb) == 1):
+        lt = 'o'
+    plt.plot(freqs, Tb, lt)
+    plt.xlabel('Frequency [GHz]')
+    plt.ylabel('Brightness temperature [K]')
 
 
 class atm_plots:

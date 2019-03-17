@@ -25,7 +25,7 @@ class Planet:
                 name:  'Jupiter', 'Saturn', 'Uranus', 'Neptune'
                 config:  config file name.  If 'planet' sets to <name>/config.par
                 mode:  sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
-                kwargs: 'verbose' and 'plot' (and other state_vars - see show_state())"""
+                kwargs: 'verbose' and 'plot_amt', etc (and other state_vars - see show_state())"""
 
         planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
         self.planet = name.capitalize()
@@ -84,6 +84,15 @@ class Planet:
         # ## Create fileIO class
         self.fIO = fileIO.FileIO(self.output_type, self.output_directory)
 
+        # ## Set plots
+        if self.plot_atm:
+            from . import plotting
+            atmplt = plotting.atm_plots(self.atm)
+            atmplt.plotTP()
+            atmplt.plotGas()
+            atmplt.plotCloud()
+            atmplt.plotProp()
+
     def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
             freqs:  frequency request as set in set_freq.  If 'reuse' it won't recompute absorption/layer (allows many b)
@@ -108,6 +117,8 @@ class Planet:
             freqs, freqUnit = self.set_freq(freqs, freqUnit)
             self.bright.resetLayers()
         self.data_return.f = freqs
+        if self.plot_bright:
+            from . import plotting
 
         #  ##Set b, etc
         b = self.set_b(b, block)
@@ -153,6 +164,13 @@ class Planet:
                     imtmp = []
             else:
                 self.Tb.append(Tbt)
+            if self.plot_bright:
+                #plotting.plot_raypath_stuff(r=np.array(r), ray=path)
+                plotting.plot_intW(freqs, self.bright.integrated_W)
+                plotting.plot_W(freqs, self.bright, self.normalize_weighting)
+                plotting.plot_Alpha(freqs, self.bright)
+                if self.outType == 'spectrum' and len(freqs) > 1:
+                    plotting.plot_Tb(freqs, self.Tb[i])
         self.data_return.Tb = self.Tb
         self.data_return.header = self.header
         missed_planet = self.rNorm is None
@@ -167,23 +185,8 @@ class Planet:
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
-        ###---###
-        if self.plot:
-            from . import plotting
-            atmplt = plotting.atm_plots(self.atm)
-            atmplt.plotTP()
-            atmplt.plotGas()
-            atmplt.plotCloud()
-            atmplt.plotProp()
-            plotting.plot_raypath_stuff(r=np.array(r), ray=path)
-            brtplt = plotting.bright_plots(self.bright)
-            brtplt.plot_W(freqs, normW4plot)
-            brtplt.plot_Alpha(freqs)
-            brtplt.plot_Tb(freqs)
-
-            if self.outType == 'profile':
-                plt = plotting.planet_plots(self)
-                plt.plot_profile(b)
+        if self.plot_bright and self.outType == 'profile':
+            plotting.planet_plot_profile(self, b)
 
         return self.data_return
 
