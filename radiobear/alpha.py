@@ -51,7 +51,7 @@ class Alpha:
         kwargs = state_variables.init_state_variables(mode, **kwargs)
         self.state_vars = kwargs.keys()
         state_variables.set_state(self, set_mode='init', **kwargs)
-        self.log = logging.Log(log)
+        self.log = logging.setup(log)
         self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
 
@@ -114,7 +114,7 @@ class Alpha:
     def formalisms(self):
         # Get possible constituents
         s = 'Reading in absorption modules from ' + self.constituentsAreAt + '\n'
-        self.log.log(s, self.verbose)
+        self.log.add(s, self.verbose)
         # Import used ones - note this dynamically imports the absorption modules.
         self.constituent = {}
         self.absorptionModule = {}
@@ -131,11 +131,11 @@ class Alpha:
             except ImportError:
                 s = "WARNING:  CAN'T LOAD " + absorber + '.  '
                 print(s * 3)
-                self.log.log("Can't load " + absorber, True)
+                self.log.add("Can't load " + absorber, True)
         self.ordered_constituents = sorted(self.constituent.keys())
-        self.log.log('Using modules:', self.verbose)
+        self.log.add('Using modules:', self.verbose)
         for k in self.constituent:
-            self.log.log('\t' + k + ':  ' + self.constituent[k], self.verbose)
+            self.log.add('\t' + k + ':  ' + self.constituent[k], self.verbose)
 
     def getAlpha(self, freqs, layer, atm, units='invcm', plot=None):
         """This is a wrapper to get the absorption coefficient, either from calculating from formalisms

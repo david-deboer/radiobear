@@ -50,8 +50,8 @@ class Planet:
         if self.write_log_file:
             runStart = datetime.datetime.now()
             logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M"))
-            self.log = logging.Log(logFile)
-            self.log.log(self.planet + ' start ' + str(runStart), self.verbose)
+            self.log = logging.LogIt(logFile)
+            self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
 
@@ -337,7 +337,7 @@ class Planet:
             s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs), freqs[0], freqs[-1], utils.proc_unit(freqUnit))
         else:
             s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
-        utils.log(self.log, s, self.verbose)
+        self.log.add(s, self.verbose)
         self.freqs = freqs
         self.freqUnit = utils.proc_unit(freqUnit)
         return freqs, self.freqUnit

@@ -9,14 +9,14 @@ from . import config
 from . import data_handling
 from . import fileIO
 from . import planet
-from . import raypath
-from . import regrid
-from . import shape
-from . import state_variables
+# from . import raypath
+# from . import regrid
+# from . import shape
+# from . import state_variables
 from . import chemistry
 from . import utils
 from . import logging
-from . import plotting
+# from . import plotting
 from . import version
 from . import Constituents
 

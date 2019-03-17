@@ -31,7 +31,7 @@ class planetConfig:
         self.planet = planet
         self.filename = configFile
         self.path = planet
-        self.log = logging.Log(log)
+        self.log = logging.setup(log)
 
         with open(default_config_file, 'r') as f:
             config_data = json.load(f)
@@ -45,9 +45,9 @@ class planetConfig:
             setattr(self, self.toks[tok]['name'], val)
         self.setConfig(configFile)
         pars = self.show()
-        self.log.log(planet, False)
-        self.log.log(configFile, False)
-        self.log.log(pars, False)
+        self.log.add(planet, False)
+        self.log.add(configFile, False)
+        self.log.add(pars, False)
 
     def setConfig(self, configFile):
         """Reads in config files and updates after default set in __init__.  These are all shown in display()"""

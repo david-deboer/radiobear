@@ -28,7 +28,7 @@ class Atmosphere:
         state_variables.set_state(self, set_mode='init', **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
-        self.log = logging.Log(log)
+        self.log = logging.setup(log)
         if self.plot:
             from . import plotting
             self.plt = plotting.atm_plots(self)
@@ -50,9 +50,9 @@ class Atmosphere:
             print('Planet ' + self.planet)
             self.config.display()
         if self.config.gasType == 'read':  # this assumes that cloudType is then also 'read'
-            self.log.log('\tReading from: ' + self.config.filename, self.verbose)
-            self.log.log('\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
-            self.log.log('\tCloud file:  ' + self.config.cloudFile, self.verbose)
+            self.log.add('\tReading from: ' + self.config.filename, self.verbose)
+            self.log.add('\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
+            self.log.add('\tCloud file:  ' + self.config.cloudFile, self.verbose)
 
     def state(self):
         state_variables.show_state(self)
@@ -285,7 +285,7 @@ class Atmosphere:
             __import__(self.config.tweakmodule)
             tweakModule = sys.modules[self.config.tweakmodule]
         except SyntaxError:
-            self.log.log("Syntax Error:  check " + self.config.tweakmodule, True)
+            self.log.add("Syntax Error:  check " + self.config.tweakmodule, True)
             raise ValueError("Error in tweakmodule")
 
         # Run module then log
@@ -294,13 +294,13 @@ class Atmosphere:
             print('---tweakComment')
             print(self.tweakComment)
             print('---')
-        self.log.log(self.tweakComment, False)
+        self.log.add(self.tweakComment, False)
         tf = os.path.join(self.config.path, self.config.tweakmodule + '.py')
         tp = open(tf, 'r')
         dt = tp.read()
-        self.log.log('======================' + tf + '=====================', False)
-        self.log.log(dt, False)
-        self.log.log('====================================================================', False)
+        self.log.add('======================' + tf + '=====================', False)
+        self.log.add(dt, False)
+        self.log.add('====================================================================', False)
         tp.close()
 
     def scaleAtm(self, scale_info='Scratch/scale.dat', plot_diff=False):
