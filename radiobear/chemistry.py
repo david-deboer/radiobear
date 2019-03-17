@@ -1,4 +1,4 @@
-import math
+import numpy as np
 GravConst = 6.6738e-20  # km3/kg/s2
 R = 8.314462            # Universal gas constant [J/K/mol]
 AMU = 1.66056E-24       # [g]
@@ -39,8 +39,8 @@ def NH3_over_NH3_ice(T):  # Briggs and Sackett
     a3 = -1.8163
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def NH3_over_liquid_NH3(T):  # Briggs and Sackett
@@ -49,8 +49,8 @@ def NH3_over_liquid_NH3(T):  # Briggs and Sackett
     a3 = -8.4598
     a4 = 5.51E-3
     a5 = 6.80E-6
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def H2S_over_H2S_ice(T):  # Allen, Giauque/Blue
@@ -59,8 +59,8 @@ def H2S_over_H2S_ice(T):  # Allen, Giauque/Blue
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def H2S_over_liquid_H2S(T):  # Allen, Giauque/Blue
@@ -69,8 +69,8 @@ def H2S_over_liquid_H2S(T):  # Allen, Giauque/Blue
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def H2O_over_ice(T):  # Briggs and Sackett
@@ -79,8 +79,8 @@ def H2O_over_ice(T):  # Briggs and Sackett
     a3 = 8.2312
     a4 = -3.861449e-2
     a5 = 2.77494e-5
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def H2O_over_water(T):  # Briggs and Sackett
@@ -89,8 +89,8 @@ def H2O_over_water(T):  # Briggs and Sackett
     a3 = 38.053682
     a4 = -0.13844344
     a5 = 7.4465367e-5
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def CH4_over_CH4_ice(T):  # dePater and Massie
@@ -99,8 +99,8 @@ def CH4_over_CH4_ice(T):  # dePater and Massie
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def CH4_over_liquid_CH4(T):  # dePater and Massie
@@ -109,8 +109,8 @@ def CH4_over_liquid_CH4(T):  # dePater and Massie
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def NH4SH(T):  # Lewis
@@ -119,8 +119,8 @@ def NH4SH(T):  # Lewis
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 def PH3_over_PH3_ice(T):  # Orton/Kaminski
@@ -129,8 +129,8 @@ def PH3_over_PH3_ice(T):  # Orton/Kaminski
     a3 = 0.0
     a4 = 0.0
     a5 = 0.0
-    sp = a1 / T + a2 + a3 * math.log(T) + a4 * T + a5 * T * T
-    return math.exp(sp)
+    sp = a1 / T + a2 + a3 * np.log(T) + a4 * T + a5 * T * T
+    return np.exp(sp)
 
 
 Psat_all = {'H2S': {'ice': H2S_over_H2S_ice, 'liquid': H2S_over_liquid_H2S},

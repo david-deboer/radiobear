@@ -1,6 +1,5 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
-import math
 import six
 import scipy.special as scisp
 import matplotlib.pyplot as plt
@@ -93,11 +92,11 @@ class Shape:
 
         lat = u.d2r(pclat)
         lng = u.d2r(delta_lng)
-        norm = np.array([0.0, math.sin(lat + gamma), math.cos(lat + gamma)])
+        norm = np.array([0.0, np.sin(lat + gamma), np.cos(lat + gamma)])
         norm = rotY(lng, norm)
-        tang = np.array([0.0, math.cos(lat + gamma), -math.sin(lat + gamma)])
+        tang = np.array([0.0, np.cos(lat + gamma), -np.sin(lat + gamma)])
         tang = rotY(lng, tang)
-        r_vec = np.array([0.0, rlat * math.sin(lat), rlat * math.cos(lat)])
+        r_vec = np.array([0.0, rlat * np.sin(lat), rlat * np.cos(lat)])
         r_vec = rotY(lng, r_vec)
         self.gamma = gamma
         self.pclat = lat
@@ -178,14 +177,14 @@ class Shape:
         # g(phi)
         dP = (3.0 * sp * np.sqrt(1.0 - sp**2))
         gp = (1.0 / 3.0) * (omega**2.0) * r * dP + self.g_static * Sp
-        gt = math.sqrt(gr**2 + gp**2)
+        gt = np.sqrt(gr**2 + gp**2)
         # geoid
-        gamma = math.atan2(gp, gr)
-        norm = np.array([0.0, math.sin(lat + gamma), math.cos(lat + gamma)])
+        gamma = np.arctan2(gp, gr)
+        norm = np.array([0.0, np.sin(lat + gamma), np.cos(lat + gamma)])
         norm = rotY(lng, norm)
-        tang = np.array([0.0, math.cos(lat + gamma), -math.sin(lat + gamma)])
+        tang = np.array([0.0, np.cos(lat + gamma), -np.sin(lat + gamma)])
         tang = rotY(lng, tang)
-        r_vec = np.array([0.0, r * math.sin(lat), r * math.cos(lat)])
+        r_vec = np.array([0.0, r * np.sin(lat), r * np.cos(lat)])
         r_vec = rotY(lng, r_vec)
         self.gamma = gamma
         self.pclat = lat
@@ -213,19 +212,19 @@ class Shape:
         else:
             nsl = np.sign(lat)
 
-        norm = np.array([0.0, a * math.sin(lat), b * math.cos(lat)])
+        norm = np.array([0.0, a * np.sin(lat), b * np.cos(lat)])
         norm = norm / np.linalg.norm(norm)
         norm = rotY(lng, norm)
-        tang = np.array([0.0, -b * math.cos(lat), a * math.sin(lat)])
+        tang = np.array([0.0, -b * np.cos(lat), a * np.sin(lat)])
         tang = tang / np.linalg.norm(tang)
         tang = rotY(lng, tang)
-        r_vec = np.array([0.0, b * math.sin(lat), a * math.cos(lat)])
+        r_vec = np.array([0.0, b * np.sin(lat), a * np.cos(lat)])
         r_vec = rotY(lng, r_vec)
         self.rmag = np.linalg.norm(r_vec)
         GM = np.interp(r, planet.layerProperty[planet.config.LP['R']], planet.layerProperty[planet.config.LP['GM']])
         self.g_static = GM / self.rmag**2
         try:
-            self.gamma = nsl * math.acos(np.dot(r_vec, norm) / self.rmag)  # don't need to worry about direction here, since norm etc defined
+            self.gamma = nsl * np.arccos(np.dot(r_vec, norm) / self.rmag)  # don't need to worry about direction here, since norm etc defined
         except ValueError:
             arg = np.dot(r_vec, norm) / self.rmag
             print('gamma warning (%s):  [{:.2f},{:.2f},{:.2f},{:.2f}]'.format(self.gtype, arg, a, b, pclat), end='')

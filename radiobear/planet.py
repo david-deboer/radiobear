@@ -1,6 +1,5 @@
 #  This is the 'executive' class for planets
 from __future__ import absolute_import, division, print_function
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
@@ -198,7 +197,7 @@ class Planet:
                 self.header['outType'] = '# outType:  {}\n'.format(self.outType)
                 if self.outType == 'image':
                     self.header['imgSize'] = '# imgSize: {}\n'.format(self.imSize)
-                    resolution = utils.r2asec(math.atan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
+                    resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
                     print('resolution = ', resolution)
                     self.header['res'] = '# res:  {} arcsec\n'.format(resolution)
         self.header['gtype'] = '# gtype: {}\n'.format(self.config.gtype)
@@ -299,7 +298,7 @@ class Planet:
                 line['mag_b'].append(float(v))
         b = []
         for v in line['mag_b']:
-            b.append([v * math.cos(line['angle_b']), v * math.sin(line['angle_b'])])
+            b.append([v * np.cos(line['angle_b']), v * np.sin(line['angle_b'])])
         return b
 
     def set_freq(self, freqs, freqUnit):

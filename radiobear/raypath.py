@@ -1,6 +1,5 @@
 # Implements full 3-D refractive path with geoid gravity
 from __future__ import absolute_import, division, print_function
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -52,7 +51,7 @@ class Ray:
 def computeAspect(Q, f=1.0):
     """Convert the orientation vector [posAng,lat_planetographic] to the rotation angles"""
     tip = -Q[0] * np.pi / 180.0   # 'tip' to north
-    rotate = -math.atan(math.tan(Q[1] * np.pi / 180.0) * (1.0 - f)**2)   # 'rotate' the sub-earth planetographic latitude
+    rotate = -np.arctan(np.tan(Q[1] * np.pi / 180.0) * (1.0 - f)**2)   # 'rotate' the sub-earth planetographic latitude
     return tip, rotate   # planetocentric coordinates
 
 
@@ -72,7 +71,7 @@ def rotate2obs(rotate, tip, b):
 def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
     tmp = (b[0]**2 + b[1]**2)
     try:
-        zQ_Trial = np.arange(math.sqrt(1.0 - tmp) * 1.01, 0.0, -0.005)
+        zQ_Trial = np.arange(np.sqrt(1.0 - tmp) * 1.01, 0.0, -0.005)
     except ValueError:
         return None, None
     pclat_zQ_Trial = []
@@ -91,8 +90,8 @@ def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
         r1 = np.linalg.norm(b_vec) * rNorm
         r_zQ_Trial.append(r1)
         # get planetocentric latitude/longitude
-        pclat = utils.r2d(math.asin(np.dot(b_vec, yHat) / np.linalg.norm(b_vec)))
-        delta_lng = utils.r2d(math.atan2(np.dot(b_vec, xHat), np.dot(b_vec, zHat)))
+        pclat = utils.r2d(np.arcsin(np.dot(b_vec, yHat) / np.linalg.norm(b_vec)))
+        delta_lng = utils.r2d(np.arctan2(np.dot(b_vec, xHat), np.dot(b_vec, zHat)))
         pclat_zQ_Trial.append(pclat)
         r2 = geoid.calcShape(atm, rNorm, pclat, delta_lng)
         r_pclat_zQ_Trial.append(r2)
@@ -132,7 +131,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
     if (b[0]**2 + b[1]**2) > 1.0:
         return path
 
-    mu = math.sqrt(1.0 - b[0]**2 - b[1]**2)
+    mu = np.sqrt(1.0 - b[0]**2 - b[1]**2)
 
     f = 1.0 - atm.config.Rpol / atm.config.Req
     tip, rotate = computeAspect(orientation, f)
@@ -146,8 +145,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
     r1 = np.linalg.norm(edge)
 
     # get planetocentric latitude/longitude
-    pclat = utils.r2d(math.asin(np.dot(edge, yHat) / np.linalg.norm(edge)))
-    delta_lng = utils.r2d(math.atan2(np.dot(edge, xHat), np.dot(edge, zHat)))
+    pclat = utils.r2d(np.arcsin(np.dot(edge, yHat) / np.linalg.norm(edge)))
+    delta_lng = utils.r2d(np.arctan2(np.dot(edge, xHat), np.dot(edge, zHat)))
     geoid = shape.Shape(gtype)
     r2 = geoid.calcShape(atm, rNorm, pclat, delta_lng)
     if verbose:
@@ -162,9 +161,9 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
     s = [start]
     n = [geoid.n]
     r = [geoid.r]
-    t_inc = [math.acos(-np.dot(s[-1], n[-1]))]            # incident angle_0
+    t_inc = [np.arccos(-np.dot(s[-1], n[-1]))]            # incident angle_0
     nratio = nr[0] / nr[1]                                # refractive index ratio_0
-    t_tran = [math.asin(nratio * math.sin(t_inc[-1]))]    # transmitted angle_0
+    t_tran = [np.arcsin(nratio * np.sin(t_inc[-1]))]    # transmitted angle_0
 
     # return array initialization, use a value to keep indexing numbering for loop
     ds = [0.0]
@@ -186,18 +185,18 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
             geoid.print_a_step()
             print('\tt_inc, tran:  {:.8f} -> {:.8f}'.format(utils.r2d(t_inc[-1]), utils.r2d(t_tran[-1])))
         # update s-vector
-        s.append(nratio * s[i] + raypathdir[direction] * (nratio * math.cos(t_inc[i]) * n[i] - math.cos(t_tran[i]) * n[i]))
+        s.append(nratio * s[i] + raypathdir[direction] * (nratio * np.cos(t_inc[i]) * n[i] - np.cos(t_tran[i]) * n[i]))
         rNowMag = geoid.rmag
         rNextMag = geoid.calcShape(atm, req[layer + raypathdir[direction]], pclat, delta_lng)
         rdots = np.dot(r[i], s[i + 1])
 
         vw = np.interp(pclat, atm.config.vwlat, atm.config.vwdat) / 1000.0
-        dopp = 1.0 - (atm.config.omega_m * rNowMag * math.cos(utils.d2r(pclat)) + vw) * math.sin(utils.d2r(delta_lng)) / 3.0E5
+        dopp = 1.0 - (atm.config.omega_m * rNowMag * np.cos(utils.d2r(pclat)) + vw) * np.sin(utils.d2r(delta_lng)) / 3.0E5
 
         # get ds, checking for exit, errors and warnings...
         try:
-            dsp = -rdots + math.sqrt(rdots**2.0 + rNextMag**2.0 - rNowMag**2.0)
-            dsm = -rdots - math.sqrt(rdots**2.0 + rNextMag**2.0 - rNowMag**2.0)
+            dsp = -rdots + np.sqrt(rdots**2.0 + rNextMag**2.0 - rNowMag**2.0)
+            dsm = -rdots - np.sqrt(rdots**2.0 + rNextMag**2.0 - rNowMag**2.0)
             if direction == 'ingress':
                 ds_step = dsm
             elif direction == 'egress':
@@ -233,8 +232,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
 
         # get next step, double-check r value (and compute n, etc)
         rnext = r[i] + ds[i + 1] * s[i + 1]
-        pclat = utils.r2d(math.asin(np.dot(rnext, yHat) / np.linalg.norm(rnext)))
-        delta_lng = utils.r2d(math.atan2(np.dot(rnext, xHat), np.dot(rnext, zHat)))
+        pclat = utils.r2d(np.arcsin(np.dot(rnext, yHat) / np.linalg.norm(rnext)))
+        delta_lng = utils.r2d(np.arctan2(np.dot(rnext, xHat), np.dot(rnext, zHat)))
         r2 = geoid.calcShape(atm, req[layer + raypathdir[direction]], pclat, delta_lng)
         if abs(r2 - rNextMag) > 2.0 and layer != 0:
             print('Warning:  {} != {} ({} km) at layer {}'.format(r2, rNextMag, r2 - rNextMag, layer))
@@ -248,7 +247,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
             t_inc.append(np.pi / 2.0)
         else:
             try:
-                t_inc.append(math.acos(-raypathdir[direction] * np.dot(s[i + 1], n[i + 1])))
+                t_inc.append(np.arccos(-raypathdir[direction] * np.dot(s[i + 1], n[i + 1])))
             except ValueError:
                 print('t_inc ValueError |s_(i+1)| = {}, |n_(i+1)| = {} - set to previous'.format(np.linalg.norm(s[i + 1]), np.linalg.norm(n[i + 1])))
                 t_inc.append(t_inc[i])
@@ -261,7 +260,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False, plot=True):
             nratio = nr[layer] / nr[layer + raypathdir[direction]]
             nratio = 1.0
             try:
-                t_tmp = math.asin(nratio * math.sin(t_inc[-1]))
+                t_tmp = np.arcsin(nratio * np.sin(t_inc[-1]))
             except ValueError:
                 t_tmp = nratio * np.pi / 2.0
             t_tran.append(t_tmp)

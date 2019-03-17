@@ -1,5 +1,4 @@
 from __future__ import absolute_import, division, print_function
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -111,7 +110,7 @@ class Atmosphere:
         else:
             self.propGen[otherType]()
 
-        angularDiameter = 2.0 * math.atan(self.layerProperty[self.config.LP['R']][0] / self.config.distance)
+        angularDiameter = 2.0 * np.arctan(self.layerProperty[self.config.LP['R']][0] / self.config.distance)
         if self.verbose == 'loud':
             print('angular radius = {} arcsec'.format(utils.r2asec(angularDiameter / 2.0)))
 
@@ -378,7 +377,7 @@ class Atmosphere:
             else:
                 rho = (amulyr * P) / (chemistry.R * T)
                 dr = abs(zv - self.gas[self.config.C['Z']][i - 1])
-                dV = 4.0 * math.pi * (rr**2) * dr
+                dV = 4.0 * np.pi * (rr**2) * dr
                 dM = 1.0e11 * rho * dV
                 GdM = self.layerProperty[self.config.LP['GM']][i - 1] + chemistry.GravConst * dM    # in km3/s2
                 self.layerProperty[self.config.LP['GM']].append(GdM)  # mass added as you make way into atmosphere by radius r (times G)
@@ -418,8 +417,8 @@ class Atmosphere:
         v = list(plt.axis())
         if v[0] < 1E-10:
             v[0] = 1E-10
-        v[2] = 100.0 * math.ceil(self.gas[self.config.C['P']][-1] / 100.0)
-        v[3] = 1.0E-7 * math.ceil(self.gas[self.config.C['P']][0] / 1E-7)
+        v[2] = 100.0 * np.ceil(self.gas[self.config.C['P']][-1] / 100.0)
+        v[3] = 1.0E-7 * np.ceil(self.gas[self.config.C['P']][0] / 1E-7)
         plt.axis(v)
         plt.ylabel('P [bars]')
         plt.xlabel(xlabel)

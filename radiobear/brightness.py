@@ -1,6 +1,5 @@
 # ## This is the file to calculate the radiometric properties of the planets
 from __future__ import absolute_import, division, print_function
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.special as ss
@@ -99,7 +98,7 @@ class Brightness():
                 if discAverage is True:
                     Ws.append(2.0 * a1 * ss.expn(2, taus[j]))  # this is W_(i+1) for disc average
                 else:
-                    Ws.append(a1 * math.exp(-taus[j]))  # this is W_(i+1) for non disc average
+                    Ws.append(a1 * np.exp(-taus[j]))  # this is W_(i+1) for non disc average
                 integrated_W[j] += (Ws[j] + self.W[i][j]) * ds / 2.0
                 dTb = (T1 * Ws[j] + T0 * self.W[i][j]) * ds / 2.0
                 Tbs.append(self.Tb_lyr[i][j] + dTb)
@@ -142,7 +141,7 @@ class Brightness():
                     label = (r'{:.1f} cm').format(30.0 / f)
                 plt.semilogy(wplot, self.P, label=label, linewidth=3)
             plt.legend()
-            plt.axis(ymin=100.0 * math.ceil(np.max(self.P) / 100.0), ymax=1.0E-7 * math.ceil(np.min(self.P) / 1E-7))
+            plt.axis(ymin=100.0 * np.ceil(np.max(self.P) / 100.0), ymax=1.0E-7 * np.ceil(np.min(self.P) / 1E-7))
             plt.ylabel('P [bars]')
 
             # ####-----Alpha
@@ -157,8 +156,8 @@ class Brightness():
                 plt.loglog(pl, self.P, label=label)
             plt.legend()
             v = list(plt.axis())
-            v[2] = 100.0 * math.ceil(np.max(self.P) / 100.0)
-            v[3] = 1.0E-7 * math.ceil(np.min(self.P) / 1E-7)
+            v[2] = 100.0 * np.ceil(np.max(self.P) / 100.0)
+            v[3] = 1.0E-7 * np.ceil(np.min(self.P) / 1E-7)
             plt.axis(v)
             plt.ylabel('P [bars]')
 
