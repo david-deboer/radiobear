@@ -46,11 +46,11 @@ class Planet:
     def __init__(self, name, mode='normal', config='config.par', **kwargs)
 ```
 
-options for name:  Jupiter, Saturn, Uranus, Neptune
+options for name:  `Jupiter`, `Saturn`, `Uranus`, `Neptune`
 
-options for mode:  normal, mcmc, batch, use_alpha, scale_alpha
+options for mode:  `normal`, `mcmc`, `batch`, `use_alpha`, `scale_alpha`
 
-options for freqs:
+examples for freqs:
 * `freqs = 1.42`    ==> single frequency at 1.42 GHz
 * `freqs = [1.4,2.5,5.5,8.4,12.1]`  ==> uses these frequencies (can be a list, csv string or numpy array)
 * `freqs = '1:10:1'` ==> this will generate a range as start:stop:step (stop is always included)
@@ -58,7 +58,7 @@ options for freqs:
 * `freqs = 'freq.dat'`   ==> (string within '') reads in those frequencies, one per line
 
 
-options for b:
+examples for b:
 * `b = 0.1`  ==> generates a full image at that resolution (see blocks)
 * `b = 'stamp'` ==> generates a small image (queries for extents)
 * `b = [[0.0,0.0],[0.1,0.0],...]`  ==> generates at listed points
