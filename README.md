@@ -41,6 +41,8 @@ Within a python environment here is an example:
 time-stamped data file is written to Output and log file to Logs
 'plot' is a keyword (see below)
 
+`catch_data` is an instance of <DataReturn>, which holds the data you probably want.
+
 The declaration for planet is
 ```
 class Planet:

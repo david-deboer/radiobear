@@ -116,13 +116,15 @@ class Planet:
         else:
             freqs, freqUnit = self.set_freq(freqs, freqUnit)
             self.bright.resetLayers()
-        self.data_return.f = freqs
+        self.data_return.set('f', freqs)
+        self.data_return.set('freqUnit', freqUnit)
         if self.plot_bright:
             from . import plotting
+            plotting.plot_Alpha(freqs, self.bright)
 
         #  ##Set b, etc
         b = self.set_b(b, block)
-        self.data_return.b = b
+        self.data_return.set('b', b)
         if self.outType == 'image' and len(freqs) > 1:
             print('Warning:  Image must be at only one frequency')
             print('Using {} {}'.format(freqs[0], freqUnit))
@@ -168,10 +170,9 @@ class Planet:
                 plotting.plot_raypath_stuff(b=bv, ray=self.bright.travel, req=self.config.Req, rpol=self.config.Rpol)
                 plotting.plot_intW(freqs, self.bright.integrated_W)
                 plotting.plot_W(freqs, self.bright, self.normalize_weighting)
-                plotting.plot_Alpha(freqs, self.bright)
                 if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
                     plotting.plot_Tb(freqs, self.Tb[i])
-        self.data_return.Tb = self.Tb
+        self.data_return.set('Tb', self.Tb)
         self.data_return.header = self.header
         missed_planet = self.rNorm is None
 

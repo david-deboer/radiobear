@@ -84,14 +84,14 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
 
 def planet_profile(data):
     plt.figure('Profile')
+    b = data.b.transpose()
+    bvec = np.sqrt(b[0] * b[0] + b[1] * b[1])
     for i, f in enumerate(data.f):
-        bvec = []
-        Tvec = []
-        for j, b in enumerate(data.b):
-            bvec.append(np.sqrt(b[0] * b[0] + b[1] * b[1]))
-            Tvec.append(data.Tb[j][i])
-        plt.plot(bvec, Tvec, label=str(f))
+        Tvec = np.transpose(data.Tb)
+        plt.plot(bvec, Tvec[i], label="{:.2f} {}".format(f, data.freqUnit))
     plt.legend()
+    plt.xlabel('b')
+    plt.ylabel('T_B [K]')
 
 
 def plot_raypath_stuff(b, ray, req=None, rpol=None):
@@ -141,17 +141,6 @@ class shape_plots:
             self.colorCounter += 1
             plt.axis('image')
             plt.legend()
-
-
-def plot_profiles(pltcls, b):
-    plt.figure("Profile")
-    Tbtr = np.transpose(pltcls.Tb)
-    for j in range(len(pltcls.freqs)):
-        frqs = ('%.2f %s' % (pltcls.freqs[j], pltcls.freqUnit))
-        plt.plot(b, Tbtr[j], label=frqs)
-    plt.legend()
-    plt.xlabel('b')
-    plt.ylabel('T_B [K]')
 
 
 def frame_plot(P, xlabel, show_legend=True):
