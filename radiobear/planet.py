@@ -307,7 +307,11 @@ class Planet:
                 line['mag_b'].append(float(v))
         b = []
         for v in line['mag_b']:
-            b.append([v * np.cos(line['angle_b']), v * np.sin(line['angle_b'])])
+            ang = line['angle_b']
+            ab = self.config.Rpol / self.config.Req
+            rrr = ab / np.sqrt(np.power(np.sin(ang), 2.0) + np.power(ab * np.cos(ang), 2.0))
+            if abs(v) < rrr:
+                b.append([v * np.cos(ang), v * np.sin(ang)])
         return b
 
     def set_freq(self, freqs, freqUnit):
