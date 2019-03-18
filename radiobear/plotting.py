@@ -82,6 +82,18 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
     plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
 
 
+def planet_profile(data):
+    plt.figure('Profile')
+    for i, f in enumerate(data.f):
+        bvec = []
+        Tvec = []
+        for j, b in enumerate(data.b):
+            bvec.append(np.sqrt(b[0] * b[0] + b[1] * b[1]))
+            Tvec.append(data.Tb[j][i])
+        plt.plot(bvec, Tvec, label=str(f))
+    plt.legend()
+
+
 def plot_raypath_stuff(b, ray, req=None, rpol=None):
     plt.figure('raypath-r')
     plt.plot(ray.r4ds, ray.ds)

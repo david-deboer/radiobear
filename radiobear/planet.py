@@ -169,7 +169,7 @@ class Planet:
                 plotting.plot_intW(freqs, self.bright.integrated_W)
                 plotting.plot_W(freqs, self.bright, self.normalize_weighting)
                 plotting.plot_Alpha(freqs, self.bright)
-                if self.outType == 'spectrum' and len(freqs) > 1:
+                if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
                     plotting.plot_Tb(freqs, self.Tb[i])
         self.data_return.Tb = self.Tb
         self.data_return.header = self.header
@@ -186,7 +186,7 @@ class Planet:
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
         if self.plot_bright and self.outType == 'profile':
-            plotting.planet_plot_profile(self, b)
+            plotting.planet_profile(self.data_return)
 
         return self.data_return
 
@@ -228,13 +228,10 @@ class Planet:
                                       optional ',angle=DEG' [defaults to 0.0]
                                       (bType='line')
            block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
-                   if not image, can define block='profile' (default is 'spectrum')
            """
         self.header['b'] = '# b request:  {}  {}\n'.format(str(b), str(block))
         self.imSize = None
         self.outType = 'spectrum'
-        if isinstance(block, six.string_types) and block[0].lower() == 'p':
-            self.outType = 'profile'
         # Do some pre-processing to handle line vs single point and ndarrays
         if len(np.shape(b)) == 1 and len(b) > 2:
             b = ','.join([str(x) for x in b])
@@ -296,6 +293,7 @@ class Planet:
         line = {'mag_b': [], 'angle_b': 0.0, 'range': ':' in self.bType}
         cmd = self.bType.split(',')
         self.bType = 'line'
+        self.outType = 'profile'
         for v in cmd:
             if '<' in v:
                 line['angle_b'] = utils.d2r(float(v.split('<')[1]))
