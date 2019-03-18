@@ -35,7 +35,10 @@ Here is an example, from working area:
 > catch_data = j.run(freqs='1:100:5', b='disc')
 ```
 
-time-stamped data file is written to Output and log file to Logs
+time-stamped data file is written to Output
+
+run log file is written to Logs
+
 'plot' is a keyword (see below)
 
 `catch_data` is an instance of <DataReturn>, which holds the data you probably want.
