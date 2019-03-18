@@ -41,7 +41,7 @@ run log file is written to Logs
 
 'plot' is a keyword (see below)
 
-`catch_data` is an instance of <DataReturn>, which holds the data you probably want.
+`catch_data` is an instance of `DataReturn`, which holds the data you probably want.
 
 The declaration for planet is
 ```
