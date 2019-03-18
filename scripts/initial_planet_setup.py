@@ -25,5 +25,5 @@ for planet in planets_to_setup:
 other_directories = ['Logs', 'Output', 'Scratch']
 for other in other_directories:
     if not os.path.isdir(other):
-        print("Making sub-directory: ".format(other))
+        print("Making sub-directory {}".format(other))
         os.mkdir(other)
