@@ -165,7 +165,7 @@ class Planet:
             else:
                 self.Tb.append(Tbt)
             if self.plot_bright:
-                plotting.plot_raypath_stuff(b=bv, ray=self.bright.travel)
+                plotting.plot_raypath_stuff(b=bv, ray=self.bright.travel, req=self.config.Req, rpol=self.config.Rpol)
                 plotting.plot_intW(freqs, self.bright.integrated_W)
                 plotting.plot_W(freqs, self.bright, self.normalize_weighting)
                 plotting.plot_Alpha(freqs, self.bright)

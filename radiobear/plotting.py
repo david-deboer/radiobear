@@ -82,7 +82,7 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
     plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
 
 
-def plot_raypath_stuff(b, ray):
+def plot_raypath_stuff(b, ray, req=None, rpol=None):
     plt.figure('raypath-r')
     plt.plot(ray.r4ds, ray.ds)
     plt.xlabel('Radius [km]')
@@ -93,8 +93,17 @@ def plot_raypath_stuff(b, ray):
     plt.ylabel('Pressure [bar]')
     plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
     plt.figure('Observer')
-    plt.plot(b[0], b[1], 'ko')
-    plt.axis([-1.2, 1.2, -1.2, 1.2])
+    if req is not None and rpol is not None:
+        prod = req * rpol
+        th = np.arange(0, (2.0 + 1.0 / 90.0) * np.pi, np.pi / 90.0)
+        rrr = prod / np.sqrt(np.power(req * np.sin(th), 2.0) + np.power(rpol * np.cos(th), 2.0))
+        x = rrr * np.cos(th)
+        y = rrr * np.sin(th)
+        plt.plot(x, y, 'k')
+        plt.plot(req * b[0], req * b[1], 'ko')
+    else:
+        plt.plot(b[0], b[1], 'ko')
+    plt.axis('image')
 
 
 class shape_plots:
