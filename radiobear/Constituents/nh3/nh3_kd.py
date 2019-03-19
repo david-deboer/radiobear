@@ -192,21 +192,21 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     P_trans = 15.0
     dP_up = 5.0
     dP_down = 3.0
-    if P > P_trans+dP_up:
-        gnu_H2=1.6361;      gnu_He=0.4555;      gnu_NH3=0.7298;
-        GAMMA_H2=0.8;       GAMMA_He=0.5;       GAMMA_NH3=1.0;
-        zeta_H2=1.1313;     zeta_He=0.1;        zeta_NH3=0.5152;
-        Z_H2=0.6234;        Z_He=0.5;           Z_NH3=2.0/3.0;
-        d=0.2;
-        Con=1.3746;
-    elif P<=P_trans-dP_down:
-        gnu_H2=1.7465;      gnu_He=0.9779;      gnu_NH3=0.7298;
-        GAMMA_H2=0.8202;    GAMMA_He=1.0;       GAMMA_NH3=1.0;
-        zeta_H2=1.2163;     zeta_He=0.0291;     zeta_NH3=0.5152;
-        Z_H2=0.8873;        Z_He=0.8994;        Z_NH3=2.0/3.0;
-        d=-0.0627;
-        Con=0.9862;
-    else: # in linear transition region
+    if P > P_trans + dP_up:
+        gnu_H2 = 1.6361;    gnu_He = 0.4555;    gnu_NH3 = 0.7298
+        GAMMA_H2 = 0.8;     GAMMA_He = 0.5;     GAMMA_NH3 = 1.0
+        zeta_H2 = 1.1313;   zeta_He = 0.1;      zeta_NH3 = 0.5152
+        Z_H2 = 0.6234;      Z_He = 0.5;         Z_NH3 = 2.0/3.0
+        d = 0.2
+        Con = 1.3746
+    elif P <= P_trans - dP_down:
+        gnu_H2=1.7465;      gnu_He=0.9779;      gnu_NH3=0.7298
+        GAMMA_H2=0.8202;    GAMMA_He=1.0;       GAMMA_NH3=1.0
+        zeta_H2=1.2163;     zeta_He=0.0291;     zeta_NH3=0.5152
+        Z_H2=0.8873;        Z_He=0.8994;        Z_NH3=2.0/3.0
+        d = -0.0627
+        Con = 0.9862
+    else:  # in linear transition region
         gnu_H2   =1.7465 + (1.7465 - 1.6361)*(15.0-dP_down - P)/(dP_up + dP_down)
         gnu_He   =0.9779 + (0.9779 - 0.4555)*(15.0-dP_down - P)/(dP_up + dP_down)
         gnu_NH3  =0.7298
@@ -227,37 +227,36 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     gH2 = gnu_H2 * P_h2
     gHe = gnu_He * P_he
     gNH3 = gnu_NH3 * P_nh3 * gammaNH3omat
-    #% Broadening parameter
-    gamma=((gH2)*((Tdiv)**(GAMMA_H2))+(gHe)*((Tdiv)**(GAMMA_He))+gNH3*(295.0/T)**(GAMMA_NH3))
-    #% Shift parameter
-    delt=d*gamma
-    #% Individual coupling parameters
-    zH2=zeta_H2*P_h2
-    zHe=zeta_He*P_he
-    zNH3=zeta_NH3*P_nh3*gammaNH3omat
-    #% Coupling parameter
-    zeta=(zH2)*((Tdiv)**(Z_H2))+(zHe)*((Tdiv)**(Z_He))+zNH3*(295.0/T)**(Z_NH3)
+    # % Broadening parameter
+    gamma = ((gH2) * ((Tdiv)**(GAMMA_H2)) + (gHe) * ((Tdiv)**(GAMMA_He)) + gNH3 * (295.0 / T)**(GAMMA_NH3))
+    # % Shift parameter
+    delt = d * gamma
+    # % Individual coupling parameters
+    zH2 = zeta_H2 * P_h2
+    zHe = zeta_He * P_he
+    zNH3 = zeta_NH3 * P_nh3 * gammaNH3omat
+    # % Coupling parameter
+    zeta = (zH2) * ((Tdiv)**(Z_H2)) + (zHe) * ((Tdiv)**(Z_He)) + zNH3 * (295.0 / T)**(Z_NH3)
 
-    zetasize=np.size(fo)
-    pst=delt      							#% answer in GHz
-    #print delt
-    #%Coupling element, pressure shift and dnu or gamma are in GHz, need to convert brlineshape to inverse cm which is done below
-    n=np.size(freq)
-    m=np.size(fo)
+    zetasize = np.size(fo)
+    pst = delt      							# % answer in GHz
+    # %Coupling element, pressure shift and dnu or gamma are in GHz, need to convert brlineshape to inverse cm which is done below
+    n = np.size(freq)
+    m = np.size(fo)
     fmat = np.matrix(freq)
     fomat = np.transpose(np.matrix(fo))
-    #% f1 f2 f3 f4 ....fn  n times where n is the number of frequency steps
-    #% f1 f2 f3 f4 ....fn				in the observation range
-    #% ...
-    #% f1 f2 f3 f4 ....fn
-    #% m times where m is the number of spectral lines
+    # % f1 f2 f3 f4 ....fn  n times where n is the number of frequency steps
+    # % f1 f2 f3 f4 ....fn				in the observation range
+    # % ...
+    # % f1 f2 f3 f4 ....fn
+    # % m times where m is the number of spectral lines
 
-    nones=np.matrix(np.ones(n))
-    mones=np.transpose(np.matrix(np.ones(m)))
-    f_matrix=mones*fmat
-    fo_matrix=fomat*nones
+    nones = np.matrix(np.ones(n))
+    mones = np.transpose(np.matrix(np.ones(m)))
+    f_matrix = mones * fmat
+    fo_matrix = fomat * nones
 
-    #% The 10^6 allows use of P(bar) for P(dynes/cm^2)
+    # % The 10^6 allows use of P(bar) for P(dynes/cm^2)
     expo = []
     ST = []
     alpha_noshape = []
