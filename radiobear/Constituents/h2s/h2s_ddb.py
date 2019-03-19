@@ -20,7 +20,7 @@ def readInputFiles(par):
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     """Computes absorption due to h2s"""
 
     par = parameters.setpar(kwargs)

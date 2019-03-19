@@ -5,43 +5,43 @@ from radiobear.Constituents import parameters
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 
-def alpha(freq, T, P, cloud, cloud_dict, otherPar, **kwargs):
+def alpha(freq, T, P, cloud, cloud_dict, other_dict, **kwargs):
     """Adapted from Imke's code, but used Ulaby, Moore and Fung (see e.g. p310)."""
     alpha_cloud = []
     par = parameters.setpar(kwargs)
     for f in freq:
         alpha = 0.0
-        k = (2.0 * np.pi * f / GHz)  # *otherPar['refr']  # in cm^-1
-        if 'ice' in otherPar.keys() and otherPar['ice'] > 0.0:
+        k = (2.0 * np.pi * f / GHz)  # *other_dict['refr']  # in cm^-1
+        if 'ice_p' in other_dict.keys() and other_dict['ice_p'] > 0.0:
             fraction = cloud[cloud_dict['H2O']] / 0.9   # g/cm^3 / g/cm^3
             e = water(f, T)
             alpha += acloud(k, fraction, e)
-        if 'water' in otherPar.keys() and otherPar['water'] > 0.0:
+        if 'water_p' in other_dict.keys() and other_dict['water_p'] > 0.0:
             fraction = cloud[cloud_dict['SOLN']] / 1.0
             e = water(f, T)
             alpha += acloud(k, fraction, e)
-        if 'nh4sh' in otherPar.keys() and otherPar['nh4sh'] > 0.0:
+        if 'nh4sh_p' in other_dict.keys() and other_dict['nh4sh_p'] > 0.0:
             fraction = cloud[cloud_dict['NH4SH']] / 1.2
             nImke = 1.7 - 0.05j
             nDeBoer = 1.74 - 0.001j
             n = 1.7 - 0.005j
             e = n**2
             alpha += acloud(k, fraction, e)
-        if 'nh3ice' in otherPar.keys() and otherPar['nh3ice'] > 0.0:
+        if 'nh3ice_p' in other_dict.keys() and other_dict['nh3ice_p'] > 0.0:
             fraction = cloud[cloud_dict['NH3']] / 1.6
             nImke = 1.3 - 0.05j
             nDeBoer = 1.3 - 0.005j
             n = 1.3 - 0.0001j
             e = n**2
             alpha += acloud(k, fraction, e)
-        if 'h2sice' in otherPar.keys() and otherPar['h2sice'] > 0.0:
+        if 'h2sice_p' in other_dict.keys() and other_dict['h2sice_p'] > 0.0:
             fraction = cloud[cloud_dict['H2S']] / 1.5
             nImke = 1.3 - 0.01j
             nDeBoer = 1.15 - 0.001j
             n = 1.15 - 0.0001j
             e = n**2
             alpha += acloud(k, fraction, e)
-        if 'ch4' in otherPar.keys() and otherPar['ch4'] > 0.0:
+        if 'ch4' in other_dict.keys() and other_dict['ch4'] > 0.0:
             fraction = cloud[cloud_dict['CH4']] / 1.0
             n = 1.3 - 0.00001j
             e = n**2

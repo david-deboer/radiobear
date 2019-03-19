@@ -115,7 +115,7 @@ def readInputFiles(freqs,path='./',verbose=False):
         print h2vab
     return 1
 
-def alpha(freq,T,P,X,X_dict,otherPar,units='dBperkm',path='./',verbose=False):
+def alpha(freq,T,P,X,X_dict,other_dict,units='dBperkm',path='./',verbose=False):
     """Piece-wise quadratic frequency interpolation and extrapolation to orton_H2.tables.
        Interpolation in T is interptype ('cubic')
        Extrapolation in T is based on:
@@ -124,14 +124,14 @@ def alpha(freq,T,P,X,X_dict,otherPar,units='dBperkm',path='./',verbose=False):
                freq is a list of frequencies (must be a list)
                T and P are scalars in K and bars
                X is a list of the mixing ratios constituents at X_dict
-               otherPar['h2state'] = 'e' or 'n' (h2states)
+               other_dict['h2state'] = 'e' or 'n' (h2states)
                Units either 'dBperkm' or 'invcm'
-               Need to have otherPar['newset']=True whenever the frequencies change"""
+               Need to have other_dict['newset']=True whenever the frequencies change"""
 
-    newset = otherPar['h2newset']
-    h2state = otherPar['h2state']
+    newset = other_dict['h2newset']
+    h2state = other_dict['h2state']
     interpType = 'cubic'
-    
+
     if len(Ttab)==0 or newset:
         readInputFiles(freq,path,verbose)
 
@@ -171,12 +171,12 @@ def alpha(freq,T,P,X,X_dict,otherPar,units='dBperkm',path='./',verbose=False):
             AQ = -1.0*Y21/X21n
             CQ = Y1 + AQ*(X1**nexp)
             a = CQ - AQ*(T**nexp)
-            alpha_h2.append(a)   
+            alpha_h2.append(a)
     elif T > Ttab[-1]:     ### extrapolate up in T using Joiner
         nearest = -1
         Tnear = Ttab[nearest]
-        jjnear = h2_jj.alpha(freq,Tnear,P,X,X_dict,otherPar)
-        jj = h2_jj.alpha(freq,T,P,X,X_dict,otherPar)
+        jjnear = h2_jj.alpha(freq,Tnear,P,X,X_dict,other_dict)
+        jj = h2_jj.alpha(freq,T,P,X,X_dict,other_dict)
         for ii in range(len(freq)):
             #h2-h2
             xx = h2tableList['eh2h2'] + h2stateList[h2state]
@@ -208,12 +208,12 @@ def alpha(freq,T,P,X,X_dict,otherPar,units='dBperkm',path='./',verbose=False):
             #total
             a = (P_h2/atm2bar)*(ah2*P_h2/atm2bar + ahe*P_he/atm2bar + ach4*P_ch4/atm2bar)*(T0/T)**2
             alpha_h2.append(a)
-            
+
     if units=='dBperkm':
         for ii,a in enumerate(alpha_h2):
             alpha_h2[ii] = a*434294.5
     elif units != 'invcm':
         print 'Assuming units are in invcm...not '+units
 
-        
+
     return alpha_h2

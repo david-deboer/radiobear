@@ -4,7 +4,7 @@ T0 = 273.0            # reference temperature in K
 from radiobear.Constituents import parameters
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     par = parameters.setpar(kwargs)
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]

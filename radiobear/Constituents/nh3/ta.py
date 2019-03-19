@@ -17,9 +17,9 @@ print('\n\tta.t0()\n\tta.t1()\n\tta.t2()\n\tta.t3()')
 
 def t0(fmin=1.0, fmax=300.0, fstep=1.0, x=[0.8, 0.2, 1.5e-4], P=1.0, T=100.0):
     P_dict = {'H2': 0, 'HE': 1, 'NH3': 2}
-    otherPar = []
+    other_dict = {}
     f = np.arange(fmin, fmax + fstep, fstep)
-    a = nh3_dbs_sjs.alpha(f, T, P, x, P_dict, otherPar)
+    a = nh3_dbs_sjs.alpha(f, T, P, x, P_dict, other_dict)
     w = 30.0 / np.array(f)
     plt.loglog(w, a)
 
@@ -29,7 +29,7 @@ def t1(fmin=1.0, fmax=1000.0, fstep=1.0, Pmin=0.0001, Pmax=0.1, Pstep=0.001):
     pv = np.arange(Pmin, Pmax, Pstep)
     for pressure_value in pv:
         P, T, X_partial = pressure_params(pressure_value)
-        a = nh3_dbs_sjs.alpha(f, T, P, X_partial, P_dict, otherPar)
+        a = nh3_dbs_sjs.alpha(f, T, P, X_partial, P_dict, other_dict)
         plt.loglog(f, a)
 
 
@@ -58,7 +58,7 @@ def t2():
         V_Plt.append(P)
         for k in usenh3.keys():
             if usenh3[k][0]:
-                usenh3[k][1].append(usenh3[k][2](f, T, P, X_partial, P_dict, otherPar))
+                usenh3[k][1].append(usenh3[k][2](f, T, P, X_partial, P_dict, other_dict))
     for k in usenh3.keys():
         if usenh3[k][0]:
             usenh3[k][1] = np.array(usenh3[k][1])
@@ -96,10 +96,10 @@ def t3():
         T = T_Jup[i]
         P = P_Jup[i]
         X_partial = X_Jup
-        a_kd.append(nh3_kd.alpha(f,T,P,X_partial,P_dict,otherPar))
-        a_bg.append(nh3_bg.alpha(f,T,P,X_partial,P_dict,otherPar))
-        a_sjs.append(nh3_sjs.alpha(f,T,P,X_partial,P_dict,otherPar))
-        a_sjsd.append(nh3_sjsd.alpha(f,T,P,X_partial,P_dict,otherPar))
+        a_kd.append(nh3_kd.alpha(f,T,P,X_partial,P_dict,other_dict))
+        a_bg.append(nh3_bg.alpha(f,T,P,X_partial,P_dict,other_dict))
+        a_sjs.append(nh3_sjs.alpha(f,T,P,X_partial,P_dict,other_dict))
+        a_sjsd.append(nh3_sjsd.alpha(f,T,P,X_partial,P_dict,other_dict))
         fp.write('%f\t%f\t%f\t%f\t%f\t%s\t%s\n' % (P,T,X_partial[0],X_partial[1],X_partial[2],str(a_kd[i]),str(a_bg[i])))
     a_kd = np.array(a_kd)
     a_bg = np.array(a_bg)

@@ -60,16 +60,11 @@ class Alpha:
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
 
-        # copy config back into otherPar
-        self.otherPar = {}
-        self.otherPar['h2state'] = self.config.h2state
-        self.otherPar['h2newset'] = self.config.h2newset
-        self.otherPar['water'] = self.config.water_p
-        self.otherPar['ice'] = self.config.ice_p
-        self.otherPar['nh4sh'] = self.config.nh4sh_p
-        self.otherPar['nh3ice'] = self.config.nh3ice_p
-        self.otherPar['h2sice'] = self.config.h2sice_p
-        self.otherPar['ch4'] = self.config.ch4_p
+        # copy config back into other_dict
+        other_to_copy = ['h2state', 'h2newset', 'water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
+        self.other_dict = {}
+        for oc in other_to_copy:
+            self.other_dict[oc] = getattr(self.config, oc)
         self.alpha_data = None
         if self.use_existing_alpha or self.scale_existing_alpha:
             self.existing_alpha_setup()
@@ -189,7 +184,7 @@ class Alpha:
             else:
                 X = gas
                 D = gas_dict
-            absorb.append(self.absorptionModule[k].alpha(freqs, T, P, X, D, self.otherPar,
+            absorb.append(self.absorptionModule[k].alpha(freqs, T, P, X, D, self.other_dict,
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()

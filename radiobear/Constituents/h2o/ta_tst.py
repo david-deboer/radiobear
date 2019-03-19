@@ -8,7 +8,7 @@ jupiterTestP = [1.,10.,20.,100.,200.,400.,1000.,2000.,4000.,7500.,18000.]
 jupiterTestT = [150.,300.,400.,700.,800.,1000.,1200.,1600.,2000.,2400.,3200.,]
 
 
-otherPar = []
+other_dict = {}
 
 
 f = [4.0]#, 8.0,20.0]
@@ -28,8 +28,8 @@ a_ddb = []
 for i in range(len(jupiterTestP)):
     T = jupiterTestT[i]
     P = jupiterTestP[i]
-    a_bk.append(h2o_bk.alpha(f,T,P,X_partial,P_dict,otherPar))
-    a_ddb.append(h2o_ddb.alpha(f,T,P,X_partial,P_dict,otherPar))
+    a_bk.append(h2o_bk.alpha(f,T,P,X_partial,P_dict,other_dict))
+    a_ddb.append(h2o_ddb.alpha(f,T,P,X_partial,P_dict,other_dict))
     print '%5.0f\t%4.0f\t%.3f\t%.3f' % (T,P,a_bk[i][0],a_ddb[i][0])
 a_bk = np.array(a_bk)
 a_ddb = np.array(a_ddb)
@@ -66,8 +66,8 @@ if True:
         T = jupiterTestT[i]
         P = jupiterTestP[i]
         X_partial = [X_h2[i],X_he[i],X_h2o[i]]
-        a_bk.append(h2o_bk.alpha(f,T,P,X_partial,P_dict,otherPar))
-        a_ddb.append(h2o_ddb.alpha(f,T,P,X_partial,P_dict,otherPar))
+        a_bk.append(h2o_bk.alpha(f,T,P,X_partial,P_dict,other_dict))
+        a_ddb.append(h2o_ddb.alpha(f,T,P,X_partial,P_dict,other_dict))
         fp.write('%f\t%f\t%f\t%f\t%f\t%s\t%s\n' % (P,T,X_partial[0],X_partial[1],X_partial[2],str(a_bk[i]),str(a_ddb[i])))
     a_bk = np.array(a_bk)
     a_ddb = np.array(a_ddb)

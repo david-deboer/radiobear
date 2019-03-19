@@ -1,5 +1,4 @@
-P_dict = {'H2': 0, 'HE': 1, 'NH3': 2}
-otherPar = []
+other_dict = {}
 
 def pressure_params(p):  # Return P, T, X near pressure p
     for i in range(len(P_Jup)):

@@ -1,5 +1,6 @@
 import math
 import os.path
+from radiobear.Constituents import parameters
 
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
@@ -11,15 +12,15 @@ GHz = 29.9792458     # conversion from cm^-1 to GHz
 f0 = []
 I0 = []
 E = []
-def readInputFiles(path,verbose=False):
+def readInputFiles(par):
     """If needed this reads in the data files for co"""
     useLinesUpTo = 26   # index number
     global nlin
     nlin = 0
-    if verbose:
+    if par.verbose:
         print "Reading co lines"
-    filename = os.path.join(path,'co.lin')
-    ifp = open(filename,'r')
+    filename = os.path.join(par.path, 'co.lin')
+    ifp = open(filename, 'r')
     for line in ifp:
         if nlin >= useLinesUpTo:
             break
@@ -32,15 +33,17 @@ def readInputFiles(path,verbose=False):
         else:
             break
     ifp.close()
-    if verbose:
+    if par.verbose:
         print '   '+str(nlin)+' lines'
     return nlin
 
-def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=False):
 
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
+
+    par = parameters.setpar(kwargs)
     # Read in data if needed
-    if len(f0)==0:
-        readInputFiles(path,verbose)
+    if len(f0) == 0:
+        readInputFiles(par)
 
     P_h2 = P*X[P_dict['H2']]
     P_he = P*X[P_dict['HE']]
@@ -69,9 +72,8 @@ def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=False):
             alpha += shape*ITG
 
         a = coef*(P_co/T0)*pow((T0/T),n_int+2)*alpha
-        if units=='dBperkm':
+        if par.units=='dBperkm':
             a*=434294.5
         alpha_co.append(a)
-        
-    return alpha_co
 
+    return alpha_co

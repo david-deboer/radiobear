@@ -4,16 +4,16 @@ import numpy as np
 from radiobear.Constituents import parameters
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     PLower = 10.0
     PMid = 35.0
     PHigher = 100.0
     wtype = 'linear'
     if P < PLower or P > PHigher:
-        alpha_nh3 = nh3_sjs.alpha(freq, T, P, X, P_dict, otherPar, **kwargs)
+        alpha_nh3 = nh3_sjs.alpha(freq, T, P, X, P_dict, other_dict, **kwargs)
     else:
-        a1 = np.array(nh3_sjs.alpha(freq, T, P, X, P_dict, otherPar, **kwargs))
-        a2 = np.array(nh3_kd.alpha(freq, T, P, X, P_dict, otherPar, **kwargs))
+        a1 = np.array(nh3_sjs.alpha(freq, T, P, X, P_dict, other_dict, **kwargs))
+        a2 = np.array(nh3_kd.alpha(freq, T, P, X, P_dict, other_dict, **kwargs))
         if wtype == 'exp':
             W = np.exp(-(P - PMid)**2 / 1000.0)
         else:

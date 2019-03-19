@@ -52,7 +52,7 @@ def readInputFiles(par):
     return nlin
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
 
     # Read in data if needed
     par = parameters.setpar(kwargs)

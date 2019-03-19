@@ -24,7 +24,7 @@ def readInputFiles(par):
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     Joiner = 0
     Spilker = 1
     Interp = 2

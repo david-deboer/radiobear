@@ -67,7 +67,7 @@ def readInputFiles(par):
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     """Wrapper to handle f_split"""
     alpha_nh3 = None
 
@@ -76,11 +76,11 @@ def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     freq = np.array(freq)
     frq = freq[np.where([x <= f_split for x in freq])]
     if len(frq):
-        alpha_nh3 = __alpha__(frq, T, P, X, P_dict, otherPar, par)
+        alpha_nh3 = __alpha__(frq, T, P, X, P_dict, other_dict, par)
     # Check hi range
     frq = freq[np.where([x > f_split for x in freq])]
     if len(frq):
-        a_hi = __alpha__(frq, T, P, X, P_dict, otherPar, par)
+        a_hi = __alpha__(frq, T, P, X, P_dict, other_dict, par)
         if alpha_nh3 is None:
             alpha_nh3 = a_hi
         else:
@@ -88,7 +88,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     return alpha_nh3
 
 
-def __alpha__(freq, T, P, X, P_dict, otherPar, par):
+def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     """function alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
     % The data files containing the frequency, line intensity and lower state
     % energy for the ammonia transitions as given in the latest JPL spectral

@@ -28,7 +28,7 @@ def readInputFiles(par):
     data_wgt = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     """Computes the absorption due to ph3"""
 
     par = parameters.setpar(kwargs)

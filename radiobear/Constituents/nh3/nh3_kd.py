@@ -125,7 +125,7 @@ def readInputFiles(par):
         print(str(nlin_v2)+' lines')
     return nlin,nlin_rot,nlin_v2
 
-def alpha(freq,T,P,X,P_dict,otherPar,**kwargs):
+def alpha(freq,T,P,X,P_dict,other_dict,**kwargs):
     """function alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
     % The data files containing the frequency, line intensity and lower state
     % energy for the ammonia transitions as given in the latest JPL spectral

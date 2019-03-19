@@ -3,3 +3,6 @@ brought over H2S.C code from my thesis code and ported to Python.  Tested with t
 
 2012-11-13
 changed from partial pressure to mixing ratio
+
+2019-03-19 ddb
+updated to par, kwargs, etc

@@ -3,3 +3,5 @@ brought over CO.C code from my thesis code and ported to Python a la h2s_ddb.py.
 should implement version from Imke's code (line 2603)
 2012-11-13 ddb
 changed from partial pressure to mixing ratio as input
+2019-03-19 ddb
+updated code for parameters, kwargs, etc.  Shouldn't work, since we need to add e.g. par.voight, etc

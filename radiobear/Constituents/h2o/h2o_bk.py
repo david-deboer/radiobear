@@ -3,7 +3,7 @@ import numpy as np
 from radiobear.Constituents import parameters
 
 
-def alpha(f, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
     """This is Karpowicz's model from:
        http://users.ece.gatech.edu/~psteffes/palpapers/karpowicz_data/water_model/karpowicz_h2o_model.m
        This function also requires the vvwlineshape function originally written by Jim Hoffman (with removal of df factor).

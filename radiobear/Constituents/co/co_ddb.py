@@ -18,7 +18,7 @@ def readInputFiles(par):
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     # ##Voigt coefficients from Janssen p67
     par = parameters.setpar(kwargs)
     PLimits = [0.001, 0.1]
@@ -56,7 +56,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     for f in freq:
         f2 = f**2
         shape_Voigt = np.zeros(len(f0))
-        if P <= PLimits[1] or otherPar == 'voigt' or otherPar == 'diff':
+        if P <= PLimits[1] or par.voigt or par.diff:
             # ##Doppler broadening Janssen p59
             betaD = 4.3e-7 * np.sqrt(T / 28.0) * f
             # ##Voigt Janssen p67
@@ -69,16 +69,16 @@ def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
             val = num / den
             shape_Voigt = GHz * (1.0 / (np.sqrt(np.pi) * betaD)) * val.real
         shape_VVW = np.zeros(len(f0))
-        if P >= PLimits[0] or otherPar == 'vvw' or otherPar == 'diff':
+        if P >= PLimits[0] or par.vvw or par.diff:
             num = (gamma - zeta) * f2 + (gamma + zeta) * (np.power(f0 + delta, 2.0) + g2 - z2)
             den = np.power((f2 - np.power(f0 + delta, 2.0) - g2 + z2), 2.0) + 4.0 * f2 * g2
             shape_VVW = GHz * 2.0 * np.power(f / f0, 2.0) * num / (np.pi * den)
         shape = w * shape_VVW + (1.0 - w) * shape_Voigt
-        if otherPar == 'voigt':
+        if par.voigt:
             alpha_co.append(np.sum(shape_Voigt))
-        elif otherPar == 'vvw':
+        elif par.vvw:
             alpha_co.append(np.sum(shape_VVW))
-        elif otherPar == 'diff':
+        elif par.diff:
             alpha_co.append(np.sum(shape_Voigt - shape_VVW))
         else:
             alpha_co.append(np.sum(shape * ITG))

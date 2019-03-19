@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 verbosity = True
-otherPar = {'h2state':'e','h2newset':True}
+other_dict = {'h2state':'e','h2newset':True}
 
 ###############Test orton vs joiner in freq
 JJCMP = True
@@ -23,17 +23,17 @@ if JJCMP:
 
     Tease = [30.0,100.0,300.0,600.0]
     for T in Tease:
-        a = h2_jj_ddb.alpha(f,T,P,X,X_dict,otherPar)
+        a = h2_jj_ddb.alpha(f,T,P,X,X_dict,other_dict)
         s = 'jj_ddb %.0f K' % (T)
         plt.semilogy(f,a,'--',label=s)
         if T==Tease[0]:
-            otherPar['newset'] = True
+            other_dict['newset'] = True
         else:
-            otherPar['newset'] = False
-        a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,verbose=verbosity)
+            other_dict['newset'] = False
+        a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,verbose=verbosity)
         s = 'orton (e) %.0f K' % (T)
         plt.semilogy(f,a,label=s)
-        a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,verbose=verbosity)
+        a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,verbose=verbosity)
         s = 'orton (n) %.0f K' % (T)
         plt.semilogy(f,a,label=s)
 
@@ -52,7 +52,7 @@ if JJCMP:
 T_TEST = True
 if T_TEST:
     h2states = ['e','n']
-    otherPar['h2newset'] = False
+    other_dict['h2newset'] = False
     plt.figure(200)
     P = 1.0
     X_ch4 = 3.3E-5
@@ -70,15 +70,15 @@ if T_TEST:
         ortone=[]
         ortonn=[]
         for T in Tease:
-            otherPar['h2state']='e'
-            a = h2_jj_ddb.alpha(f,T,P,X,X_dict,otherPar)
+            other_dict['h2state']='e'
+            a = h2_jj_ddb.alpha(f,T,P,X,X_dict,other_dict)
             jje.append(a[0])
-            a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,verbose=verbosity)
+            a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,verbose=verbosity)
             ortone.append(a[0])
-            otherPar['h2state']='n'
-            a = h2_jj_ddb.alpha(f,T,P,X,X_dict,otherPar)
+            other_dict['h2state']='n'
+            a = h2_jj_ddb.alpha(f,T,P,X,X_dict,other_dict)
             jjn.append(a[0])
-            a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,verbose=verbosity)
+            a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,verbose=verbosity)
             ortonn.append(a[0])
         s = 'jj_ddb(e) %.0f GHz' % (f[0])
         plt.semilogy(Tease,jje,'--',label=s)
@@ -93,7 +93,7 @@ if T_TEST:
     plt.ylabel('dB/km')
 
 
-    
+
 ################ plot to compare with measured values in Birnbaum JQSRT 19:51
 JQSRT = False
 if JQSRT:
@@ -106,16 +106,16 @@ if JQSRT:
     X_he = 0.6
     X_h2 = 1.0 - (X_ch4+X_he)
     X_dict={'H2':0,'HE':1,'CH4':2}
-    otherPar['h2newset'] = False
+    other_dict['h2newset'] = False
     X=[X_h2,X_he,X_ch4]
 
     h2stateList = ['e','n']
 
     h2_orton.readInputFiles(f)
     for h2state in h2stateList:  # but don't need to reset on h2state type, just frequencies
-        otherPar['h2state']=h2state
+        other_dict['h2state']=h2state
         T = 77.0
-        a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,units='invcm',verbose=False)
+        a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,units='invcm',verbose=False)
         rho = (P/1.01325)*(273.15/T)
         ff = np.array(f)/29.97
         aa = np.array(a)*1.0E7/rho**2
@@ -123,7 +123,7 @@ if JQSRT:
         plt.plot(ff,aa,label=s)
 
         T = 195.0
-        a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,units='invcm',verbose=False)
+        a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,units='invcm',verbose=False)
         rho = (P/1.01325)*(273.15/T)
         ff = np.array(f)/29.97
         aa = np.array(a)*1.0E7/rho**2
@@ -131,7 +131,7 @@ if JQSRT:
         plt.plot(ff,aa,label=s)
 
         T = 292.0
-        a = h2_orton.alpha(f,T,P,X,X_dict,otherPar,units='invcm',verbose=False)
+        a = h2_orton.alpha(f,T,P,X,X_dict,other_dict,units='invcm',verbose=False)
         rho = (P/1.01325)*(273.15/T)
         ff = np.array(f)/29.97
         aa = np.array(a)*1.0E7/rho**2
