@@ -1,40 +1,40 @@
 from __future__ import print_function
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#% THIS FUNCTION COMPUTES AMMONIA ABSORPTION UNDER JOVIAN ATMOSPHERIC
-#% CONDITIONS BETWEEN 1-200 GHz
-#%
-#% NAME:
-#%      NH3_Consistent_Model
-#%
-#% EXPLANATION:
-#%   This function can be used to compute the opacity of pure ammonia and
-#%   that of ammonia in a hydrogen/helium atmosphere between 0.1-200 GHz at
-#%   pressures between 0.01-100 bars and temperatures between 200-500 K.
-#%
-#% CALLING SEQUENCE:
-#%       alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
-#%
-#% INPUTS:
-#%       f        - Array of frequencies (GHz)
-#%       T        - Temperature (K)
-#%       P        - Pressure (bars)
-#%       H2mr     - Hydrogen mixing ratio (as mole fraction)
-#%       Hemr     - Helium mixing ratio (as mole fraction)
-#%       NH3mr    - Ammonia mixing ratio (as mole fraction)
-#%
-#% OUTPUTS:
-#%      alphanh3  - Array of ammonia opacity (dB/km) at the input frequencies
-#%
-#% METHOD:
-#%   A modified Ben Reuven (Ben Reuven, 1966) lineshape is used for computing
-#%   ammonia opacity due to inversion lines, and a Gross lineshape (Gross, 1955)
-#%   is used for computing ammonia opacity due to the rotational lines and
-#%   the v2 roto-vibrational lines.
-#%
-#% History:
-#%       written by Kiruthika Devaraj at Georgia Tech,  June, 2011
-#%       converted to python by David DeBoer at UC Berkeley,  July 2012
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# % THIS FUNCTION COMPUTES AMMONIA ABSORPTION UNDER JOVIAN ATMOSPHERIC
+# % CONDITIONS BETWEEN 1-200 GHz
+# %
+# % NAME:
+# %      NH3_Consistent_Model
+# %
+# % EXPLANATION:
+# %   This function can be used to compute the opacity of pure ammonia and
+# %   that of ammonia in a hydrogen/helium atmosphere between 0.1-200 GHz at
+# %   pressures between 0.01-100 bars and temperatures between 200-500 K.
+# %
+# % CALLING SEQUENCE:
+# %       alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
+# %
+# % INPUTS:
+# %       f        - Array of frequencies (GHz)
+# %       T        - Temperature (K)
+# %       P        - Pressure (bars)
+# %       H2mr     - Hydrogen mixing ratio (as mole fraction)
+# %       Hemr     - Helium mixing ratio (as mole fraction)
+# %       NH3mr    - Ammonia mixing ratio (as mole fraction)
+# %
+# % OUTPUTS:
+# %      alphanh3  - Array of ammonia opacity (dB/km) at the input frequencies
+# %
+# % METHOD:
+# %   A modified Ben Reuven (Ben Reuven, 1966) lineshape is used for computing
+# %   ammonia opacity due to inversion lines, and a Gross lineshape (Gross, 1955)
+# %   is used for computing ammonia opacity due to the rotational lines and
+# %   the v2 roto-vibrational lines.
+# %
+# % History:
+# %       written by Kiruthika Devaraj at Georgia Tech,  June, 2011
+# %       converted to python by David DeBoer at UC Berkeley,  July 2012
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import math
 import numpy as np
 import os.path
@@ -57,19 +57,20 @@ fo_v2 = []
 Io_v2 = []
 Eo_v2 = []
 
-#%% Declaring Constants
-GHztoinv_cm=1/29.9792458           #% for converting GHz to inverse cm
-OpticaldepthstodB=434294.5	   #% convert from cm^-1 to dB/km
-torrperatm=760.0                   #% convert from atm to torr
-bartoatm=0.987                     #% convert from bat to atm
-GHztoMHz=1000.0                    #% convert from GHz to MHz
-hc=19.858252418E-24                #% planks (J.s) light (cm/s)
-kB=1.38E-23                       #% boltzmann's in J/K or N.m/K
-No=6.02297E23                      #% Avogadros Number [mole^-1]
-R=8.31432E7                        #% Rydberg's [erg/mole-K]
-To=300.0                           #% Ref temp for P/P Catalogue
-dynesperbar=1.0E6                  #% dyne=bar/1e6;
-coef=dynesperbar*No/R              #% See Appendix D: Using the Poyter-Pickett Catalogs
+# %% Declaring Constants
+GHztoinv_cm = 1 / 29.9792458           # % for converting GHz to inverse cm
+OpticaldepthstodB = 434294.5	       # % convert from cm^-1 to dB/km
+torrperatm = 760.0                     # % convert from atm to torr
+bartoatm = 0.987                       # % convert from bat to atm
+GHztoMHz = 1000.0                      # % convert from GHz to MHz
+hc = 19.858252418E-24                  # % planks (J.s) light (cm/s)
+kB = 1.38E-23                          # % boltzmann's in J/K or N.m/K
+No = 6.02297E23                        # % Avogadros Number [mole^-1]
+R = 8.31432E7                          # % Rydberg's [erg/mole-K]
+To = 300.0                             # % Ref temp for P/P Catalogue
+dynesperbar = 1.0E6                    # % dyne=bar/1e6;
+coef = dynesperbar * No / R            # % See Appendix D: Using the Poyter-Pickett Catalogs
+
 
 def viewsum(arr):
     """diagnostic viewer"""
@@ -77,55 +78,69 @@ def viewsum(arr):
     filename, lineno, function_name, code = stack[-2]
     print('-------------', end='')
     print(code)
-    arrsum=0.0
+    arrsum = 0.0
     for a in arr:
-        arrsum+=a
+        arrsum += a
     print(arrsum)
     print(np.shape(arr))
     print('+++++++++++++')
 
+
+data = None
+
+
 def readInputFiles(par):
-    global fo, Io, Eo, gammaNH3o, H2HeBroad
-    global fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot
-    global fo_v2, Io_v2, Eo_v2
+    """This reads in the data files for nh3"""
+    filename = os.path.join(par.path, 'ammonia.npz')
+    if par.verbose:
+        print("Reading nh3 lines from {}".format(filename))
+    global data
+    data = np.load(filename)
 
-    #%% Inversion lines:
-    #% fo is frequency in GHz, Io is line intensity in cm^-1/(molecule./cm^2),
-    #% Eo is lower state energy in cm^-1, gammaNH3o and H2HeBroad are self and
-    #% foreign gas broadening parameters.
-    filename = os.path.join(par.path,'ammonia_inversion.dat')
-    if par.verbose:
-        print("Reading nh3 inversion lines:  "+filename)
-    fo,Io,Eo,gammaNH3o,H2HeBroad = np.loadtxt(filename,skiprows=1,unpack=True)
-    nlin = len(fo)
-    if par.verbose:
-        print(str(nlin)+' lines')
 
-    #%% Rotational lines:
-    #% fo_rot is frequency in GHz, Io_rot is line intensity in
-    #% cm^-1/(molecule./cm^2), Eo_rot is lower state energy in cm^-1, gNH3_rot,
-    #% gH2_rot, gHe_rot are broadening parameters for rotational lines.
-    filename=os.path.join(par.path,'ammonia_rotational.dat')
-    if par.verbose:
-        print("Reading nh3 rotational lines:  "+filename)
-    fo_rot,Io_rot,Eo_rot,gNH3_rot,gH2_rot,gHe_rot = np.loadtxt(filename,skiprows=1,unpack=True)
-    nlin_rot = len(fo_rot)
-    if par.verbose:
-        print(str(nlin_rot)+' lines')
+# def readInputFiles(par):
+#     global fo, Io, Eo, gammaNH3o, H2HeBroad
+#     global fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot
+#     global fo_v2, Io_v2, Eo_v2
+#
+#     # %% Inversion lines:
+#     # % fo is frequency in GHz, Io is line intensity in cm^-1/(molecule./cm^2),
+#     # % Eo is lower state energy in cm^-1, gammaNH3o and H2HeBroad are self and
+#     # % foreign gas broadening parameters.
+#     filename = os.path.join(par.path, 'ammonia_inversion.dat')
+#     if par.verbose:
+#         print("Reading nh3 inversion lines:  " + filename)
+#     fo, Io, Eo, gammaNH3o, H2HeBroad = np.loadtxt(filename, skiprows=1, unpack=True)
+#     nlin = len(fo)
+#     if par.verbose:
+#         print(str(nlin) + ' lines')
+#
+#     # %% Rotational lines:
+#     # % fo_rot is frequency in GHz, Io_rot is line intensity in
+#     # % cm^-1/(molecule./cm^2), Eo_rot is lower state energy in cm^-1, gNH3_rot,
+#     # % gH2_rot, gHe_rot are broadening parameters for rotational lines.
+#     filename = os.path.join(par.path, 'ammonia_rotational.dat')
+#     if par.verbose:
+#         print("Reading nh3 rotational lines:  " + filename)
+#     fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot = np.loadtxt(filename, skiprows=1, unpack=True)
+#     nlin_rot = len(fo_rot)
+#     if par.verbose:
+#         print(str(nlin_rot) + ' lines')
+#
+#     # %% v2 roto-vibrational lines:
+#     # % fo_v2 is frequency in GHz, Io_v2 is line intensity in
+#     # % cm^-1/(molecule./cm^2), Eo_v2 is lower state energy in cm^-1,
+#     filename = os.path.join(par.path, 'ammonia_rotovibrational.dat')
+#     if par.verbose:
+#         print("Reading nh3 roto-vibrational lines:  " + filename)
+#     fo_v2, Io_v2, Eo_v2 = np.loadtxt(filename, skiprows=1, unpack=True)
+#     nlin_v2 = len(fo_v2)
+#     if par.verbose:
+#         print(str(nlin_v2) + ' lines')
+#     return nlin, nlin_rot, nlin_v2
 
-    #%% v2 roto-vibrational lines:
-    #% fo_v2 is frequency in GHz, Io_v2 is line intensity in
-    #% cm^-1/(molecule./cm^2), Eo_v2 is lower state energy in cm^-1,
-    filename = os.path.join(par.path,'ammonia_rotovibrational.dat')
-    if par.verbose:
-        print("Reading nh3 roto-vibrational lines:  "+filename)
-    fo_v2,Io_v2,Eo_v2 = np.loadtxt(filename,skiprows=1,unpack=True)
-    nlin_v2 = len(fo_v2)
-    if par.verbose:
-        print(str(nlin_v2)+' lines')
-    return nlin,nlin_rot,nlin_v2
 
-def alpha(freq,T,P,X,P_dict,other_dict,**kwargs):
+def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     """function alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
     % The data files containing the frequency, line intensity and lower state
     % energy for the ammonia transitions as given in the latest JPL spectral
@@ -133,38 +148,51 @@ def alpha(freq,T,P,X,P_dict,other_dict,**kwargs):
     % communication, 2010), and the self and foreign gas broadening
     % parameters for the various transitions as given by Devaraj 2011 are
     % loaded in the following steps. """
-
-    global fo, Io, Eo, gammaNH3o, H2HeBroad
-    global fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot
-    global fo_v2, Io_v2, Eo_v2
     global GHztoinv_cm, OpticaldepthstodB, torrperatm, bartoatm
     global GHztoMHz, hc, kB, No, R, To, dynesperbar, coef
 
     par = parameters.setpar(kwargs)
-    if len(fo)==0:
+    global data
+    if data is None:
         readInputFiles(par)
 
-    P_h2 = P*X[P_dict['H2']]
-    P_he = P*X[P_dict['HE']]
-    P_nh3= P*X[P_dict['NH3']]
+    fo = data['fo']
+    Io = data['Io']
+    Eo = data['Eo']
+    gammaNH3o = data['gammaNH3o']
+    H2HeBroad = data['H2HeBroad']
+    fo_rot = data['fo_rot']
+    Io_rot = data['Io_rot']
+    Eo_rot = data['Eo_rot']
+    gNH3_rot = data['gNH3_rot']
+    gH2_rot = data['gH2_rot']
+    gHe_rot = data['gHe_rot']
+    fo_v2 = data['fo_v2']
+    Io_v2 = data['Io_v2']
+    Eo_v2 = data['Eo_v2']
 
-    #%% Computing partial pressures, temperature factor, and coefficient for ammonia
-    #% Compute the mixing ratios of  of H2, He, and NH2
-    H2mr = P_h2/P
-    Hemr = P_he/P
-    NH3mr = P_nh3/P
-    #% Compute the temperature factor
-    Tdiv=To/T
-    #%  Coefficient for symmetric top molecule
-    eta=3.0/2.0
+    print(P, type(P))
+    P_h2 = P * np.array(X[P_dict['H2']])
+    P_he = P * np.array(X[P_dict['HE']])
+    P_nh3 = P * np.array(X[P_dict['NH3']])
 
-    ####################INVERSION LINES
-    #% Pressure Dependent Switch for the parameters of the inversion transitions
-    #ddb 141218:  put in linear transition
+    # %% Computing partial pressures, temperature factor, and coefficient for ammonia
+    # % Compute the mixing ratios of  of H2, He, and NH2
+    H2mr = P_h2 / P
+    Hemr = P_he / P
+    NH3mr = P_nh3 / P
+    # % Compute the temperature factor
+    Tdiv = To / T
+    # %  Coefficient for symmetric top molecule
+    eta = 3.0 / 2.0
+
+    # ###################INVERSION LINES
+    # % Pressure Dependent Switch for the parameters of the inversion transitions
+    # ddb 141218:  put in linear transition
     P_trans = 15.0
     dP_up = 5.0
     dP_down = 3.0
-    if P>P_trans+dP_up:
+    if P > P_trans+dP_up:
         gnu_H2=1.6361;      gnu_He=0.4555;      gnu_NH3=0.7298;
         GAMMA_H2=0.8;       GAMMA_He=0.5;       GAMMA_NH3=1.0;
         zeta_H2=1.1313;     zeta_He=0.1;        zeta_NH3=0.5152;
@@ -195,10 +223,10 @@ def alpha(freq,T,P,X,P_dict,other_dict,**kwargs):
         Con      =0.9862 + (0.9862 - 1.3746)*(15.0-dP_down - P)/(dP_up + dP_down)
 
     gammaNH3omat = np.matrix(gammaNH3o)
-    #% Individual broadening parameters
-    gH2=gnu_H2*P_h2
-    gHe=gnu_He*P_he
-    gNH3=gnu_NH3*P_nh3*gammaNH3omat
+    # % Individual broadening parameters
+    gH2 = gnu_H2 * P_h2
+    gHe = gnu_He * P_he
+    gNH3 = gnu_NH3 * P_nh3 * gammaNH3omat
     #% Broadening parameter
     gamma=((gH2)*((Tdiv)**(GAMMA_H2))+(gHe)*((Tdiv)**(GAMMA_He))+gNH3*(295.0/T)**(GAMMA_NH3))
     #% Shift parameter

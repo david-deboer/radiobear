@@ -11,50 +11,66 @@ hck = 1.438396       # hc/k  [K cm]
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 # Set data arrays
-f0 = []
-I0 = []
-E = []
-G0 = []
+# f0 = []
+# I0 = []
+# E = []
+# G0 = []
+
+data = None
 
 
 def readInputFiles(par):
-    """If needed this reads in the data files for h2s"""
-    useLinesUpTo = 200
-    global nlin
-    nlin = 0
+    """This reads in the data files for nh3"""
+    filename = os.path.join(par.path, 'nh3.npz')
+    if par.verbose:
+        print("Reading nh3 lines from {}".format(filename))
+    global data
+    data = np.load(filename)
 
-    filename = os.path.join(par.path, 'nh3.lin')
-    if par.verbose:
-        print("Reading nh3 lines from " + filename)
-    ifp = open(filename, 'r')
-    for line in ifp:
-        if nlin >= useLinesUpTo:
-            break
-        nlin += 1
-        data = line.split()
-        if len(data) == 4:
-            f0.append(float(data[0]))
-            I0.append(float(data[1]))
-            E.append(float(data[2]))
-            G0.append(float(data[3]))
-        else:
-            break
-    ifp.close()
-    if par.verbose:
-        print('   ' + str(nlin) + ' lines')
-    return nlin
+# def readInputFiles(par):
+#     """If needed this reads in the data files for h2s"""
+#     useLinesUpTo = 200
+#     global nlin
+#     nlin = 0
+#
+#     filename = os.path.join(par.path, 'nh3.lin')
+#     if par.verbose:
+#         print("Reading nh3 lines from " + filename)
+#     ifp = open(filename, 'r')
+#     for line in ifp:
+#         if nlin >= useLinesUpTo:
+#             break
+#         nlin += 1
+#         data = line.split()
+#         if len(data) == 4:
+#             f0.append(float(data[0]))
+#             I0.append(float(data[1]))
+#             E.append(float(data[2]))
+#             G0.append(float(data[3]))
+#         else:
+#             break
+#     ifp.close()
+#     if par.verbose:
+#         print('   ' + str(nlin) + ' lines')
+#     return nlin
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
 
     par = parameters.setpar(kwargs)
     # Read in data if needed
-    if len(f0) == 0:
+    global data
+    if data is None:
         readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
     P_nh3 = P * X[P_dict['NH3']]
+    f0 = data['f0']
+    I0 = data['I0']
+    E = data['E']
+    G0 = data['G0']
+    nlin = len(f0)
 
     GH2 = 2.318
     GHe = 0.790

@@ -25,6 +25,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
 
     par = parameters.setpar(kwargs)
     # Read in data if needed
+    global data
     if data is None:
         readInputFiles(par)
 

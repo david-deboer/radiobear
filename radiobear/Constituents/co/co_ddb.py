@@ -9,6 +9,8 @@ T0 = 296.0           # reference temperature in K
 hck = 1.438396       # hc/k  [K cm]
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
+data = None
+
 
 def readInputFiles(par):
     filename = os.path.join(par.path, 'co.npz')
@@ -26,6 +28,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     bvoigt = [122.60793178, 352.73062511, 457.33447878, 348.70391772, 170.35400182, 53.99290691, 10.47985711, 1.0]
 
     # Read in data if needed
+    global data
     if data is None:
         readInputFiles(par)
 
