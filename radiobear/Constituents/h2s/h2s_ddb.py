@@ -26,7 +26,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     par = parameters.setpar(kwargs)
     # Read in data if needed
     if data is None:
-        readInputFiles(par.path, par.verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
