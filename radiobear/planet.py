@@ -148,6 +148,8 @@ class Planet:
 
         #  ##Start b loop
         runStart = datetime.datetime.now()
+        self.log.add('Run start ' + str(runStart), self.verbose)
+        self.data_return.set('start', runStart)
         for i, bv in enumerate(b):
             if self.verbose == 'loud':
                 print('{} of {} (view [{:.4f}, {:.4f}])  '.format(i + 1, len(b), bv[0], bv[1]), end='')
@@ -189,6 +191,9 @@ class Planet:
         if self.plot_bright and self.outType == 'profile':
             plotting.planet_profile(self.data_return)
 
+        runStop = datetime.datetime.now()
+        self.log.add('Run stop ' + str(runStop), self.verbose)
+        self.data_return.set('stop', runStop)
         return self.data_return
 
     def set_header(self, missed_planet):

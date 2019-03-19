@@ -8,7 +8,7 @@ class DataReturn:
     This holds the data that one may wish to use as output.  Data are stored as numpy arrays
     """
 
-    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header']
+    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop']
 
     def __repr__(self):
         s = ''

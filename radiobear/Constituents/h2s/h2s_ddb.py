@@ -1,9 +1,8 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
-#from radiobear.Constituents import parameters
-from argparse import Namespace
-import six
+from radiobear.Constituents import parameters
+
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
 T0 = 296.0           # reference temperature in K
@@ -12,11 +11,6 @@ GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 data = None
 
-def setpar(kwargs):
-    par = Namespace(units='dBperkm', path='./', verbose=False)
-    for p, v in six.iteritems(kwargs):
-        setattr(par, p, v)
-    return par
 
 def readInputFiles(path, verbose):
     filename = os.path.join(path, 'h2s.npz')
@@ -29,7 +23,7 @@ def readInputFiles(path, verbose):
 def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     """Computes absorption due to h2s"""
 
-    par = setpar(kwargs)
+    par = parameters.setpar(kwargs)
     # Read in data if needed
     if data is None:
         readInputFiles(par.path, par.verbose)
