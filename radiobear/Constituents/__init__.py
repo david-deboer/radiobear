@@ -1,7 +1,8 @@
 # -*- mode: python; coding: utf-8 -*-
-# Copyright 2018 the HERA Collaboration
+# Copyright 2019 David DeBoer
 # Licensed under the 2-clause BSD license.
 
+from . import parameters
 # from . import clouds
 # from . import co
 # from . import h2

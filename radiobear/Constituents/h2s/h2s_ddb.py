@@ -1,7 +1,9 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
-
+#from radiobear.Constituents import parameters
+from argparse import Namespace
+import six
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
 T0 = 296.0           # reference temperature in K
@@ -10,6 +12,11 @@ GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 data = None
 
+def setpar(kwargs):
+    par = Namespace(units='dBperkm', path='./', verbose=False)
+    for p, v in six.iteritems(kwargs):
+        setattr(par, p, v)
+    return par
 
 def readInputFiles(path, verbose):
     filename = os.path.join(path, 'h2s.npz')
@@ -19,12 +26,13 @@ def readInputFiles(path, verbose):
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     """Computes absorption due to h2s"""
 
+    par = setpar(kwargs)
     # Read in data if needed
     if data is None:
-        readInputFiles(path, verbose)
+        readInputFiles(par.path, par.verbose)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -58,7 +66,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=F
         alpha_h2s.append(np.sum(shape * ITG))
 
     alpha_h2s = coef * (P_h2s / T0) * pow((T0 / T), n_int + 2) * np.array(alpha_h2s)
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_h2s *= 434294.5
 
     return alpha_h2s

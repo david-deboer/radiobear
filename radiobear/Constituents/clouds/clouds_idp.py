@@ -1,12 +1,14 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import cmath
+from radiobear.Constituents import parameters
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 
-def alpha(freq, T, P, cloud, cloud_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, cloud, cloud_dict, otherPar, **kwargs):
     """Adapted from Imke's code, but used Ulaby, Moore and Fung (see e.g. p310)."""
     alpha_cloud = []
+    par = parameters.setpar(kwargs)
     for f in freq:
         alpha = 0.0
         k = (2.0 * np.pi * f / GHz)  # *otherPar['refr']  # in cm^-1
@@ -47,10 +49,10 @@ def alpha(freq, T, P, cloud, cloud_dict, otherPar, units='dBperkm', path='./', v
         if alpha < 0.0:
             print("Warning:  cloud alpha<0.  Reset to 0")
             alpha = 0.0
-        if units == 'dBperkm':
+        if par.units == 'dBperkm':
             alpha *= 434294.5
         alpha_cloud.append(alpha)
-    if verbose:
+    if par.verbose:
         print('cloud absorption: ', alpha_cloud)
     return alpha_cloud
 
