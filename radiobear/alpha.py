@@ -189,7 +189,8 @@ class Alpha:
             else:
                 X = gas
                 D = gas_dict
-            absorb.append(self.absorptionModule[k].alpha(freqs, T, P, X, D, self.otherPar, units=units, path=path, verbose=print_meta))
+            absorb.append(self.absorptionModule[k].alpha(freqs, T, P, X, D, self.otherPar,
+                          units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()
         totalAbsorption = np.zeros_like(freqs)
