@@ -1,6 +1,7 @@
 from __future__ import print_function
 import math
 import os.path
+from radiobear.Constituents import parameters
 
 # Some constants
 T0 = 300.0           # reference temperature in K
@@ -19,14 +20,14 @@ x_He = []
 x_H2O = []
 
 
-def readInputFiles(path, verbose=False):
+def readInputFiles(par):
     """If needed this reads in the data files for h2o"""
     useLinesUpTo = 10   # index number
     global nlin
     nlin = 0
-    if verbose:
+    if par.verbose:
         print("Reading h2o lines")
-    filename = os.path.join(path, 'h2od.lin')
+    filename = os.path.join(par.path, 'h2od.lin')
     ifp = open(filename, 'r')
     for line in ifp:
         if nlin >= useLinesUpTo:
@@ -46,15 +47,17 @@ def readInputFiles(path, verbose=False):
         else:
             break
     ifp.close()
-    if verbose:
-        print('   '+str(nlin)+' lines')
+    if par.verbose:
+        print('   ' + str(nlin) + ' lines')
     return nlin
 
-def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=False):
+
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
 
     # Read in data if needed
-    if len(f0)==0:
-        readInputFiles(path,verbose)
+    par = parameters.setpar(kwargs)
+    if len(f0) == 0:
+        readInputFiles(par)
 
     P_h2 = P*X[P_dict['H2']]
     P_he = P*X[P_dict['HE']]
@@ -77,7 +80,7 @@ def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=False):
             alpha += shape*ITG
         GR1971 = 1.08E-11*rho*pow((T0/T),2.1)*Pa*f2
         a = 2.0*f2*rho*pow((T0/T),n_int)*alpha/434294.5 + GR1971/434294.5
-        if units=='dBperkm':
+        if par.units=='dBperkm':
             a*=434294.5
         alpha_h2o.append(a)
 

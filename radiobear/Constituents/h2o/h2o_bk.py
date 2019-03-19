@@ -1,8 +1,9 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
+from radiobear.Constituents import parameters
 
 
-def alpha(f, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(f, T, P, X, P_dict, otherPar, **kwargs):
     """This is Karpowicz's model from:
        http://users.ece.gatech.edu/~psteffes/palpapers/karpowicz_data/water_model/karpowicz_h2o_model.m
        This function also requires the vvwlineshape function originally written by Jim Hoffman (with removal of df factor).
@@ -10,6 +11,7 @@ def alpha(f, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=Fals
        Rosenkranz 1998 Radio Science vol 33, pp919-928
        NB (DDB): f may be a list, but T, P, etc should be scalars"""
 
+    par = parameters.setpar(kwargs)
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
     P_h2o = P * X[P_dict['H2O']]
@@ -80,7 +82,7 @@ def alpha(f, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=Fals
     alpha_h2o = line_contribution + inv_km_to_dB * Foreign_Continuum + inv_km_to_dB * Self_Continuum
     # alpha_h2o = inv_km_to_dB*Self_Continuum
     # alpha_h2o = line_contribution
-    if units != 'dBperkm':
+    if par.units != 'dBperkm':
         alpha_h2o = alpha_h2o / 434294.5
 
     return np.ndarray.tolist(np.ndarray.flatten(alpha_h2o))

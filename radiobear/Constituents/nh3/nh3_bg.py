@@ -2,6 +2,7 @@ from __future__ import print_function
 import math
 import os.path
 import numpy as np
+from radiobear.Constituents import parameters
 
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
@@ -16,14 +17,14 @@ E = []
 G0 = []
 
 
-def readInputFiles(path, verbose=False):
+def readInputFiles(par):
     """If needed this reads in the data files for h2s"""
     useLinesUpTo = 200
     global nlin
     nlin = 0
 
-    filename = os.path.join(path, 'nh3.lin')
-    if verbose:
+    filename = os.path.join(par.path, 'nh3.lin')
+    if par.verbose:
         print("Reading nh3 lines from " + filename)
     ifp = open(filename, 'r')
     for line in ifp:
@@ -39,16 +40,17 @@ def readInputFiles(path, verbose=False):
         else:
             break
     ifp.close()
-    if verbose:
+    if par.verbose:
         print('   ' + str(nlin) + ' lines')
     return nlin
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
 
+    par = parameters.setpar(kwargs)
     # Read in data if needed
     if len(f0) == 0:
-        readInputFiles(path, verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -82,7 +84,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=F
             alpha += shape * ITG
 
         a = coef * (P_nh3 / T0) * pow((T0 / T), n_int + 2) * alpha
-        if units == 'dBperkm':
+        if par.units == 'dBperkm':
             a *= 434294.5
         alpha_nh3.append(a)
 

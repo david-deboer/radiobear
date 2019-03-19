@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
+from radiobear.Constituents import parameters
 
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
@@ -8,26 +9,25 @@ T0 = 296.0           # reference temperature in K
 hck = 1.438396       # hc/k  [K cm]
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
-data = None
 
-
-def readInputFiles(path, verbose):
-    filename = os.path.join(path, 'co.npz')
-    if verbose:
+def readInputFiles(par):
+    filename = os.path.join(par.path, 'co.npz')
+    if par.verbose:
         print("Reading co lines from {}".format(filename))
     global data
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     # ##Voigt coefficients from Janssen p67
+    par = parameters.setpar(kwargs)
     PLimits = [0.001, 0.1]
     avoigt = [122.60793178, 214.38238869, 181.92853309, 93.15558046, 30.18014220, 5.91262621, 0.56418958, 0.0]
     bvoigt = [122.60793178, 352.73062511, 457.33447878, 348.70391772, 170.35400182, 53.99290691, 10.47985711, 1.0]
 
     # Read in data if needed
     if data is None:
-        readInputFiles(path, verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -84,7 +84,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=F
             alpha_co.append(np.sum(shape * ITG))
 
     alpha_co = coef * (P_co / T0) * pow((T0 / T), n_int + 2) * np.array(alpha_co)
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_co *= 434294.5
 
     return alpha_co

@@ -38,6 +38,7 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import os.path
+from radiobear.Constituents import parameters
 
 # %% Declaring Constants
 GHztoinv_cm = 1 / 29.9792458     # % for converting GHz to inverse cm
@@ -58,27 +59,28 @@ f_split = 30.0
 data = None
 
 
-def readInputFiles(path, verbose=False):
-    filename = os.path.join(path, 'ammonia.npz')
-    if verbose:
+def readInputFiles(par):
+    filename = os.path.join(par.path, 'ammonia.npz')
+    if par.verbose:
         print("Reading nh3 lines from {}".format(filename))
     global data
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=True):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     """Wrapper to handle f_split"""
     alpha_nh3 = None
 
+    par = parameters.setpar(kwargs)
     # Check lo range
     freq = np.array(freq)
     frq = freq[np.where([x <= f_split for x in freq])]
     if len(frq):
-        alpha_nh3 = __alpha__(frq, T, P, X, P_dict, otherPar, units, path, verbose)
+        alpha_nh3 = __alpha__(frq, T, P, X, P_dict, otherPar, par)
     # Check hi range
     frq = freq[np.where([x > f_split for x in freq])]
     if len(frq):
-        a_hi = __alpha__(frq, T, P, X, P_dict, otherPar, units, path, verbose)
+        a_hi = __alpha__(frq, T, P, X, P_dict, otherPar, par)
         if alpha_nh3 is None:
             alpha_nh3 = a_hi
         else:
@@ -86,7 +88,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=T
     return alpha_nh3
 
 
-def __alpha__(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=True):
+def __alpha__(freq, T, P, X, P_dict, otherPar, par):
     """function alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
     % The data files containing the frequency, line intensity and lower state
     % energy for the ammonia transitions as given in the latest JPL spectral
@@ -96,7 +98,7 @@ def __alpha__(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbo
     % loaded in the following steps. """
 
     if data is None:
-        readInputFiles(path, verbose=verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -299,7 +301,7 @@ def __alpha__(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbo
     # %% Computing the total opacity
     alpha_opdep = np.sum(np.transpose(alpha_inversion), 1) + np.sum(np.transpose(alpha_rot), 1) + np.sum(np.transpose(alpha_v2), 1)
     alpha_opdep = np.array(np.transpose(alpha_opdep))
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_opdep *= OpticaldepthstodB
     alpha_nh3_temp = np.ndarray.tolist(np.ndarray.flatten(alpha_opdep))
     alpha_nh3 = np.ndarray.flatten(alpha_opdep)

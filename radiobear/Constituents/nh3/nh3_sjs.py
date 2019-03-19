@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
+from radiobear.Constituents import parameters
 
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14
@@ -14,23 +15,24 @@ EPS = 1E-12          # a small number
 data = None
 
 
-def readInputFiles(path, verbose=False):
+def readInputFiles(par):
     """This reads in the data files for nh3"""
-    filename = os.path.join(path, 'nh3.npz')
-    if verbose:
+    filename = os.path.join(par.path, 'nh3.npz')
+    if par.verbose:
         print("Reading nh3 lines from {}".format(filename))
     global data
     data = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     Joiner = 0
     Spilker = 1
     Interp = 2
 
+    par = parameters.setpar(kwargs)
     # Read in data if needed
     if data is None:
-        readInputFiles(path, verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -120,7 +122,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=F
         alpha_nh3.append(np.sum(shape * ITG))
 
     alpha_nh3 = coef * (P_nh3 / T0) * pow((T0 / T), n_int + 2) * np.array(alpha_nh3) * Pscale
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_nh3 *= 434294.5
 
     return alpha_nh3

@@ -39,6 +39,7 @@ import math
 import numpy as np
 import os.path
 import traceback
+from radiobear.Constituents import parameters
 
 # Declare data arrays
 fo = []
@@ -83,7 +84,7 @@ def viewsum(arr):
     print(np.shape(arr))
     print('+++++++++++++')
 
-def readInputFiles(path,verbose=False):
+def readInputFiles(par):
     global fo, Io, Eo, gammaNH3o, H2HeBroad
     global fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot
     global fo_v2, Io_v2, Eo_v2
@@ -92,39 +93,39 @@ def readInputFiles(path,verbose=False):
     #% fo is frequency in GHz, Io is line intensity in cm^-1/(molecule./cm^2),
     #% Eo is lower state energy in cm^-1, gammaNH3o and H2HeBroad are self and
     #% foreign gas broadening parameters.
-    filename = os.path.join(path,'ammonia_inversion.dat')
-    if verbose:
+    filename = os.path.join(par.path,'ammonia_inversion.dat')
+    if par.verbose:
         print("Reading nh3 inversion lines:  "+filename)
     fo,Io,Eo,gammaNH3o,H2HeBroad = np.loadtxt(filename,skiprows=1,unpack=True)
     nlin = len(fo)
-    if verbose:
+    if par.verbose:
         print(str(nlin)+' lines')
 
     #%% Rotational lines:
     #% fo_rot is frequency in GHz, Io_rot is line intensity in
     #% cm^-1/(molecule./cm^2), Eo_rot is lower state energy in cm^-1, gNH3_rot,
     #% gH2_rot, gHe_rot are broadening parameters for rotational lines.
-    filename=os.path.join(path,'ammonia_rotational.dat')
-    if verbose:
+    filename=os.path.join(par.path,'ammonia_rotational.dat')
+    if par.verbose:
         print("Reading nh3 rotational lines:  "+filename)
     fo_rot,Io_rot,Eo_rot,gNH3_rot,gH2_rot,gHe_rot = np.loadtxt(filename,skiprows=1,unpack=True)
     nlin_rot = len(fo_rot)
-    if verbose:
+    if par.verbose:
         print(str(nlin_rot)+' lines')
 
     #%% v2 roto-vibrational lines:
     #% fo_v2 is frequency in GHz, Io_v2 is line intensity in
     #% cm^-1/(molecule./cm^2), Eo_v2 is lower state energy in cm^-1,
-    filename = os.path.join(path,'ammonia_rotovibrational.dat')
-    if verbose:
+    filename = os.path.join(par.path,'ammonia_rotovibrational.dat')
+    if par.verbose:
         print("Reading nh3 roto-vibrational lines:  "+filename)
     fo_v2,Io_v2,Eo_v2 = np.loadtxt(filename,skiprows=1,unpack=True)
     nlin_v2 = len(fo_v2)
-    if verbose:
+    if par.verbose:
         print(str(nlin_v2)+' lines')
     return nlin,nlin_rot,nlin_v2
 
-def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=True):
+def alpha(freq,T,P,X,P_dict,otherPar,**kwargs):
     """function alphanh3=NH3_Consistent_Model(f,T,P,H2mr,Hemr,NH3mr)
     % The data files containing the frequency, line intensity and lower state
     % energy for the ammonia transitions as given in the latest JPL spectral
@@ -139,8 +140,9 @@ def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=True):
     global GHztoinv_cm, OpticaldepthstodB, torrperatm, bartoatm
     global GHztoMHz, hc, kB, No, R, To, dynesperbar, coef
 
+    par = parameters.setpar(kwargs)
     if len(fo)==0:
-        readInputFiles(path,verbose=verbose)
+        readInputFiles(par)
 
     P_h2 = P*X[P_dict['H2']]
     P_he = P*X[P_dict['HE']]
@@ -336,7 +338,7 @@ def alpha(freq,T,P,X,P_dict,otherPar,units='dBperkm',path='./',verbose=True):
     #%% Computing the total opacity
     alpha_opdep=np.sum(np.transpose(alpha_inversion),1)+np.sum(np.transpose(alpha_rot),1)+np.sum(np.transpose(alpha_v2),1)
     alpha_opdep=np.array(np.transpose(alpha_opdep))
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_opdep*=OpticaldepthstodB
     alpha_nh3_temp=np.ndarray.tolist(np.ndarray.flatten(alpha_opdep))
     alpha_nh3 = []

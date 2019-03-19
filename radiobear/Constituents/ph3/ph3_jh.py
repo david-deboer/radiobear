@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
+from radiobear.Constituents import parameters
 
 # Some constants
 coef = 7.244E+21        # coefficient from GEISA_PP.TEX eq. 14
@@ -14,25 +15,26 @@ data = None
 data_wgt = {}
 
 
-def readInputFiles(path, verbose=False):
-    filename = os.path.join(path, 'ph3jh.npz')
-    if verbose:
+def readInputFiles(par):
+    filename = os.path.join(par.path, 'ph3jh.npz')
+    if par.verbose:
         print("Reading ph3 lines from  {}".format(filename))
     global data
     data = np.load(filename)
-    filename = os.path.join(path, 'PH3WGT.npz')
-    if verbose:
+    filename = os.path.join(par.path, 'PH3WGT.npz')
+    if par.verbose:
         print("Reading ph3 wgts from {}".format(filename))
     global data_wgt
     data_wgt = np.load(filename)
 
 
-def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=False):
+def alpha(freq, T, P, X, P_dict, otherPar, **kwargs):
     """Computes the absorption due to ph3"""
 
+    par = parameters.setpar(kwargs)
     # Read in data if needed
     if data is None:
-        readInputFiles(path, verbose=verbose)
+        readInputFiles(par)
 
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
@@ -66,7 +68,7 @@ def alpha(freq, T, P, X, P_dict, otherPar, units='dBperkm', path='./', verbose=F
         alpha_ph3.append(np.sum(shape * ITG))
 
     alpha_ph3 = coef * (P_ph3 / T0) * np.power((T0 / T), n_int + 2) * np.array(alpha_ph3)
-    if units == 'dBperkm':
+    if par.units == 'dBperkm':
         alpha_ph3 *= 434294.5
 
     return alpha_ph3

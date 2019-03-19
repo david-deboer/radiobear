@@ -12,9 +12,9 @@ GHz = 29.9792458     # conversion from cm^-1 to GHz
 data = None
 
 
-def readInputFiles(path, verbose):
-    filename = os.path.join(path, 'h2s.npz')
-    if verbose:
+def readInputFiles(par):
+    filename = os.path.join(par.path, 'h2s.npz')
+    if par.verbose:
         print("Reading h2s lines from {}".format(filename))
     global data
     data = np.load(filename)
