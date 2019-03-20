@@ -86,13 +86,13 @@ class Planet:
 
         # ## Set plots
         if self.plot_atm:
-            from . import plotting
-            atmplt = plotting.atm_plots(self.atm)
-            atmplt.plotTP()
-            atmplt.plotGas()
-            atmplt.plotCloud()
-            atmplt.plotProp()
-            plotting.plt.show()
+            from radiobear.plotting import atm
+            atmplt = atm.plots(self.atm)
+            atmplt.TP()
+            atmplt.Gas()
+            atmplt.Cloud()
+            atmplt.Properties()
+            atmplt.show()
 
     def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
@@ -120,8 +120,8 @@ class Planet:
         self.data_return.set('f', freqs)
         self.data_return.set('freqUnit', freqUnit)
         if self.plot_bright:
-            from . import plotting
-            brtplt = plotting.bright_plots(self.bright)
+            from radiobear.plotting import bright, data
+            brtplt = bright.plots(self.bright)
 
         #  ##Set b, etc
         b = self.set_b(b, block)
@@ -170,9 +170,10 @@ class Planet:
             else:
                 self.Tb.append(Tbt)
             if self.plot_bright:
-                brtplt.plot_raypath_stuff(b=bv, req=self.config.Req, rpol=self.config.Rpol)
-                brtplt.plot_intW()
-                brtplt.plot_W(self.normalize_weighting)
+                brtplt.raypath()
+                brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
+                brtplt.intW()
+                brtplt.W(self.normalize_weighting)
         self.data_return.set('Tb', self.Tb)
         self.data_return.header = self.header
         missed_planet = self.rNorm is None
@@ -188,13 +189,13 @@ class Planet:
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
         if self.plot_bright:
-            brtplt.plot_Alpha()
-            datplt = plotting.data_plots(self.data_return)
+            brtplt.alpha()
+            datplt = data.plots(self.data_return)
             if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
-                datplt.plot_Tb()
+                datplt.Tb()
             if self.outType == 'profile':
-                datplt.planet_profile()
-            plotting.plt.show()
+                datplt.profile()
+            daxtplt.show()
 
         runStop = datetime.datetime.now()
         self.log.add('Run stop ' + str(runStop), self.verbose)
