@@ -2,28 +2,27 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
-from . import atmosphere as atm
-from . import config as pcfg
+import os
+import six
+from . import atmosphere
+from . import config
 from . import alpha
-from . import brightness as bright
+from . import brightness
 from . import data_handling
 from . import utils
 from . import fileIO
 from . import state_variables
 from . import logging
-import os
-import six
-
-version = '2.4'
+from . import version
 
 
 class Planet:
-    def __init__(self, name, mode='normal', config='config.par', **kwargs):
+    def __init__(self, name, mode='normal', config_file='config.par', **kwargs):
         """This is the 'executive function class to compute overall planetary emission.
            For both mode and kwargs look at state_variables.py
            Inputs:
                 name:  'Jupiter', 'Saturn', 'Uranus', 'Neptune'
-                config:  config file name.  If 'planet' sets to <name>/config.par
+                config_file:  config file name.  If 'planet' sets to <name>/config.par
                 mode:  sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
                 kwargs: 'verbose' and 'plot_amt', etc (and other state_vars - see show_state())"""
 
@@ -34,7 +33,7 @@ class Planet:
         self.freqUnit = None
         self.b = None
 
-        print('Planetary modeling  (ver {})'.format(version))
+        print('Planetary modeling  (ver {})'.format(version.VERSION))
         if self.planet not in planet_list:
             print("{} not found.".format(self.planet))
             return
@@ -56,11 +55,11 @@ class Planet:
             self.log = None
 
         #  ## Get config
-        config = os.path.join(self.planet, config)
+        config_file = os.path.join(self.planet, config_file)
         if self.verbose:
-            print('Reading config file:  ', config)
+            print('Reading config file:  ', config_file)
             print("\t'{}.config.display()' to see config parameters.".format(name[0].lower()))
-        self.config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
+        self.config = config.planetConfig(self.planet, configFile=config_file, log=self.log)
         self.config.show()
 
         if self.initialize:
@@ -70,15 +69,15 @@ class Planet:
         state_variables.show_state(self)
 
     def initialize_run(self):
-        #  ## Create atmosphere:  attributes are self.atm.gas, self.atm.cloud and self.atm.layerProperty
-        self.atm = atm.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
-        self.atm.run()
+        #  ## Create atmosphere:  attributes are self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
+        self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+        self.atmos.run()
 
         #  ## Read in absorption modules:  to change absorption, edit files under /constituents'
         self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **self.kwargs)
 
         #  ## Next compute radiometric properties - initialize bright and return data class
-        self.bright = bright.Brightness(mode=self.mode, log=self.log, **self.kwargs)
+        self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
         self.data_return = data_handling.DataReturn()
 
         # ## Create fileIO class
@@ -87,7 +86,7 @@ class Planet:
         # ## Set plots
         if self.plot_atm:
             from radiobear.plotting import atm
-            atmplt = atm.plots(self.atm)
+            atmplt = atm.plots(self.atmos)
             atmplt.TP()
             atmplt.Gas()
             atmplt.Cloud()
@@ -154,7 +153,7 @@ class Planet:
         for i, bv in enumerate(b):
             if self.verbose == 'loud':
                 print('{} of {} (view [{:.4f}, {:.4f}])  '.format(i + 1, len(b), bv[0], bv[1]), end='')
-            Tbt = self.bright.single(freqs, self.atm, bv, self.alpha, self.config.orientation, discAverage=(self.bType == 'disc'))
+            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation, discAverage=(self.bType == 'disc'))
             if self.bright.travel is not None:
                 if self.rNorm is None:
                     self.rNorm = self.bright.travel.rNorm
@@ -195,7 +194,7 @@ class Planet:
                 datplt.Tb()
             if self.outType == 'profile':
                 datplt.profile()
-            daxtplt.show()
+            datplt.show()
 
         runStop = datetime.datetime.now()
         self.log.add('Run stop ' + str(runStop), self.verbose)
