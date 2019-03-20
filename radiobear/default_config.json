@@ -2,7 +2,7 @@
     "toks": {
         "constituents": {
             "name": "C",
-            "unit": None,
+            "unit": null,
             "help": "This 'C'onstituent dictionary has atm layer gas data.   Needs to correspond to datafile if not computing but can have extra at end",
             "default": {
                 "Jupiter": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
@@ -17,18 +17,18 @@
         },
         "alpha": {
             "name": "constituent_alpha",
-            "unit": None,
+            "unit": null,
             "help": "This dictionary sets which absoprtion formalisms to use",
             "default": {
-                "Jupiter": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
-                "Saturn": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
-                "Uranus": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"},
-                "Neptune": {"clouds": "None", "co": "None", "h2": "None", "h2o": "None", "h2s": "None", "hcn": "None", "nh3": "None", "ph3": "None"}
+                "Jupiter": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Saturn": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Uranus": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Neptune": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null}
             }
         },
         "gasfile": {
             "name": "gasFile",
-            "unit": None,
+            "unit": null,
             "help": "atmospheric constituent file - column order set by C",
             "default": {
                 "Jupiter": "jupiter.paulSolar",
@@ -39,7 +39,7 @@
         },
         "gastype": {
             "name": "gasType",
-            "unit": None,
+            "unit": null,
             "help": "read vs compute -- normally read (currently can't compute)",
             "default": {
                 "Jupiter": "read",
@@ -50,7 +50,7 @@
         },
         "clouds": {
             "name": "Cl",
-            "unit": None,
+            "unit": null,
             "help": "This 'Cl'oud dictionary has the cloud parameters.  Needs to correspond to datafile if not computing, but can have extra at end",
             "default": {
                 "Jupiter": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
@@ -61,7 +61,7 @@
         },
         "cloudfile": {
             "name": "cloudFile",
-            "unit": None,
+            "unit": null,
             "help": "atmospheric cloud file - column order set by Cl",
             "default": {
                 "Jupiter": "jupiter.paulclSolar",
@@ -72,7 +72,7 @@
         },
         "cloudtype": {
             "name": "cloudType",
-            "unit": "None",
+            "unit": null,
             "help": "read vs compute -- normally read (currently can't compute)",
             "default": {
                 "Jupiter": "read",
@@ -83,7 +83,7 @@
         },
         "other": {
             "name": "LP",
-            "unit": "None",
+            "unit": null,
             "help": "This dictionary has other parameters.",
             "default": {
                 "Jupiter": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
@@ -94,7 +94,7 @@
         },
         "othertype": {
             "name": "otherType",
-            "unit": "None",
+            "unit": null,
             "help": "read vs compute -- normally compute (currently can't read)",
             "default": {
                 "Jupiter": "compute",
@@ -226,7 +226,7 @@
         },
         "gtype": {
             "name": "gtype",
-            "unit": "None",
+            "unit": null,
             "help": "type for planet shape [ellipse/reference/gravity/sphere]",
             "default": {
                 "Jupiter": "ellipse",
@@ -237,7 +237,7 @@
         },
         "zonal": {
             "name": "zonal",
-            "unit": "None",
+            "unit": null,
             "help": "file with zonal winds",
             "default": {
                 "Jupiter": "Jupiter/zonalJupiter.dat",
@@ -248,7 +248,7 @@
         },
         "regridtype": {
             "name": "regridType",
-            "unit": "None",
+            "unit": null,
             "help": "instructions or file to regrid data (see regrid.py) (string/int)",
             "default": {
                 "Jupiter": "grid.dat",
@@ -259,7 +259,7 @@
         },
         "limb": {
             "name": "limb",
-            "unit": "None",
+            "unit": null,
             "help": "limb type - used in compute_ds to test limb darkening [shape/sec]",
             "default": {
                 "Jupiter": "shape",
@@ -270,7 +270,7 @@
         },
         "h2state": {
             "name": "h2state",
-            "unit": "None",
+            "unit": null,
             "help": "hydrogen state [e or n]",
             "default": {
                 "Jupiter": "e",
@@ -281,18 +281,18 @@
         },
         "doppler": {
             "name": "Doppler",
-            "unit": "None",
+            "unit": null,
             "help": "use Doppler or not",
             "default": {
-                "Jupiter": "False",
-                "Saturn": "False",
-                "Uranus": "False",
-                "Neptune": "False"
+                "Jupiter": false,
+                "Saturn": false,
+                "Uranus": false,
+                "Neptune": false
             }
         },
         "tweakmodule": {
             "name": "tweakmodule",
-            "unit": "None",
+            "unit": null,
             "help": "module that tweaks the read atmosphere",
             "default": {
                 "Jupiter": "JupiterTweak",
@@ -303,7 +303,7 @@
         },
         "scalemodule": {
             "name": "scalemodule",
-            "unit": "None",
+            "unit": null,
             "help": "module used to linearly scale absorption profiles",
             "default": {
                 "Jupiter": "calc_scale",
@@ -314,7 +314,7 @@
         },
         "scalefilename": {
             "name": "scale_file_name",
-            "unit": "None",
+            "unit": null,
             "help": "name of scale data file to use for scale_existing_data",
             "default": {
                 "Jupiter": "Scratch/scale.dat",
@@ -391,13 +391,13 @@
         },
         "h2newset": {
             "name": "h2newset",
-            "unit": "None",
+            "unit": null,
             "help": "related to h2_orton - can be deprecated?",
             "default": {
-                "Jupiter": True,
-                "Saturn": True,
-                "Uranus": True,
-                "Neptune": True
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
             }
         }
     }

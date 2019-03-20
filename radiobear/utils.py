@@ -32,6 +32,8 @@ def proc_unit(supplied_unit):
 
 
 def convert_unit(v, supplied_unit):
+    if supplied_unit is None:
+        return v
     converted = v
     for proc, units in six.iteritems(processingUnits):
         if supplied_unit in units:

@@ -7,17 +7,22 @@ import os.path
 
 
 def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none': None}):
-    if str(val).lower() in special.keys():
-        val = special[str(val).lower()]
-    else:
-        try:
-            val = int(val)
-        except ValueError:
+    if isinstance(val, six.string_types):
+        if val.lower() in special.keys():
+            val = special[str(val).lower()]
+        elif '.' in val:
             try:
                 val = float(val)
-                val = utils.convert_unit(val, unit)
             except ValueError:
-                val = val
+                pass
+        else:
+            try:
+                val = int(val)
+            except ValueError:
+                pass
+    if isinstance(val, float):
+        val = utils.convert_unit(val, unit)
+
     return val
 
 
@@ -40,7 +45,7 @@ class planetConfig:
         # Set defaults
         for tok in self.toks:
             val = self.toks[tok]['default'][self.planet]
-            if isinstance(val, (six.string_types, int, float)):
+            if isinstance(val, (six.string_types, float)):
                 val = set_single_val(val, self.toks[tok]['unit'])
             setattr(self, self.toks[tok]['name'], val)
         self.setConfig(configFile)
