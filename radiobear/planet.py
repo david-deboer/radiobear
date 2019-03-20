@@ -92,6 +92,7 @@ class Planet:
             atmplt.plotGas()
             atmplt.plotCloud()
             atmplt.plotProp()
+            plotting.plt.show()
 
     def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
@@ -191,6 +192,7 @@ class Planet:
             plotting.plot_Alpha(freqs, self.bright)
             if self.outType == 'profile':
                 plotting.planet_profile(self.data_return)
+            plotting.plt.show()
 
         runStop = datetime.datetime.now()
         self.log.add('Run stop ' + str(runStop), self.verbose)
