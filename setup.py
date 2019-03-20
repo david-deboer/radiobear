@@ -24,7 +24,7 @@ setup_args = {
     'author': "David DeBoer",
     'author_email': "ddeboer@berkeley.edu",
     'version': version.VERSION,
-    'packages': ['radiobear',
+    'packages': ['radiobear', 'radiobear.plotting',
                  'radiobear.Jupiter', 'radiobear.Saturn', 'radiobear.Uranus', 'radiobear.Neptune',
                  'radiobear.Constituents',
                  'radiobear.Constituents.clouds', 'radiobear.Constituents.co', 'radiobear.Constituents.h2',
