@@ -209,7 +209,7 @@ class atm_plots:
     def __init__(self, pltcls):
         self.pltcls = pltcls
 
-    def frame_plot(self, xlabel, show_legend=True):
+    def _frame_plot(self, xlabel, show_legend=True):
         v = list(plt.axis())
         if v[0] < 1E-10:
             v[0] = 1E-10
@@ -227,7 +227,7 @@ class atm_plots:
             plt.figure(self.pltcls.planet + ': T-P')
         plt.title(self.pltcls.planet + ':  T-P profile')
         plt.loglog(self.pltcls.gas[self.pltcls.config.C['T']], self.pltcls.gas[self.pltcls.config.C['P']], label='T')
-        self.frame_plot('T [K]', show_legend=False)
+        self._frame_plot('T [K]', show_legend=False)
 
     def plotCloud(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
         """Plots the clouds"""
@@ -239,7 +239,7 @@ class atm_plots:
             if cloud in dontPlot or not present:
                 continue
             plt.loglog(cl, self.pltcls.cloud[self.pltcls.config.Cl['P']], label=cloud)
-        self.frame_plot('Density [g/cm^3]')
+        self._frame_plot('Density [g/cm^3]')
 
     def plotGas(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
         """Plots the constituents"""
@@ -251,7 +251,7 @@ class atm_plots:
             if gas in dontPlot or not present:
                 continue
             plt.loglog(g, self.pltcls.gas[self.pltcls.config.C['P']], label=gas)
-        self.frame_plot('Fractional Abundance')
+        self._frame_plot('Fractional Abundance')
 
     def plotProp(self, dontPlot=['Z', 'P', 'T'], plot='auto'):
         if plot == 'auto':
@@ -262,4 +262,4 @@ class atm_plots:
             if other in dontPlot or not present:
                 continue
             plt.loglog(g, self.pltcls.gas[self.pltcls.config.C['P']], label=other)
-        self.frame_plot('Property Value')
+        self._frame_plot('Property Value')

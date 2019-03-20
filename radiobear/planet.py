@@ -120,7 +120,6 @@ class Planet:
         self.data_return.set('freqUnit', freqUnit)
         if self.plot_bright:
             from . import plotting
-            plotting.plot_Alpha(freqs, self.bright)
 
         #  ##Set b, etc
         b = self.set_b(b, block)
@@ -188,8 +187,10 @@ class Planet:
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
-        if self.plot_bright and self.outType == 'profile':
-            plotting.planet_profile(self.data_return)
+        if self.plot_bright:
+            plotting.plot_Alpha(freqs, self.bright)
+            if self.outType == 'profile':
+                plotting.planet_profile(self.data_return)
 
         runStop = datetime.datetime.now()
         self.log.add('Run stop ' + str(runStop), self.verbose)
