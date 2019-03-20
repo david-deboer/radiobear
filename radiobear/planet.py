@@ -170,9 +170,9 @@ class Planet:
             else:
                 self.Tb.append(Tbt)
             if self.plot_bright:
-                plotting.plot_raypath_stuff(b=bv, ray=self.bright.travel, req=self.config.Req, rpol=self.config.Rpol)
-                plotting.plot_intW(freqs, self.bright.integrated_W)
-                plotting.plot_W(freqs, self.bright, self.normalize_weighting)
+                brtplt.plot_raypath_stuff(b=bv, req=self.config.Req, rpol=self.config.Rpol)
+                brtplt.plot_intW()
+                brtplt.plot_W(self.normalize_weighting)
         self.data_return.set('Tb', self.Tb)
         self.data_return.header = self.header
         missed_planet = self.rNorm is None
@@ -188,11 +188,12 @@ class Planet:
             self.set_header(missed_planet)
             self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
         if self.plot_bright:
-            plotting.plot_Alpha(freqs, self.bright)
+            brtplt.plot_Alpha()
+            datplt = plotting.data_plots(self.data_return)
             if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
-                plotting.plot_Tb(freqs, self.Tb[i])
+                datplt.plot_Tb()
             if self.outType == 'profile':
-                plotting.planet_profile(self.data_return)
+                datplt.planet_profile()
             plotting.plt.show()
 
         runStop = datetime.datetime.now()
