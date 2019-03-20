@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# ###GENERAL FILE PLOTTING
 def plotTB(fn=None, xaxis='Frequency', xlog=False, justFreq=False, directory='Output', distance=4377233696.68):
     """plots brightness temperature against frequency and disc location:
            fn = filename to read (but then ignores directory) | '?', '.' or None | integer [None]
@@ -82,16 +83,10 @@ def plotObs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='
     plt.errorbar(data[:, 0], data[:, 1], yerr=data[:, 2], color=color, marker=marker, ls='none')
 
 
-def planet_profile(data):
-    plt.figure('Profile')
-    b = data.b.transpose()
-    bvec = np.sqrt(b[0] * b[0] + b[1] * b[1])
-    for i, f in enumerate(data.f):
-        Tvec = np.transpose(data.Tb)
-        plt.plot(bvec, Tvec[i], label="{:.2f} {}".format(f, data.freqUnit))
-    plt.legend()
-    plt.xlabel('b')
-    plt.ylabel('T_B [K]')
+# ###########################BRIGHTNESS
+class bright_plots:
+    def __init__(self, pltcls):
+        self.pltcls = pltcls
 
 
 def plot_raypath_stuff(b, ray, req=None, rpol=None):
@@ -118,31 +113,6 @@ def plot_raypath_stuff(b, ray, req=None, rpol=None):
     plt.axis('image')
 
 
-class shape_plots:
-    def __init__(self, pltcls):
-        self.pltcls = pltcls
-
-    def plotShapes(self, planet, r, lat=90.0, delta_lng=0.0, gtypes=['ellipse', 'sphere', 'reference', 'gravity'], latstep='default'):
-        colors = ['k', 'r', 'g', 'b', 'y', 'm', 'c']
-        plt.figure('Shapes')
-        for i, gtype in enumerate(gtypes):
-            self.saveShape = [['oui']]
-            rmag = self.pltcls.calcShape(planet, r, pclat=90.0, delta_lng=delta_lng, gtype=gtype, latstep=latstep)
-            del self.pltcls.saveShape[0]  # remove nonsense first term
-            self.pltcls.saveShape = np.array(self.pltcls.saveShape)
-            if gtype != 'gravity':
-                self.pltcls.saveShape = np.flipud(self.pltcls.saveShape)
-            _y = []
-            _z = []
-            for v in self.pltcls.saveShape:
-                _y.append(v[_Y])
-                _z.append(v[_Z])
-            plt.plot(_z, _y, color=colors[self.colorCounter % len(colors)], label=gtype)
-            self.colorCounter += 1
-            plt.axis('image')
-            plt.legend()
-
-
 def frame_plot(P, xlabel, show_legend=True):
     v = list(plt.axis())
     if v[0] < 1E-10:
@@ -155,7 +125,6 @@ def frame_plot(P, xlabel, show_legend=True):
     if show_legend:
         plt.legend()
 
-
 def plot_intW(freqs, int_W):
     # ####-----Weigthing functions
     plt.figure('INT_W')
@@ -165,7 +134,6 @@ def plot_intW(freqs, int_W):
     plt.plot(freqs, int_W, lt)
     plt.title('Integrated weighting function')
     plt.xlabel('Frequency [GHz]')
-
 
 def plot_W(freqs, bright, normW4plot):
     plt.figure('radtran')
@@ -181,7 +149,6 @@ def plot_W(freqs, bright, normW4plot):
         plt.semilogy(wplot, bright.P, label=label, linewidth=3)
     frame_plot(bright.P, 'W', True)
 
-
 def plot_Alpha(freqs, bright):
     # ####-----Alpha
     plt.figure('alpha')
@@ -194,17 +161,33 @@ def plot_Alpha(freqs, bright):
     frame_plot(bright.P, 'dB/km', True)
 
 
-def plot_Tb(freqs, Tb):
-    # ####-----Brightness temperature
-    plt.figure('brightness')
-    lt = '-'
-    if (len(Tb) == 1):
-        lt = 'o'
-    plt.plot(freqs, Tb, lt)
-    plt.xlabel('Frequency [GHz]')
-    plt.ylabel('Brightness temperature [K]')
+class data_plots:
+    def __init__(self, pltcls):
+        self.pltcls = pltcls
+
+    def planet_profile(self):
+        plt.figure('Profile')
+        b = self.pltcls.b.transpose()
+        bvec = np.sqrt(b[0] * b[0] + b[1] * b[1])
+        for i, f in enumerate(self.pltcls.f):
+            Tvec = np.transpose(self.pltcls.Tb)
+            plt.plot(bvec, Tvec[i], label="{:.2f} {}".format(f, self.pltcls.freqUnit))
+        plt.legend()
+        plt.xlabel('b')
+        plt.ylabel('T_B [K]')
+
+    def plot_Tb(self):
+        # ####-----Brightness temperature
+        plt.figure('brightness')
+        lt = '-'
+        if (len(Tb) == 1):
+            lt = 'o'
+        plt.plot(self.pltcls.f, Tb, lt)
+        plt.xlabel('Frequency [GHz]')
+        plt.ylabel('Brightness temperature [K]')
 
 
+# ###########################ATMOSPHERE
 class atm_plots:
     def __init__(self, pltcls):
         self.pltcls = pltcls
@@ -263,3 +246,29 @@ class atm_plots:
                 continue
             plt.loglog(g, self.pltcls.gas[self.pltcls.config.C['P']], label=other)
         self._frame_plot('Property Value')
+
+
+# #######################SHAPE
+class shape_plots:
+    def __init__(self, pltcls):
+        self.pltcls = pltcls
+
+    def plotShapes(self, planet, r, lat=90.0, delta_lng=0.0, gtypes=['ellipse', 'sphere', 'reference', 'gravity'], latstep='default'):
+        colors = ['k', 'r', 'g', 'b', 'y', 'm', 'c']
+        plt.figure('Shapes')
+        for i, gtype in enumerate(gtypes):
+            self.saveShape = [['oui']]
+            rmag = self.pltcls.calcShape(planet, r, pclat=90.0, delta_lng=delta_lng, gtype=gtype, latstep=latstep)
+            del self.pltcls.saveShape[0]  # remove nonsense first term
+            self.pltcls.saveShape = np.array(self.pltcls.saveShape)
+            if gtype != 'gravity':
+                self.pltcls.saveShape = np.flipud(self.pltcls.saveShape)
+            _y = []
+            _z = []
+            for v in self.pltcls.saveShape:
+                _y.append(v[_Y])
+                _z.append(v[_Z])
+            plt.plot(_z, _y, color=colors[self.colorCounter % len(colors)], label=gtype)
+            self.colorCounter += 1
+            plt.axis('image')
+            plt.legend()
