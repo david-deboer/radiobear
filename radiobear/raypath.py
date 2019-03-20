@@ -93,7 +93,7 @@ def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
         pclat_zQ_Trial.append(pclat)
         r2 = geoid.calcShape(atm, rNorm, pclat, delta_lng)
         r_pclat_zQ_Trial.append(r2)
-        if r1 <= r2:
+        if r1 < r2:
             hitPlanet = True
             break
     if not hitPlanet:
@@ -126,7 +126,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     rNorm = req[0]
     nr = atm.layerProperty[atm.config.LP['N']]    # refractive index of layers
     P = atm.gas[atm.config.C['P']]
-    if (b[0]**2 + b[1]**2) > 1.0:
+    if (b[0]**2 + b[1]**2) >= 1.0:
         return path
 
     mu = np.sqrt(1.0 - b[0]**2 - b[1]**2)
