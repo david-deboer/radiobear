@@ -172,7 +172,7 @@ class Planet:
                 plotting.plot_raypath_stuff(b=bv, ray=self.bright.travel, req=self.config.Req, rpol=self.config.Rpol)
                 plotting.plot_intW(freqs, self.bright.integrated_W)
                 plotting.plot_W(freqs, self.bright, self.normalize_weighting)
-                if self.plot_bright and self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
+                if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
                     plotting.plot_Tb(freqs, self.Tb[i])
         self.data_return.set('Tb', self.Tb)
         self.data_return.header = self.header
