@@ -16,8 +16,26 @@ def readInputFiles(par):
     filename = os.path.join(par.path, 'h2s.npz')
     if par.verbose:
         print("Reading h2s lines from {}".format(filename))
-    global data
-    data = np.load(filename)
+    global data_in
+    data_in = np.load(filename)
+    for x in data_in.files:
+        data[x] = data_in[x]
+    if par.truncate_strength is not None:
+        if par.verbose:
+            print("Truncating lines less than {}".format(par.truncate_strength))
+        used_I0 = np.where(data['I0'] > par.truncate_strength)
+        data['f0'] = data['f0'][used_I0]
+        data['I0'] = data['I0'][used_I0]
+        data['E'] = data['E'][used_I0]
+        data['GH2S'] = data['GH2S'][used_I0]
+    if par.truncate_freq is not None:
+        if par.verbose:
+            print("Truncating lines greater than {}".format(par.truncate_freq))
+        used_f = np.where(data['f0'] < par.truncate_freq)
+        data['f0'] = data['f0'][used_f]
+        data['I0'] = data['I0'][used_f]
+        data['E'] = data['E'][used_f]
+        data['GH2S'] = data['GH2S'][used_f]
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
