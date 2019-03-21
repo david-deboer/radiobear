@@ -16,7 +16,8 @@ def readInputFiles(par):
     filename = os.path.join(par.path, 'h2s.npz')
     if par.verbose:
         print("Reading h2s lines from {}".format(filename))
-    global data_in
+    global data
+    data = {}
     data_in = np.load(filename)
     for x in data_in.files:
         data[x] = data_in[x]
