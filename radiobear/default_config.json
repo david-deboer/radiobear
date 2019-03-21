@@ -20,10 +20,47 @@
             "unit": null,
             "help": "This dictionary sets which absoprtion formalisms to use",
             "default": {
-                "Jupiter": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
-                "Saturn": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
-                "Uranus": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
-                "Neptune": {"clouds": null, "co": null, "h2": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null}
+                "Jupiter": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
+                "Saturn": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
+                "Uranus": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
+                "Neptune": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"}
+            }
+        },
+        "truncate_freq": {
+            "name": "truncate_freq",
+            "unit": "GHz",
+            "help": "This dictionary sets the frequency at which to truncate the lines used in the formalisms",
+            "default": {
+                "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null}
+            }
+        },
+        "truncate_strength": {
+            "name": "truncate_strength",
+            "unit": "Something",
+            "help": "This dictionary sets the strength at which to truncate the lines used in the formalisms",
+            "default": {
+                "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22}
+            }
+        },
+        "truncate_method": {
+            "name": "truncate_method",
+            "unit": null,
+            "help": "Method to use in truncation:  None, 'truncate_freq', 'truncate_strength', csv",
+            "default": {
+              "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"}
             }
         },
         "gasfile": {

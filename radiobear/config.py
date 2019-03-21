@@ -6,11 +6,11 @@ import six
 import os.path
 
 
-def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none': None}):
+def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none': None, 'null': None}):
     if isinstance(val, six.string_types):
         if val.lower() in special.keys():
             val = special[str(val).lower()]
-        elif '.' in val:
+        elif '.' in val or 'e' in val or 'E' in val:
             try:
                 val = float(val)
             except ValueError:

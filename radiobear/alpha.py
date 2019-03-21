@@ -113,6 +113,8 @@ class Alpha:
         # Import used ones - note this dynamically imports the absorption modules.
         self.constituent = {}
         self.absorptionModule = {}
+        self.truncate_strength = {}
+        self.truncate_freq = {}
         for c in self.config.constituent_alpha:
             absorber = self.config.constituent_alpha[c]
             if absorber is None:
@@ -127,10 +129,21 @@ class Alpha:
                 s = "WARNING:  CAN'T LOAD " + absorber + '.  '
                 print(s * 3)
                 self.log.add("Can't load " + absorber, True)
+            self.truncate_freq[c] = None
+            self.truncate_strength[c] = None
+            if c in self.config.truncate_method.keys() and self.config.truncate_method[c] is not None:
+                trunc_methods = self.config.truncate_method[c].split(",")
+                for tm in trunc_methods:
+                    getattr(self, tm)[c] = getattr(self.config, tm)[c]
         self.ordered_constituents = sorted(self.constituent.keys())
         self.log.add('Using modules:', self.verbose)
-        for k in self.constituent:
-            self.log.add('\t' + k + ':  ' + self.constituent[k], self.verbose)
+        for c in self.constituent:
+            s = "\t{}: {} \t".format(c, self.constituent[c])
+            if self.truncate_strength[c] is not None:
+                s += "(truncate_strength {})\t".format(self.truncate_strength[c])
+            if self.truncate_freq[c] is not None:
+                s += "(truncate_freq {})".format(self.truncate_freq[c])
+            self.log.add(s, self.verbose)
 
     def getAlpha(self, freqs, layer, atm, units='invcm'):
         """This is a wrapper to get the absorption coefficient, either from calculating from formalisms
@@ -176,15 +189,16 @@ class Alpha:
            Returns total absorption at that layer."""
         absorb = []
         print_meta = self.verbose == 'loud'
-        for k in self.ordered_constituents:
-            path = os.path.join(self.constituentsAreAt, k)
-            if k[0:4].lower() == 'clou':
+        for c in self.ordered_constituents:
+            path = os.path.join(self.constituentsAreAt, c)
+            if c[0:4].lower() == 'clou':
                 X = cloud
                 D = cloud_dict
             else:
                 X = gas
                 D = gas_dict
-            absorb.append(self.absorptionModule[k].alpha(freqs, T, P, X, D, self.other_dict,
+            absorb.append(self.absorptionModule[c].alpha(freqs, T, P, X, D, self.other_dict,
+                          truncate_freq=self.truncate_freq[c], truncate_strength=self.truncate_strength[c],
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()

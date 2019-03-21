@@ -16,16 +16,48 @@ data_wgt = {}
 
 
 def readInputFiles(par):
+    # Read in lines
     filename = os.path.join(par.path, 'ph3jh.npz')
     if par.verbose:
         print("Reading ph3 lines from  {}".format(filename))
     global data
-    data = np.load(filename)
+    data = {}
+    data_in = np.load(filename)
+    for x in data_in.files:
+        data[x] = data_in[x]
+    if par.truncate_strength is not None:
+        if par.verbose:
+            print("Truncating lines less than {}".format(par.truncate_strength))
+        used_I0 = np.where(data['I0'] > par.truncate_strength)
+        data['f0'] = data['f0'][used_I0]
+        data['I0'] = data['I0'][used_I0]
+        data['E'] = data['E'][used_I0]
+    test_length = len(data['f0'])
+    if par.truncate_freq is not None:
+        if par.verbose:
+            print("Truncating lines greater than {}".format(par.truncate_freq))
+        used_f = np.where(data['f0'] < par.truncate_freq)
+        data['f0'] = data['f0'][used_f]
+        data['I0'] = data['I0'][used_f]
+        data['E'] = data['E'][used_f]
+    # Read in weights
     filename = os.path.join(par.path, 'PH3WGT.npz')
     if par.verbose:
         print("Reading ph3 wgts from {}".format(filename))
     global data_wgt
-    data_wgt = np.load(filename)
+    data_in = np.load(filename)
+    for x in data_in.files:
+        data_wgt[x] = data_in[x]
+    if par.truncate_strength:
+        data_wgt['WgtI0'] = data_wgt['WgtI0'][used_I0]
+        data_wgt['WgtFGB'] = data_wgt['WgtFGB'][used_I0]
+        data_wgt['WgtSB'] = data_wgt['WgtSB'][used_I0]
+    if len(data_wgt['WgtI0']) != test_length:
+        raise ValueError("PH3 wgt vector wrong length.")
+    if par.truncate_freq:
+        data_wgt['WgtI0'] = data_wgt['WgtI0'][used_f]
+        data_wgt['WgtFGB'] = data_wgt['WgtFGB'][used_f]
+        data_wgt['WgtSB'] = data_wgt['WgtSB'][used_f]
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):

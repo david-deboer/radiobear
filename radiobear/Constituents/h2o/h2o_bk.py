@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
+from argparse import Namespace
 from radiobear.Constituents import parameters
 
 
@@ -32,31 +33,46 @@ def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
     density_h2o = isotope_partition * (density_h2o / M_amu) * NA * (1.0 / 1e6)  # need in molecules/cc
 
     # Center Frequencies in GHZ
-    f_o = np.array([22.2351, 183.3101, 321.2256, 325.1529, 380.1974, 439.1508, 443.0183, 448.0011, 470.8890, 474.6891, 488.4911,
-                    556.9360, 620.7008, 752.0332, 916.1712])
+    P = Namespace()
+    P.f_o = np.array([22.2351, 183.3101, 321.2256, 325.1529, 380.1974, 439.1508, 443.0183, 448.0011, 470.8890, 474.6891, 488.4911,
+                      556.9360, 620.7008, 752.0332, 916.1712])
     # Line intensities
-    I_o = np.array([0.1314E-13, 0.2279E-11, 0.8058E-13, 0.2701E-11, 0.2444E-10, 0.2185E-11, 0.4637E-12, 0.2568E-10, 0.8392E-12,
-                    0.3272E-11, 0.6676E-12, 0.1535E-08, 0.1711E-10, 0.1014E-08, 0.4238E-10])
+    P.I_o = np.array([0.1314E-13, 0.2279E-11, 0.8058E-13, 0.2701E-11, 0.2444E-10, 0.2185E-11, 0.4637E-12, 0.2568E-10, 0.8392E-12,
+                      0.3272E-11, 0.6676E-12, 0.1535E-08, 0.1711E-10, 0.1014E-08, 0.4238E-10])
     # Temperature coefficients
-    E_o = np.array([2.144, 0.668, 6.179, 1.541, 1.048, 3.595, 5.048, 1.405, 3.597, 2.379, 2.852, 0.159, 2.391, 0.396, 1.441])
+    P.E_o = np.array([2.144, 0.668, 6.179, 1.541, 1.048, 3.595, 5.048, 1.405, 3.597, 2.379, 2.852, 0.159, 2.391, 0.396, 1.441])
     # self broadening parameters converted to bars
-    w_s = np.array([0.01349, 0.01466, 0.01057, 0.01381, 0.01454, 0.009715, 0.00788, 0.01275, 0.00983,
-                    0.01095, 0.01313, 0.01405, 0.011836, 0.01253, 0.01275]) / mbars_to_bars
-    x_s = np.array([0.61, 0.85, 0.54, 0.74, 0.89, 0.62, 0.50, 0.67, 0.65, 0.64, 0.72, 1.0, 0.68, 0.84, 0.78])
+    P.w_s = np.array([0.01349, 0.01466, 0.01057, 0.01381, 0.01454, 0.009715, 0.00788, 0.01275, 0.00983,
+                      0.01095, 0.01313, 0.01405, 0.011836, 0.01253, 0.01275]) / mbars_to_bars
+    P.x_s = np.array([0.61, 0.85, 0.54, 0.74, 0.89, 0.62, 0.50, 0.67, 0.65, 0.64, 0.72, 1.0, 0.68, 0.84, 0.78])
     # foreign gas broadening parameters
-    w_h2 = np.array([2.395, 2.4000, 2.395, 2.395, 2.390, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395])
-    w_he = np.array([0.67, 0.71, 0.67, 0.67, 0.63, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67])
-    x_h2 = np.array([0.900, 0.950, 0.900, 0.900, 0.850, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900])
-    x_he = np.array([0.515, 0.490, 0.515, 0.490, 0.540, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515])
-    SR = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    P.w_h2 = np.array([2.395, 2.4000, 2.395, 2.395, 2.390, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395])
+    P.w_he = np.array([0.67, 0.71, 0.67, 0.67, 0.63, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67])
+    P.x_h2 = np.array([0.900, 0.950, 0.900, 0.900, 0.850, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900])
+    P.x_he = np.array([0.515, 0.490, 0.515, 0.490, 0.540, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515])
+    P.SR = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+    attributes_to_truncate = ['f_o', 'I_o', 'E_o', 'w_s', 'x_s', 'w_h2', 'w_he', 'x_h2', 'x_he', 'SR']
+    if par.truncate_strength:
+        if par.verbose:
+            print("Truncating lines less than {}".format(par.truncate_strength))
+        used_I0 = np.where(P.I_o > par.truncate_strength)
+        for xx in attributes_to_truncate:
+            setattr(P, xx, getattr(P, xx)[used_I0])
+    if par.truncate_freq:
+        if par.verbose:
+            print("Truncating lines greater than {}".format(par.truncate_freq))
+        used_f = np.where(P.f_o < par.truncate_freq)
+        for xx in attributes_to_truncate:
+            setattr(P, xx, getattr(P, xx)[used_f])
 
     # ###Calculate the line-broadening terms
-    expo = E_o * (1.0 - Theta)
-    S = I_o * (Theta**2.5) * np.exp(expo)
+    expo = P.E_o * (1.0 - Theta)
+    S = P.I_o * (Theta**2.5) * np.exp(expo)
     # df aka gamma delta-nu change aka pressure broadening term
-    df = w_s * P_h2o * np.power(Theta, x_s) + w_h2 * P_h2 * np.power(Theta, x_h2) + w_he * P_he * np.power(Theta, x_he)
+    df = P.w_s * P_h2o * np.power(Theta, P.x_s) + P.w_h2 * P_h2 * np.power(Theta, P.x_h2) + P.w_he * P_he * np.power(Theta, P.x_he)
     # calculate van-vleck line contribution...returns array of line contributions
-    FSsum = vvwlinecontribution_modified(f, f_o, df, SR, S)
+    FSsum = vvwlinecontribution_modified(f, P.f_o, df, P.SR, S)
     line_contribution = inv_km_to_dB * convert_to_km * density_h2o * FSsum
 
     # ###Calculate the continuum terms
