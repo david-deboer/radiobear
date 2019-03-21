@@ -6,9 +6,9 @@ import six
 
 
 class FileIO(object):
-    def __init__(self, outputType, output_directory):
-        self.outputType = outputType
-        self.directory = output_directory
+    def __init__(self, directory):
+        self.directory = directory
+        self.header = {}
 
     def write(self, outputFile, outType, freqs, freqUnit, b, Tb, header):
         with open(outputFile, 'w') as fp:
@@ -23,11 +23,11 @@ class FileIO(object):
                 print("Invalid output type: {}".format(outType))
         return outputFile
 
-    def writeSpectrum(self, fp, freqs, freqUnit, b, Tb, lineoutput='Scratch/specoutputline.dat'):
+    def writeSpectrum(self, fp, freqs, freqUnit, b, Tb, xaxis='frequency', lineoutput='Scratch/specoutputline.dat'):
         fp_lineoutput = open(lineoutput, 'w')
-        if self.outputType.lower() == 'frequency':
+        if xaxis.lower() == 'frequency':
             s = '# {}  K@b  \t'.format(freqUnit)
-        elif self.outputType.lower() == 'wavelength':
+        elif xaxis.lower() == 'wavelength':
             s = '# cm   K@b  \t'
         else:
             s = '# {}    cm    K@b  \t'.format(freqUnit)
@@ -37,9 +37,9 @@ class FileIO(object):
         fp.write(s)
         for i, f in enumerate(freqs):
             wlcm = 100.0 * utils.speedOfLight / (f * utils.Units[freqUnit])
-            if self.outputType == 'frequency':
+            if xaxis == 'frequency':
                 s = '{:.2f}\t  '.format(f)
-            elif self.outputType == 'wavelength':
+            elif xaxis == 'wavelength':
                 s = '{:.4f}\t  '.format(wlcm)
             else:
                 s = '{:.2f}     {:.4f} \t '.format(f, wlcm)
@@ -50,18 +50,18 @@ class FileIO(object):
             fp.write(s)
         fp_lineoutput.close()
 
-    def writeProfile(self, fp, freqs, freqUnit, b, Tb):
-        if self.outputType == 'frequency':
+    def writeProfile(self, fp, freqs, freqUnit, b, Tb, xaxis='frequency'):
+        if xaxis == 'frequency':
             s = '# b  K@{} \t'.format(freqUnit)
-        elif self.outputType == 'wavelength':
+        elif xaxis == 'wavelength':
             s = '# b  K@cm  \t'
         else:
             s = '# b  K@{},cm  \t'.format(freqUnit)
         for i, fv in enumerate(freqs):
             wlcm = 100.0 * utils.speedOfLight / (fv * utils.Units[freqUnit])
-            if self.outputType == 'frequency':
+            if xaxis == 'frequency':
                 s += '  {:9.4f}   \t'.format(fv)
-            elif self.outputType == 'wavelength':
+            elif xaxis == 'wavelength':
                 s += '  {:.4f}   \t'.format(wlcm)
             else:
                 s += ' {:.2f},{:.4f}\t'.format(fv, wlcm)
@@ -127,49 +127,36 @@ class FileIO(object):
 
         return files
 
-    def read(self, fd=None, directory=None):
+    def read(self, fn=None, file_type='spectrum', directory=None):
         """reads brightness temperature file(s):
            fn = filename to read (but then ignores directory) | '?', '.' or None | integer [None]
            directory = subdirectory for data (not used if filename given) ['Output']"""
 
-        ftypes = ['image', 'profile', 'spectrum']
-        if fd is None:
-            if directory is not None:
-                usedir = directory
-            else:
-                usedir = self.directory
-            try_files = self.flist(fd, usedir)
+        if directory is None:
+            directory = self.directory
+        if fn is None:
+            try_files = self.flist(fn, directory)
         else:
-            try_files = fd
+            if isinstance(fn, six.string_types):
+                try_files = fn.split(',')
+                try_files = [os.path.join(directory, x) for x in try_files]
 
         # ## Read in two passes:  first header
-        self.ftype = None
         headerText = []
         self.files = []
-        self.ftype = 'Unknown'
         for i, filename in enumerate(try_files):
             try:
                 fp = open(filename, 'r')
             except IOError:
                 print(filename + " not found - removing from list")
                 continue
-            for ff in ftypes:
-                if ff in filename:
-                    self.ftype = ff
-                    break
-            if not i:
-                overallType = self.ftype
-                print('File type:  ' + overallType)
-            else:
-                if self.ftype != overallType:
-                    print(self.ftype + ' not of type ' + overallType + ' - removing from list')
-                    continue
+            if file_type.lower() not in filename.lower():
+                continue
 
             print("\tReading " + filename)
             self.files.append(filename)
 
             # ## Get past any header and get first line
-            line = '# file:  ' + filename + '\n'
             for line in fp:
                 if line[0] == '#':
                     headerText.append(line)
@@ -178,11 +165,11 @@ class FileIO(object):
 
         freqs = []  # frequencies
         wavel = []  # wavelengths
-        data = []   # data
+        TB = []   # data
         b = []      # b-vectors (resolution for images)
         bmag = []   # b-mag (resolution for images)
         # ## Now we have valid files and the header, now read in ftype
-        if self.ftype == 'image':
+        if file_type == 'image':
             imRow = imCol = 0
             b = self.resolution
             bmag = b
@@ -200,7 +187,7 @@ class FileIO(object):
                     for v in sdat:
                         imCol += 1
                         vdat.append(float(v))
-                    data.append(vdat)
+                    TB.append(vdat)
                 fp.close()
             self.header['img_filename'] = filename
             if 'img_size' not in self.header.keys():
@@ -208,17 +195,17 @@ class FileIO(object):
             else:
                 print(self.header['img_size'])
                 print('should equal ', imRow, imCol)
-            self.data = np.array(data)
-            self.xyextents = [-self.resolution * len(self.data) / 2.0, self.resolution * len(self.data) / 2.0,
-                              -self.resolution * len(self.data) / 2.0, self.resolution * len(self.data) / 2.0]
+            self.TB = np.array(TB)
+            self.xyextents = [-self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0,
+                              -self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0]
             self.x = []
             self.y = []
-            for i in range(len(self.data)):
+            for i in range(len(self.TB)):
                 self.x.append(self.xyextents[0] + i * self.resolution)
                 self.y.append(self.xyextents[2] + i * self.resolution)
             self.x = np.array(self.x)
             self.y = np.array(self.y)
-        elif self.ftype == 'spectrum' or self.ftype == 'profile':
+        elif file_type == 'spectrum' or file_type == 'profile':
             # indata = []
             n = 0
             validData = True
@@ -231,7 +218,7 @@ class FileIO(object):
                         ylabel = labels[2].split('@')[1]
                         del(labels[0:3])
                         curveLabels = labels
-                        if self.ftype == 'spectrum':
+                        if file_type == 'spectrum':
                             print('b = ', end='')
                             for bb in labels:
                                 print(' ' + bb, end='')
@@ -242,7 +229,7 @@ class FileIO(object):
                             b = np.array(b)
                             bmag = np.array(bmag)
                             print('')
-                        elif self.ftype == 'profile':
+                        elif file_type == 'profile':
                             print('Freq = ', end='')
                             for f in labels:
                                 try:
@@ -261,18 +248,17 @@ class FileIO(object):
                             try:
                                 dat[i] = float(dat[i])
                             except ValueError:
-                                dat[i] = dat[i]
                                 validData = False
-                        if self.ftype == 'spectrum':
+                        if file_type == 'spectrum':
                             freqs.append(dat[0])
                             wavel.append((utils.speedOfLight / 1.0E7) / dat[0])
-                        elif self.ftype == 'profile':
+                        elif file_type == 'profile':
                             print("NEED TO READ B'S")
                         del(dat[0])
-                        data.append(dat)
+                        TB.append(dat)
                 fp.close()
         if validData:
-            self.data = np.array(data)
+            self.TB = np.array(TB).transpose()
         self.freqs = np.array(freqs)
         self.wavel = np.array(wavel)
         self.b = np.array(b)
@@ -286,8 +272,8 @@ class FileIO(object):
             updateKey = False
             if ':' in hdr:
                 updateKey = True
-                hdrkey = hdr.split(':')[0].split()[0]
-                hdr = hdr.split(':')[1]
+                hdrkey = hdr.split(':')[0]
+                hdr = ':'.join(hdr.split(':')[1:])
                 h = []
                 hdr = hdr.split()
                 for dat in hdr:

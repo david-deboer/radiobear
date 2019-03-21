@@ -81,7 +81,7 @@ class Planet:
         self.data_return = data_handling.DataReturn()
 
         # ## Create fileIO class
-        self.fIO = fileIO.FileIO(self.output_type, self.output_directory)
+        self.fIO = fileIO.FileIO(directory=self.output_directory)
 
         # ## Set plots
         if self.plot_atm:

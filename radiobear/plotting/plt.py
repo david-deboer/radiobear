@@ -1,41 +1,47 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from radiobear import fileIO
 
 
 # ##############################################################################################################
 #                                          GENERAL FILE PLOTTING
 # ##############################################################################################################
-def TB(fn=None, xaxis='Frequency', xlog=False, justFreq=False, directory='Output', distance=4377233696.68):
+def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False):
     """plots brightness temperature against frequency and disc location:
+           fn = filename to read (None will search...)
+           xaxis = 'f[requency]' | 'w[avelength' ['freq']
+           directory = subdirectory for data"""
+
+    fio = fileIO.FileIO(directory=directory)
+    fio.read(fn=fn, file_type='spectrum')
+
+    # Frequency plot
+    plt.figure('TB')
+    for i, b in enumerate(fio.b):
+        if xaxis[0].lower() == 'f':
+            plotx = fio.freqs
+            xlabel = 'Frequency'
+        else:
+            plotx = fio.wavel
+            xlabel = 'Wavelength [cm]'
+        if xlog:
+            plt.semilogx(plotx, fio.TB[i], label=str(b))
+        else:
+            plt.plot(plotx, fio.TB[i], label=str(b))
+    plt.xlabel(xlabel)
+    plt.ylabel('Brightness Temperature [K]')
+
+
+def b(fn=None, xaxis='Frequency', xlog=False, directory='Output', distance=4377233696.68):
+    """
+    <<<NOT READY>>>
+    plots brightness temperature against frequency and disc location:
            fn = filename to read (but then ignores directory) | '?', '.' or None | integer [None]
            xaxis = 'f[requency]' | 'w[avelength' ['freq']
            xlog = True | False [False]
            justFreq = True | False [False]
            directory = subdirectory for data (not used if filename given) ['Output']
            distance = distance for angular size plot in km [4377233696 km for Neptune]"""
-
-    filename, Tb, f, wavel, b, xlabel, ylabels = read(fn=fn, directory=directory)
-    title = filename.split('/')
-
-    # Frequency plot
-    plt.figure('TB')
-    for i in range(len(b)):
-        if xaxis[0].lower() == 'f':
-            plotx = f
-        else:
-            plotx = wavel
-            xlabel = 'Wavelength [cm]'
-        if xlog:
-            plt.semilogx(plotx, Tb[i], label=ylabels[i])
-        else:
-            plt.plot(plotx, Tb[i], label=ylabels[i])
-    plt.xlabel(xlabel)
-    plt.ylabel('Brightness Temperature [K]')
-    plt.title(title[-1])
-
-    if justFreq:
-        return len(f)
-
     # # b plot
     plt.figure('b')
     for i in range(len(f)):
@@ -63,6 +69,9 @@ def TB(fn=None, xaxis='Frequency', xlog=False, justFreq=False, directory='Output
 
 
 def Obs(fn, cols=[0, 1, 2], color='b', marker='o', delimiter=None, comline='!'):
+    """
+    <<<<????>>>>
+    """
     try:
         fp = open(fn, 'r')
     except IOError:
