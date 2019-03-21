@@ -32,8 +32,6 @@ class plots:
             lt = '-'
             if (len(Tplt) == 1):
                 lt = 'o'
-            plt.plot(self.f, self.data.Tb[j], label=str(b))
-
-        plt.plot(self.data.f, Tb, lt)
+            plt.plot(self.data.f, self.data.Tb[j], lt, label=str(b))
         plt.xlabel('Frequency [GHz]')
         plt.ylabel('Brightness temperature [K]')

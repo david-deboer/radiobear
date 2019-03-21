@@ -65,7 +65,7 @@ class FileIO(object):
                 s += '  {:.4f}   \t'.format(wlcm)
             else:
                 s += ' {:.2f},{:.4f}\t'.format(fv, wlcm)
-        s.strip('\t') + '\n'
+        s = s.strip() + '\n'
         fp.write(s)
         bs = []
         for i, bv in enumerate(b):
