@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import os
 import argparse
+import six
 
 ap = argparse.ArgumentParser()
 
@@ -18,7 +19,10 @@ print("This will delete all {} files in {}".format(args.tag, args.directory))
 are_you_sure = six.moves.input("Are you sure (y/n)?")
 if are_you_sure == 'y':
     files_list = os.listdir(args.directory)
+    number_deleted = 0
     for fa in files_list:
         tag = fa.split('.')[-1]
         if tag == args.tag:
             os.remove(os.path.join(args.directory, fa))
+            number_deleted += 1
+print("Deleted {} files.".format(number_deleted))
