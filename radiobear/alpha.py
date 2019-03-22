@@ -60,11 +60,6 @@ class Alpha:
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
 
-        # copy config back into other_dict
-        other_to_copy = ['h2state', 'h2newset', 'water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
-        self.other_dict = {}
-        for oc in other_to_copy:
-            self.other_dict[oc] = getattr(self.config, oc)
         self.alpha_data = None
         if self.use_existing_alpha or self.scale_existing_alpha:
             self.existing_alpha_setup()
@@ -72,6 +67,16 @@ class Alpha:
             self.formalisms()
         if self.generate_alpha:
             self.start_generate_alpha()
+        # copy config back into other_dict as needed
+        other_to_copy = {}
+        other_to_copy['h2'] = ['h2state', 'h2newset']
+        other_to_copy['clouds'] = ['water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
+        self.other_dict = {}
+        for absorber in self.ordered_constituents:
+            self.other_dict[absorber] = {}
+            if absorber in other_to_copy.keys():
+                for oc in other_to_copy[absorber]:
+                    self.other_dict[absorber][oc] = getattr(self.config, oc)
 
     def start_generate_alpha(self):
         np.savez('{}/constituents'.format(self.scratch_directory), alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
@@ -191,13 +196,13 @@ class Alpha:
         print_meta = self.verbose == 'loud'
         for c in self.ordered_constituents:
             path = os.path.join(self.constituentsAreAt, c)
-            if c[0:4].lower() == 'clou':
+            if c.lower().startswith('cloud'):
                 X = cloud
                 D = cloud_dict
             else:
                 X = gas
                 D = gas_dict
-            absorb.append(self.absorptionModule[c].alpha(freqs, T, P, X, D, self.other_dict,
+            absorb.append(self.absorptionModule[c].alpha(freqs, T, P, X, D, self.other_dict[c],
                           truncate_freq=self.truncate_freq[c], truncate_strength=self.truncate_strength[c],
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)

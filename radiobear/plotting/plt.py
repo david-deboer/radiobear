@@ -26,13 +26,15 @@ def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False, ylog=False):
             else:
                 plotx = (utils.speedOfLight / 1E7) / fio.freqs[filen]
                 xlabel = 'Wavelength [cm]'
-            plt.plot(plotx, fio.TB[filen][i], label=str(b))
+            label = "{}: {}".format(b, filen)
+            plt.plot(plotx, fio.TB[filen][i], label=label)
             if xlog:
                 plt.xscale('log')
             if ylog:
                 plt.yscale('log')
     plt.xlabel(xlabel)
     plt.ylabel('Brightness Temperature [K]')
+    plt.legend()
     return fio
 
 
