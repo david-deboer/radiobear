@@ -10,11 +10,6 @@ T0 = 296.0           # reference temperature in K
 hck = 1.438396       # hc/k  [K cm]
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
-# Set data arrays
-# f0 = []
-# I0 = []
-# E = []
-# G0 = []
 
 data = None
 
@@ -26,33 +21,6 @@ def readInputFiles(par):
         print("Reading nh3 lines from {}".format(filename))
     global data
     data = np.load(filename)
-
-# def readInputFiles(par):
-#     """If needed this reads in the data files for h2s"""
-#     useLinesUpTo = 200
-#     global nlin
-#     nlin = 0
-#
-#     filename = os.path.join(par.path, 'nh3.lin')
-#     if par.verbose:
-#         print("Reading nh3 lines from " + filename)
-#     ifp = open(filename, 'r')
-#     for line in ifp:
-#         if nlin >= useLinesUpTo:
-#             break
-#         nlin += 1
-#         data = line.split()
-#         if len(data) == 4:
-#             f0.append(float(data[0]))
-#             I0.append(float(data[1]))
-#             E.append(float(data[2]))
-#             G0.append(float(data[3]))
-#         else:
-#             break
-#     ifp.close()
-#     if par.verbose:
-#         print('   ' + str(nlin) + ' lines')
-#     return nlin
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):

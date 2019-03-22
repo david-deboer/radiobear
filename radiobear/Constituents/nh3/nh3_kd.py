@@ -98,46 +98,19 @@ def readInputFiles(par):
     data = np.load(filename)
 
 
-# def readInputFiles(par):
-#     global fo, Io, Eo, gammaNH3o, H2HeBroad
-#     global fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot
-#     global fo_v2, Io_v2, Eo_v2
-#
 #     # %% Inversion lines:
 #     # % fo is frequency in GHz, Io is line intensity in cm^-1/(molecule./cm^2),
 #     # % Eo is lower state energy in cm^-1, gammaNH3o and H2HeBroad are self and
 #     # % foreign gas broadening parameters.
-#     filename = os.path.join(par.path, 'ammonia_inversion.dat')
-#     if par.verbose:
-#         print("Reading nh3 inversion lines:  " + filename)
-#     fo, Io, Eo, gammaNH3o, H2HeBroad = np.loadtxt(filename, skiprows=1, unpack=True)
-#     nlin = len(fo)
-#     if par.verbose:
-#         print(str(nlin) + ' lines')
 #
 #     # %% Rotational lines:
 #     # % fo_rot is frequency in GHz, Io_rot is line intensity in
 #     # % cm^-1/(molecule./cm^2), Eo_rot is lower state energy in cm^-1, gNH3_rot,
 #     # % gH2_rot, gHe_rot are broadening parameters for rotational lines.
-#     filename = os.path.join(par.path, 'ammonia_rotational.dat')
-#     if par.verbose:
-#         print("Reading nh3 rotational lines:  " + filename)
-#     fo_rot, Io_rot, Eo_rot, gNH3_rot, gH2_rot, gHe_rot = np.loadtxt(filename, skiprows=1, unpack=True)
-#     nlin_rot = len(fo_rot)
-#     if par.verbose:
-#         print(str(nlin_rot) + ' lines')
 #
 #     # %% v2 roto-vibrational lines:
 #     # % fo_v2 is frequency in GHz, Io_v2 is line intensity in
 #     # % cm^-1/(molecule./cm^2), Eo_v2 is lower state energy in cm^-1,
-#     filename = os.path.join(par.path, 'ammonia_rotovibrational.dat')
-#     if par.verbose:
-#         print("Reading nh3 roto-vibrational lines:  " + filename)
-#     fo_v2, Io_v2, Eo_v2 = np.loadtxt(filename, skiprows=1, unpack=True)
-#     nlin_v2 = len(fo_v2)
-#     if par.verbose:
-#         print(str(nlin_v2) + ' lines')
-#     return nlin, nlin_rot, nlin_v2
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
