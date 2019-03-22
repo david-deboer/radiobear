@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from radiobear import fileIO
+from radiobear import utils
 
 
 # ##############################################################################################################
 #                                          GENERAL FILE PLOTTING
 # ##############################################################################################################
-def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False):
+def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False, ylog=False):
     """plots brightness temperature against frequency and disc location:
            fn = filename to read (None will search...)
            xaxis = 'f[requency]' | 'w[avelength' ['freq']
@@ -17,19 +18,22 @@ def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False):
 
     # Frequency plot
     plt.figure('TB')
-    for i, b in enumerate(fio.b):
-        if xaxis[0].lower() == 'f':
-            plotx = fio.freqs
-            xlabel = 'Frequency'
-        else:
-            plotx = fio.wavel
-            xlabel = 'Wavelength [cm]'
-        if xlog:
-            plt.semilogx(plotx, fio.TB[i], label=str(b))
-        else:
-            plt.plot(plotx, fio.TB[i], label=str(b))
+    for filen in fio.files:
+        for i, b in enumerate(fio.b[filen]):
+            if xaxis[0].lower() == 'f':
+                plotx = fio.freqs[filen]
+                xlabel = 'Frequency'
+            else:
+                plotx = (utils.speedOfLight / 1E7) / fio.freqs[filen]
+                xlabel = 'Wavelength [cm]'
+            plt.plot(plotx, fio.TB[filen][i], label=str(b))
+            if xlog:
+                plt.xscale('log')
+            if ylog:
+                plt.yscale('log')
     plt.xlabel(xlabel)
     plt.ylabel('Brightness Temperature [K]')
+    return fio
 
 
 def b(fn=None, xaxis='Frequency', xlog=False, directory='Output', distance=4377233696.68):
@@ -43,6 +47,8 @@ def b(fn=None, xaxis='Frequency', xlog=False, directory='Output', distance=43772
            directory = subdirectory for data (not used if filename given) ['Output']
            distance = distance for angular size plot in km [4377233696 km for Neptune]"""
     # # b plot
+    fio = fileIO.FileIO(directory=directory)
+    fio.read(fn=fn, file_type='spectrum')
     plt.figure('b')
     for i in range(len(f)):
         plt.plot(b[:, 0], Tb[:, i], label=str(f[i]))

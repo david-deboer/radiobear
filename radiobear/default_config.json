@@ -46,10 +46,10 @@
             "unit": "Something",
             "help": "This dictionary sets the strength at which to truncate the lines used in the formalisms",
             "default": {
-                "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
-                "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
-                "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22},
-                "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": 1E-22}
+                "Jupiter": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Saturn": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Uranus": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "Neptune": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22}
             }
         },
         "truncate_method": {
@@ -57,10 +57,10 @@
             "unit": null,
             "help": "Method to use in truncation:  None, 'truncate_freq', 'truncate_strength', csv",
             "default": {
-              "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
-              "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
-              "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"},
-              "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": "truncate_strength"}
+              "Jupiter": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Saturn": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Uranus": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "Neptune": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"}
             }
         },
         "gasfile": {

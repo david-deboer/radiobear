@@ -1,6 +1,7 @@
 from __future__ import print_function, absolute_import, division
 import os.path
 import numpy as np
+import copy
 from . import utils
 import six
 
@@ -44,7 +45,7 @@ class FileIO(object):
             else:
                 s = '{:.2f}     {:.4f} \t '.format(f, wlcm)
             for j in range(len(b)):
-                s += '  {:7.2f}  \t'.format(Tb[j][i])
+                s += '  {:9.4f}  \t'.format(Tb[j][i])
             s = s.strip() + '\n'
             fp_lineoutput.write(s)
             fp.write(s)
@@ -104,7 +105,7 @@ class FileIO(object):
         elif fd is None:
             for i, fn in enumerate(file_list):
                 print('{}  -  {}'.format(i, fn))
-            sfile = raw_input('File numbers: ')
+            sfile = six.moves.input('File numbers: ')
             split_on = None
             if '-' in sfile:
                 sfile = sfile.split('-')
@@ -141,9 +142,13 @@ class FileIO(object):
                 try_files = fn.split(',')
                 try_files = [os.path.join(directory, x) for x in try_files]
 
-        # ## Read in two passes:  first header
-        headerText = []
         self.files = []
+        self.TB = {}
+        self.freqs = {}
+        self.b = {}
+        self.x = {}
+        self.y = {}
+        # ## Read in two passes:  first header
         for i, filename in enumerate(try_files):
             try:
                 fp = open(filename, 'r')
@@ -157,118 +162,116 @@ class FileIO(object):
             self.files.append(filename)
 
             # ## Get past any header and get first line
+            headerText = []
             for line in fp:
                 if line[0] == '#':
                     headerText.append(line)
             fp.close()
-        self.parseHeader(headerText)
+            self.header[filename] = self.parseHeader(headerText)
 
-        freqs = []  # frequencies
-        wavel = []  # wavelengths
-        TB = []   # data
-        b = []      # b-vectors (resolution for images)
-        bmag = []   # b-mag (resolution for images)
-        # ## Now we have valid files and the header, now read in ftype
-        if file_type == 'image':
-            imRow = imCol = 0
-            b = self.resolution
-            bmag = b
-            for filename in self.files:
-                fp = open(filename, 'r')
+        for filename in self.files:
+            freqs = []  # frequencies
+            TB = []   # data
+            b = []      # b-vectors (resolution for images)
+            # ## Now we have valid files and the header, now read in ftype
+            with open(filename, 'r') as fp:
+                # Get past header
                 for line in fp:
                     if line[0] == '#':
+                        if 'K@' in line:
+                            label_line = copy.copy(line)
                         continue
-                    imRow += 1
-                    vdat = []
-                    sdat = line.split()
-                    if len(sdat) < 2:
-                        continue
-                    imCol = 0
-                    for v in sdat:
-                        imCol += 1
-                        vdat.append(float(v))
-                    TB.append(vdat)
-                fp.close()
-            self.header['img_filename'] = filename
-            if 'img_size' not in self.header.keys():
-                self.header['img_size'] = [imRow, imCol]
-            else:
-                print(self.header['img_size'])
-                print('should equal ', imRow, imCol)
-            self.TB = np.array(TB)
-            self.xyextents = [-self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0,
-                              -self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0]
-            self.x = []
-            self.y = []
-            for i in range(len(self.TB)):
-                self.x.append(self.xyextents[0] + i * self.resolution)
-                self.y.append(self.xyextents[2] + i * self.resolution)
-            self.x = np.array(self.x)
-            self.y = np.array(self.y)
-        elif file_type == 'spectrum' or file_type == 'profile':
-            # indata = []
-            n = 0
-            validData = True
-            for filename in self.files:
-                fp = open(filename, 'r')
-                for line in fp:
-                    if line[0] == '#' and 'K@' in line:
-                        labels = line.split()
-                        xlabel = labels[1]
-                        ylabel = labels[2].split('@')[1]
-                        del(labels[0:3])
-                        curveLabels = labels
-                        if file_type == 'spectrum':
-                            print('b = ', end='')
-                            for bb in labels:
-                                print(' ' + bb, end='')
-                                bbb = bb.split('(')[1].strip(')').split(',')
-                                bbbb = [float(bbb[0]), float(bbb[1])]
-                                b.append(bbbb)
-                                bmag.append(np.sqrt(bbbb[0]**2 + bbbb[1]**2))
-                            b = np.array(b)
-                            bmag = np.array(bmag)
-                            print('')
-                        elif file_type == 'profile':
-                            print('Freq = ', end='')
-                            for f in labels:
-                                try:
-                                    ff = float(f)
-                                except ValueError:
-                                    print(line)
-                                    continue
-                                freqs.append(ff)
-                                print('{:.3f} {}'.format(ff, 'GHz_hardcoded'), end='')
-                            freqs = np.array(freqs)
-                    elif line[0] == '#':
-                        continue
-                    elif len(line) > 2:
-                        dat = line.split()
-                        for i in range(len(dat)):
+                    else:
+                        break
+                if file_type == 'image':
+                    imRow = imCol = 0
+                    b = self.resolution
+                    bmag = b
+                    for line in fp:
+                        if line[0] == '#':
+                            continue
+                        imRow += 1
+                        vdat = []
+                        sdat = line.split()
+                        if len(sdat) < 2:
+                            continue
+                        imCol = 0
+                        for v in sdat:
+                            imCol += 1
+                            vdat.append(float(v))
+                        TB.append(vdat)
+                    self.header[filename]['img_filename'] = filename
+                    if 'img_size' not in self.header[filename].keys():
+                        self.header[filename]['img_size'] = [imRow, imCol]
+                    else:
+                        print(self.header[filename]['img_size'])
+                        print('should equal ', imRow, imCol)
+                    self.TB[filename] = np.array(TB)
+                    xyextents = [-self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0,
+                                 -self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0]
+                    x = []
+                    y = []
+                    for i in range(len(self.TB)):
+                        x.append(xyextents[0] + i * resolution)
+                        y.append(xyextents[2] + i * resolution)
+                    self.x[filename] = np.array(x)
+                    self.y[filename] = np.array(y)
+                    self.TB[filename] = np.array(TB)
+                elif file_type == 'spectrum' or file_type == 'profile':
+                    validData = True
+                    labels = label_line.split()
+                    xlabel = labels[1]
+                    ylabel = labels[2].split('@')[1]
+                    del(labels[0:3])
+                    curveLabels = labels
+                    if file_type == 'spectrum':
+                        btmp = []
+                        print('b = ', end='')
+                        for bb in labels:
+                            print(' ' + bb, end='')
+                            bbb = bb.split('(')[1].strip(')').split(',')
+                            bbbb = [float(bbb[0]), float(bbb[1])]
+                            btmp.append(bbbb)
+                        b = np.array(btmp)
+                        print('')
+                    elif file_type == 'profile':
+                        print('Freq = ', end='')
+                        freq = []
+                        for f in labels:
                             try:
-                                dat[i] = float(dat[i])
+                                ff = float(f)
                             except ValueError:
-                                validData = False
-                        if file_type == 'spectrum':
-                            freqs.append(dat[0])
-                            wavel.append((utils.speedOfLight / 1.0E7) / dat[0])
-                        elif file_type == 'profile':
-                            print("NEED TO READ B'S")
-                        del(dat[0])
-                        TB.append(dat)
-                fp.close()
-        if validData:
-            self.TB = np.array(TB).transpose()
-        self.freqs = np.array(freqs)
-        self.wavel = np.array(wavel)
-        self.b = np.array(b)
-        self.bmag = np.array(bmag)
+                                print(line)
+                                continue
+                            freqs.append(ff)
+                            print('{:.3f} {}'.format(ff, 'GHz_hardcoded'), end='')
+                        freqs = np.array(freqs)
+                    for line in fp:
+                        if line[0] == '#':
+                            continue
+                        elif len(line) > 2:
+                            dat = line.split()
+                            for i in range(len(dat)):
+                                try:
+                                    dat[i] = float(dat[i])
+                                except ValueError:
+                                    validData = False
+                            if file_type == 'spectrum':
+                                freqs.append(dat[0])
+                            elif file_type == 'profile':
+                                print("NEED TO READ B'S")
+                            del(dat[0])
+                            TB.append(dat)
+            if validData:
+                self.TB[filename] = np.array(TB).transpose()
+                self.freqs[filename] = np.array(freqs)
+                self.b[filename] = np.array(b)
 
     def parseHeader(self, headerText):
         """Parses the pyPlanet image header"""
+        _header = {}
         for hdr in headerText:
             hdr = hdr.strip('#').strip()
-            print(hdr)
             updateKey = False
             if ':' in hdr:
                 updateKey = True
@@ -284,15 +287,16 @@ class FileIO(object):
                         h.append(dat)
             else:
                 hdrkey = hdr.split()[0]
-                if hdrkey not in self.header.keys():
+                if hdrkey not in _header.keys():
                     updateKey = True
                     h = [None]
             if updateKey:
-                self.header[hdrkey] = h
+                _header[hdrkey] = h
                 self.__dict__[hdrkey] = h
         # ## set any header-derived values
-        if 'res' in self.header.keys():
-            self.resolution = self.header['res'][0]   # keep this for backward compatibility
-        if 'freqs' in self.header.keys():
-            self.freq = self.header['freqs'][0]
-            self.header['band'] = utils.getRFband(self.freq, 'GHz')
+        if 'res' in _header.keys():
+            self.resolution = _header['res'][0]   # keep this for backward compatibility
+        if 'freqs' in _header.keys():
+            self.freq = _header['freqs'][0]
+            _header['band'] = utils.getRFband(self.freq, 'GHz')
+        return _header
