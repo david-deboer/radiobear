@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import os.path
 from radiobear import fileIO
 from radiobear import utils
 
@@ -26,7 +27,7 @@ def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False, ylog=False):
             else:
                 plotx = (utils.speedOfLight / 1E7) / fio.freqs[filen]
                 xlabel = 'Wavelength [cm]'
-            label = "{}: {}".format(b, filen)
+            label = "{}: {}".format(b, os.path.basename(filen))
             plt.plot(plotx, fio.TB[filen][i], label=label)
             if xlog:
                 plt.xscale('log')
