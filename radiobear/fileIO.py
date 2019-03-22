@@ -155,9 +155,8 @@ class FileIO(object):
             except IOError:
                 print(filename + " not found - removing from list")
                 continue
-            if file_type.lower() not in filename.lower():
+            if file_type.lower() != 'all' and file_type.lower() not in filename.lower():
                 continue
-            filename = os.path.basename(filename)
             print("\tReading " + filename)
             self.files.append(filename)
 
@@ -169,12 +168,12 @@ class FileIO(object):
             fp.close()
             self.header[filename] = self.parseHeader(headerText)
 
+        validData = False
         for filename in self.files:
             freqs = []  # frequencies
             TB = []   # data
             b = []      # b-vectors (resolution for images)
             # ## Now we have valid files and the header, now read in ftype
-            filename = os.path.basename(filename)
             with open(filename, 'r') as fp:
                 # Get past header
                 for line in fp:
@@ -184,7 +183,11 @@ class FileIO(object):
                         continue
                     else:
                         break
-                if file_type == 'image':
+                types_in_file = [x.lower() for x in self.header[filename]['outType']]
+                is_spectrum = 'spectrum' in types_in_file
+                is_profile = 'profile' in types_in_file
+                is_image = 'image' in types_in_file
+                if is_image:
                     imRow = imCol = 0
                     b = self.resolution
                     bmag = b
@@ -218,14 +221,14 @@ class FileIO(object):
                     self.x[filename] = np.array(x)
                     self.y[filename] = np.array(y)
                     self.TB[filename] = np.array(TB)
-                elif file_type == 'spectrum' or file_type == 'profile':
+                elif is_spectrum or is_profile:
                     validData = True
                     labels = label_line.split()
                     xlabel = labels[1]
                     ylabel = labels[2].split('@')[1]
                     del(labels[0:3])
                     curveLabels = labels
-                    if file_type == 'spectrum':
+                    if is_spectrum:
                         btmp = []
                         print('b = ', end='')
                         for bb in labels:
@@ -235,7 +238,7 @@ class FileIO(object):
                             btmp.append(bbbb)
                         b = np.array(btmp)
                         print('')
-                    elif file_type == 'profile':
+                    elif is_profile:
                         print('Freq = ', end='')
                         freq = []
                         for f in labels:
@@ -257,16 +260,16 @@ class FileIO(object):
                                     dat[i] = float(dat[i])
                                 except ValueError:
                                     validData = False
-                            if file_type == 'spectrum':
+                            if is_spectrum:
                                 freqs.append(dat[0])
-                            elif file_type == 'profile':
+                            elif is_profile:
                                 print("NEED TO READ B'S")
                             del(dat[0])
                             TB.append(dat)
-            if validData:
-                self.TB[filename] = np.array(TB).transpose()
-                self.freqs[filename] = np.array(freqs)
-                self.b[filename] = np.array(b)
+                if validData:
+                    self.TB[filename] = np.array(TB).transpose()
+                    self.freqs[filename] = np.array(freqs)
+                    self.b[filename] = np.array(b)
 
     def parseHeader(self, headerText):
         """Parses the pyPlanet image header"""
