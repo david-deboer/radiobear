@@ -157,7 +157,7 @@ class FileIO(object):
                 continue
             if file_type.lower() not in filename.lower():
                 continue
-
+            key_name = os.path.basename(filename)
             print("\tReading " + filename)
             self.files.append(filename)
 
@@ -167,13 +167,14 @@ class FileIO(object):
                 if line[0] == '#':
                     headerText.append(line)
             fp.close()
-            self.header[filename] = self.parseHeader(headerText)
+            self.header[key_name] = self.parseHeader(headerText)
 
         for filename in self.files:
             freqs = []  # frequencies
             TB = []   # data
             b = []      # b-vectors (resolution for images)
             # ## Now we have valid files and the header, now read in ftype
+            key_name = os.path.basename(filename)
             with open(filename, 'r') as fp:
                 # Get past header
                 for line in fp:
@@ -200,13 +201,13 @@ class FileIO(object):
                             imCol += 1
                             vdat.append(float(v))
                         TB.append(vdat)
-                    self.header[filename]['img_filename'] = filename
-                    if 'img_size' not in self.header[filename].keys():
-                        self.header[filename]['img_size'] = [imRow, imCol]
+                    self.header[key_name]['img_filename'] = filename
+                    if 'img_size' not in self.header[key_name].keys():
+                        self.header[key_name]['img_size'] = [imRow, imCol]
                     else:
-                        print(self.header[filename]['img_size'])
+                        print(self.header[key_name]['img_size'])
                         print('should equal ', imRow, imCol)
-                    self.TB[filename] = np.array(TB)
+                    self.TB[key_name] = np.array(TB)
                     xyextents = [-self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0,
                                  -self.resolution * len(self.TB) / 2.0, self.resolution * len(self.TB) / 2.0]
                     x = []
@@ -214,9 +215,9 @@ class FileIO(object):
                     for i in range(len(self.TB)):
                         x.append(xyextents[0] + i * resolution)
                         y.append(xyextents[2] + i * resolution)
-                    self.x[filename] = np.array(x)
-                    self.y[filename] = np.array(y)
-                    self.TB[filename] = np.array(TB)
+                    self.x[key_name] = np.array(x)
+                    self.y[key_name] = np.array(y)
+                    self.TB[key_name] = np.array(TB)
                 elif file_type == 'spectrum' or file_type == 'profile':
                     validData = True
                     labels = label_line.split()
@@ -263,9 +264,9 @@ class FileIO(object):
                             del(dat[0])
                             TB.append(dat)
             if validData:
-                self.TB[filename] = np.array(TB).transpose()
-                self.freqs[filename] = np.array(freqs)
-                self.b[filename] = np.array(b)
+                self.TB[key_name] = np.array(TB).transpose()
+                self.freqs[key_name] = np.array(freqs)
+                self.b[key_name] = np.array(b)
 
     def parseHeader(self, headerText):
         """Parses the pyPlanet image header"""
