@@ -37,6 +37,7 @@ def readInputFiles(par):
         data['I0'] = data['I0'][used_f]
         data['E'] = data['E'][used_f]
         data['GH2S'] = data['GH2S'][used_f]
+    del data_in
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
@@ -82,5 +83,6 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     alpha_h2s = coef * (P_h2s / T0) * pow((T0 / T), n_int + 2) * np.array(alpha_h2s)
     if par.units == 'dBperkm':
         alpha_h2s *= 434294.5
+    del num, den, shape
 
     return alpha_h2s

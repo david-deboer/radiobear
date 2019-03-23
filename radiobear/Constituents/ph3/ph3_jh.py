@@ -58,6 +58,7 @@ def readInputFiles(par):
         data_wgt['WgtI0'] = data_wgt['WgtI0'][used_f]
         data_wgt['WgtFGB'] = data_wgt['WgtFGB'][used_f]
         data_wgt['WgtSB'] = data_wgt['WgtSB'][used_f]
+    del data_in
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
@@ -103,4 +104,5 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     if par.units == 'dBperkm':
         alpha_ph3 *= 434294.5
 
+    del num, den, shape
     return alpha_ph3
