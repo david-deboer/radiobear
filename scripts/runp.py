@@ -1,4 +1,10 @@
 #! /usr/bin/env python
+
+from __future__ import print_function
+
+print("This has not been integrated into radiobear")
+
+
 # script planet processing
 import planet
 import sys

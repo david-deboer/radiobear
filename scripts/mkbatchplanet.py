@@ -1,4 +1,10 @@
 #! /usr/bin/env python
+
+from __future__ import print_function
+
+print("This has not been integrated into radiobear")
+
+
 import os
 import sys
 
@@ -53,7 +59,7 @@ if names_are_set:
             indices_are_set = False
     else:
         indices_are_set = False
-            
+
 if indices_are_set:
     if number_to_use == 'all':
         start_at = 0
