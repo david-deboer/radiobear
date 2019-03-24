@@ -124,7 +124,7 @@ class Brightness():
         self.z = np.array(self.z)
         self.integrated_W = np.array(integrated_W)
 
-        del taus, Tbs, Ws
+        del taus, Tbs, Ws, travel
         return self.Tb
 
     def savertm(self, tag=None):

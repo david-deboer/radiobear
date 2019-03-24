@@ -212,6 +212,7 @@ class Alpha:
             totalAbsorption[i] = absorb[i].sum()
         if self.generate_alpha:
             self.write_layer(absorb, totalAbsorption)
+        del absorb
         return totalAbsorption
 
     def write_layer(self, absorb, totalAbsorption):
