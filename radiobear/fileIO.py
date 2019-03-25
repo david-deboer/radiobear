@@ -7,9 +7,8 @@ import six
 
 
 class FileIO(object):
-    def __init__(self, directory='Output', log_directory='Logs'):
+    def __init__(self, directory='Output'):
         self.directory = directory
-        self.log_directory = log_directory
         self.header = {}
 
     def write(self, outputFile, outType, freqs, freqUnit, b, Tb, header):
@@ -157,23 +156,22 @@ class FileIO(object):
             if logfile not in logs:
                 logs.append(logfile)
                 print("{}:  {}".format(k, logfile))
-                print("PRINT OUT LOG")
+                with open(logfile, 'r') as fp:
+                    for line in fp:
+                        print("\t{}".format(line.strip()))
             else:
                 print("{}:  Same as above".format(k))
 
     def read(self, fn=None, tag='dat', file_type='spectrum'):
-        """reads brightness temperature file(s):
-           fn = filename to read (but then ignores directory) | '?', '.' or None | integer <None>
-           directory = subdirectory for data (not used if filename given) <'Output'>
-           log_dir:  subdirectory where the Log files reside <'Logs'>"""
+        """
+        Reads brightness temperature file(s):
 
-        directory = self.directory
-        if fn is None:
-            try_files = self.flist(fn, tag)
-        else:
-            if isinstance(fn, six.string_types):
-                try_files = fn.split(',')
-                try_files = [os.path.join(directory, x) for x in try_files]
+        Parameters:
+        ------------
+        files:  file(s):  None, <str>, <int>, <list>
+        tag:  tag to filter on:  <str> or None
+        """
+        try_files = self.flist(fn, tag)
 
         self.files = []
         self.logs = []
