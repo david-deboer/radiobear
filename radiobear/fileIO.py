@@ -155,7 +155,7 @@ class FileIO(object):
             logfile = self.header[k]['logfile'][0]
             if logfile not in logs:
                 logs.append(logfile)
-                print("{}:  {}".format(k, logfile))
+                print("======================={}:  {}".format(k, logfile))
                 with open(logfile, 'r') as fp:
                     for line in fp:
                         print("\t{}".format(line.strip()))
