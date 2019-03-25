@@ -8,11 +8,16 @@ from radiobear import utils
 # ##############################################################################################################
 #                                          GENERAL FILE PLOTTING
 # ##############################################################################################################
-def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False, ylog=False):
+def TB(fn=None, xaxis='Frequency', directory='Output', **kwargs):
     """plots brightness temperature against frequency and disc location:
            fn = filename to read (None will search...)
            xaxis = 'f[requency]' | 'w[avelength' ['freq']
-           directory = subdirectory for data"""
+           directory = subdirectory for data
+           kwargs options are:
+            xlog:  plot x-axis on log-scale if True
+            ylog:  plot y-axis on log-scale if True
+            legend:  include legend if True
+           """
 
     fio = fileIO.FileIO(directory=directory)
     fio.read(fn=fn, file_type='spectrum')
@@ -23,19 +28,20 @@ def TB(fn=None, xaxis='Frequency', directory='Output', xlog=False, ylog=False):
         for i, b in enumerate(fio.b[filen]):
             if xaxis[0].lower() == 'f':
                 plotx = fio.freqs[filen]
-                xlabel = 'Frequency'
+                xlabel = 'Frequency [GHz]'
             else:
                 plotx = (utils.speedOfLight / 1E7) / fio.freqs[filen]
                 xlabel = 'Wavelength [cm]'
             label = "{}: {}".format(b, os.path.basename(filen))
             plt.plot(plotx, fio.TB[filen][i], label=label)
-            if xlog:
+            if 'xlog' in kwargs.keys() and kwargs['xlog']:
                 plt.xscale('log')
-            if ylog:
+            if 'ylog' in kwargs.keys() and kwargs['ylog']:
                 plt.yscale('log')
     plt.xlabel(xlabel)
     plt.ylabel('Brightness Temperature [K]')
-    plt.legend()
+    if 'legend' in kwargs.keys() and kwargs['legend']:
+        plt.legend()
     return fio
 
 

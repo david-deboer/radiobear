@@ -90,3 +90,14 @@ radiobear.planet.Planet state variables and defaults
  - log_directory:  Logs.        # sub-directory for logs
  - output_directory:  Output.   # sub-directory for output
  - scratch_directory:  Scratch. # sub-directory for eg. Absorption etc.
+
+ Routines for viewing the data are in the 'plotting.plt' module.  
+
+ To view spectra try:
+```
+  > from radiobear.plotting import plt
+  > d=plt.TB()
+  > d.show_header()
+  > d.show_log()
+```
+See options under plt.TB()

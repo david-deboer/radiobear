@@ -170,9 +170,9 @@ class FileIO(object):
         ------------
         files:  file(s):  None, <str>, <int>, <list>
         tag:  tag to filter on:  <str> or None
+        file_type:  'spectrum' or 'profile' etc
         """
         try_files = self.flist(fn, tag)
-
         self.files = []
         self.logs = []
         self.TB = {}
