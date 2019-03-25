@@ -7,8 +7,9 @@ import six
 
 
 class FileIO(object):
-    def __init__(self, directory):
+    def __init__(self, directory='Output', log_directory='Logs'):
         self.directory = directory
+        self.log_directory = log_directory
         self.header = {}
 
     def write(self, outputFile, outType, freqs, freqUnit, b, Tb, header):
@@ -90,59 +91,92 @@ class FileIO(object):
         for hdr in alpha_header:
             fp.write(header[hdr])
 
-    def flist(self, fd=None, directory=None, tag='dat'):
-        """This generates the list of filenames to be opened - doesn't check for existence"""
-        if directory is not None:
-            usedir = directory
-        else:
-            usedir = self.directory
-        file_list = utils.ls(directory=usedir, tag=tag, show=False, returnList=True)
+    def flist(self, files=None, tag=None):
+        """
+        This generates the list of filenames to be opened.
 
-        ifile = []
-        files = []
-        if isinstance(fd, six.integer_types):
-            ifile = [fd]
-        elif fd is None:
+        Parameters:
+        ------------
+        files:  file(s):  None, <str>, <int>, <list>
+        tag:  tag to filter on:  <str> or None
+        """
+        usedir = self.directory
+        file_list = utils.ls(directory=usedir, tag=tag, show=False, returnList=True)
+        if not len(file_list):
+            print("No files found in {}".format(usedir))
+            return []
+        file_list = sorted(file_list)
+
+        ifile = []  # list of integers of files to use within file_list
+        if isinstance(files, six.integer_types):
+            ifile = [files]
+        elif isinstance(files, six.string_types):
+            file_list = files.split(',')
+            ifile = range(len(file_list))
+        elif isinstance(files, list):
+            if isinstance(files[0], six.integer_types):
+                ifile = files[:]
+            elif isinstance(files[0], six.string_types):
+                file_list = files[:]
+                ifile = range(len(files))
+        elif files is None:
             for i, fn in enumerate(file_list):
                 print('{}  -  {}'.format(i, fn))
-            sfile = six.moves.input('File numbers: ')
-            split_on = None
-            if '-' in sfile:
+            sfile = six.moves.input('File numbers (n; n1-n2; n1,n2,...; all): ')
+            if sfile.lower() == 'all':
+                ifile = range(len(file_list))
+            elif '-' in sfile:
                 sfile = sfile.split('-')
                 ifile = range(int(sfile[0]), int(sfile[1]) + 1)
             else:
-                if ',' in sfile:
-                    split_on = ','
-                ifile = [int(x) for x in sfile.split(split_on)]
-        elif type(fd) == list and isinstance(fd[0], six.integer_types):
-            ifile = fd
-        elif type(fd) == list and isinstance(fd[0], six.string_types):
-            files = fd
-        else:
-            files = [fd]
+                ifile = [int(x) for x in sfile.split(',')]
 
-        if bool(len(ifile)):
-            for i, fn in enumerate(file_list):
-                if i in ifile:
-                    files.append(fn)
+        ret_files = []
+        for i in ifile:
+            ret_files.append(file_list[i])
+        return ret_files
 
-        return files
+    def show_header(self, key=None):
+        if key is None:
+            key = list(self.header.keys())
+        elif isinstance(key, six.string_types):
+            key = key.split(',')
+        for k in key:
+            print("{}-----".format(k))
+            for h in self.header[k].keys():
+                print("\t{}:  {}".format(h, self.header[k][h]))
 
-    def read(self, fn=None, file_type='spectrum', directory=None):
+    def show_log(self, key=None):
+        if key is None:
+            key = list(self.header.keys())
+        elif isinstance(key, six.string_types):
+            key = key.split(',')
+        logs = []
+        for k in key:
+            logfile = self.header[k]['logfile'][0]
+            if logfile not in logs:
+                logs.append(logfile)
+                print("{}:  {}".format(k, logfile))
+                print("PRINT OUT LOG")
+            else:
+                print("{}:  Same as above".format(k))
+
+    def read(self, fn=None, tag='dat', file_type='spectrum'):
         """reads brightness temperature file(s):
-           fn = filename to read (but then ignores directory) | '?', '.' or None | integer [None]
-           directory = subdirectory for data (not used if filename given) ['Output']"""
+           fn = filename to read (but then ignores directory) | '?', '.' or None | integer <None>
+           directory = subdirectory for data (not used if filename given) <'Output'>
+           log_dir:  subdirectory where the Log files reside <'Logs'>"""
 
-        if directory is None:
-            directory = self.directory
+        directory = self.directory
         if fn is None:
-            try_files = self.flist(fn, directory)
+            try_files = self.flist(fn, tag)
         else:
             if isinstance(fn, six.string_types):
                 try_files = fn.split(',')
                 try_files = [os.path.join(directory, x) for x in try_files]
 
         self.files = []
+        self.logs = []
         self.TB = {}
         self.freqs = {}
         self.b = {}

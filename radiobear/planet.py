@@ -48,11 +48,13 @@ class Planet:
         #  ##Set up log file
         if self.write_log_file:
             runStart = datetime.datetime.now()
-            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M"))
+            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M%S"))
             self.log = logging.LogIt(logFile)
             self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
+        self.data_return = data_handling.DataReturn()
+        self.data_return.set('log', self.log)
 
         #  ## Get config
         config_file = os.path.join(self.planet, config_file)
@@ -78,7 +80,6 @@ class Planet:
 
         #  ## Next compute radiometric properties - initialize bright and return data class
         self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
-        self.data_return = data_handling.DataReturn()
 
         # ## Create fileIO class
         self.fIO = fileIO.FileIO(directory=self.output_directory)
@@ -182,7 +183,7 @@ class Planet:
 
         #  ##Write output files
         if self.write_output_files:
-            outputFile = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M"))
+            outputFile = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.outType, datFile))
             self.set_header(missed_planet)
@@ -223,6 +224,7 @@ class Planet:
         self.header['gtype'] = '# gtype: {}\n'.format(self.config.gtype)
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km\n'.format(self.config.Req, self.config.Rpol)
         self.header['distance'] = '# distance:  {} km\n'.format(self.config.distance)
+        self.header['log-file:'] = '# logfile: {}\n'.format(self.log.logfile)
 
     def set_b(self, b, block):
         """Process b request.
