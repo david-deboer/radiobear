@@ -32,6 +32,8 @@ class Planet:
         self.freqs = None
         self.freqUnit = None
         self.b = None
+        self.data_type = None
+        self.imSize = None
 
         print('Planetary modeling  (ver {})'.format(version.VERSION))
         if self.planet not in planet_list:
@@ -205,7 +207,6 @@ class Planet:
 
     def set_header(self, missed_planet):
         if missed_planet:
-            self.header['res'] = '# res not set\n'
             self.header['orientation'] = '# orientation not set\n'
             self.header['aspect'] = '# aspect tip, rotate not set\n'
             self.header['rNorm'] = '# rNorm not set\n'
@@ -213,13 +214,12 @@ class Planet:
             self.header['orientation'] = '# orientation:   {}\n'.format(repr(self.config.orientation))
             self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}\n'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
             self.header['rNorm'] = '# rNorm: {}\n'.format(self.rNorm)
-            if self.data_type:
-                self.header['data_type'] = '# data_type:  {}\n'.format(self.data_type)
-                if self.data_type == 'image':
-                    self.header['imgSize'] = '# imgSize: {}\n'.format(self.imSize)
-                    resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
-                    print('resolution = ', resolution)
-                    self.header['res'] = '# res:  {} arcsec\n'.format(resolution)
+            self.header['data_type'] = '# data_type:  {}\n'.format(self.data_type)
+            if self.data_type == 'image':
+                self.header['imgSize'] = '# imgSize: {}\n'.format(self.imSize)
+                resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
+                print('resolution = ', resolution)
+                self.header['res'] = '# res:  {} arcsec\n'.format(resolution)
         self.header['gtype'] = '# gtype: {}\n'.format(self.config.gtype)
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km\n'.format(self.config.Req, self.config.Rpol)
         self.header['distance'] = '# distance:  {} km\n'.format(self.config.distance)
@@ -239,16 +239,16 @@ class Planet:
                 'disc' (or 'disk') -> returns [[0.0, 0.0]]
                 'stamp:bres:xmin,xmax,ymin,ymax' -> returns grid of postage stamp
                 'start:stop:step[<angle] -> string defining line
+                'n1,n2,n3[<angle]' -> csv list of b magnitudes
            block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
            """
         self.header['b'] = '# b request:  {}  {}\n'.format(str(b), str(block))
-        self.imSize = None
         # Deal with strings
         if isinstance(b, six.string_types):
             b = b.lower()
             if b.startswith('dis'):
                 self.data_type = 'spectrum'
-                return [[0.0, 0.0]]
+                b = [[0.0, 0.0]]
             elif b.startswith('stamp'):
                 bres = float(b.split(':')[1])
                 bext = [float(x) for x in b.split(':')[2].split(',')]
@@ -259,19 +259,23 @@ class Planet:
                 xbr = len(np.arange(bext[2], bext[3] + bres / 2.0, bres))
                 self.imSize = [xbr, len(b) / xbr]
                 self.data_type = 'image'
-                return b
             else:
                 b = b.split('<')
-                angle_b = 0.0 if len(b) == 1 else float(b[1])
-                pro = [float(x) for x in b[0].split(':')]
-                mag_b = np.arange(pro[0], pro[1] + pro[2] / 2.0, pro[2])
+                angle_b = 0.0 if len(b) == 1 else utils.d2r(float(b[1]))
+                if ',' in b[0]:
+                    mag_b = [float(x) for x in b[0].split(',')]
+                elif ':' in b[0]:
+                    mag_b = [float(x) for x in b[0].split(':')]
+                    mag_b = np.arange(mag_b[0], mag_b[1] + mag_b[2] / 2.0, mag_b[2])
                 ab = self.config.Rpol / self.config.Req
                 rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
-                i_b = np.where(mag_b < rab)
-                b = [mag_b[i_b] * np.cos(angle_b), mag_b[i_b] * np.sin(angle_b)]
+                b = []
+                for v in mag_b:
+                    if v < rab:
+                        b.append([v * np.cos(angle_b), v * np.sin(angle_b)])
                 self.data_type = 'profile'
-                return b
-        elif isinstance(b, float):  # this generates a grid at that spacing and blocking
+            return b
+        if isinstance(b, float):  # this generates a grid at that spacing and blocking
             grid = -1.0 * np.flipud(np.arange(b, 1.5 + b, b))
             grid = np.concatenate((grid, np.arange(0.0, 1.5 + b, b)))
             # get blocks
@@ -288,12 +292,13 @@ class Planet:
             self.imSize = [len(grid), len(b) / len(grid)]
             self.data_type = 'image'
             return b
+        shape_b = np.shape(b)
+        if len(shape_b) == 1:
+            self.data_type = 'spectrum'
+            return [b]
         else:
-            shape_b = np.shape(b)
-            if len(shape_b) == 1:
-                return [b]
-            else:
-                return b
+            self.data_type = 'spectrum' if shape_b[0] < 5 else 'profile'
+            return b
 
     def set_freq(self, freqs, freqUnit):
         """ Process frequency request.
