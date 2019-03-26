@@ -134,16 +134,16 @@ def bang():
         plotting.plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
 
 
-def writeWavel(fn=None, outputFile=None, directory='Output'):
+def writeWavel(fn=None, output_file=None, directory='Output'):
     filename, Tb, f, wavel, b, xlabel, ylabels = readTB(fn=fn, directory=directory)
     title = filename.split('/')[-1].split('.')[0]
 
     # Write file
     title += '_wavel.dat'
-    if outputFile is None:
-        outputFile = title
-    print('Writing to ', outputFile)
-    fp = open(outputFile, 'w')
+    if output_file is None:
+        output_file = title
+    print('Writing to ', output_file)
+    fp = open(output_file, 'w')
     for i in range(len(wavel)):
         s = '%f\t' % (wavel[i])
         fp.write(s)

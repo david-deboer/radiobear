@@ -124,15 +124,16 @@ class Planet:
             brtplt = bright.plots(self.bright)
 
         #  ##Set b, etc
+        disc_average = False if not isinstance(b, six.string_types) else b.startswith('dis')
         b = self.set_b(b, block)
         self.data_return.set('b', b)
-        if self.outType == 'image' and len(freqs) > 1:
+        if self.data_type == 'image' and len(freqs) > 1:
             print('Warning:  Image must be at only one frequency')
             print('Using {} {}'.format(freqs[0], freqUnit))
             self.freqs = list(freqs[0])
             freqs = self.freqs
         if self.verbose == 'loud':
-            print('outType = {}'.format(self.outType))
+            print('data_type = {}'.format(self.data_type))
 
         # ##Initialize other stuff
         self.Tb = []
@@ -140,7 +141,7 @@ class Planet:
         self.rNorm = None
         self.tip = None
         self.rotate = None
-        if self.outType == 'image':  # We now treat it as an image at one frequency
+        if self.data_type == 'image':  # We now treat it as an image at one frequency
             if self.verbose == 'loud':
                 print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
             imtmp = []
@@ -154,7 +155,7 @@ class Planet:
         for i, bv in enumerate(b):
             if self.verbose == 'loud':
                 print('{} of {} (view [{:.4f}, {:.4f}])  '.format(i + 1, len(b), bv[0], bv[1]), end='')
-            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation, discAverage=(self.bType == 'disc'))
+            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation, discAverage=disc_average)
             if self.bright.travel is not None:
                 if self.rNorm is None:
                     self.rNorm = self.bright.travel.rNorm
@@ -162,7 +163,7 @@ class Planet:
                     self.tip = self.bright.travel.tip
                 if self.rotate is None:
                     self.rotate = self.bright.travel.rotate
-            if self.outType == 'image':
+            if self.data_type == 'image':
                 imtmp.append(Tbt[0])
                 if not (i + 1) % self.imSize[0]:
                     self.Tb.append(imtmp)
@@ -183,17 +184,17 @@ class Planet:
 
         #  ##Write output files
         if self.write_output_files:
-            outputFile = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.outType, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
+            output_file = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.data_type, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
             if self.verbose == 'loud':
-                print('\nWriting {} data to {}'.format(self.outType, datFile))
+                print('\nWriting {} data to {}'.format(self.data_type, datFile))
             self.set_header(missed_planet)
-            self.fIO.write(outputFile, self.outType, freqs, freqUnit, b, self.Tb, self.header)
+            self.fIO.write(output_file, self.data_type, freqs, freqUnit, b, self.Tb, self.header)
         if self.plot_bright:
             brtplt.alpha()
             datplt = data.plots(self.data_return)
-            if self.outType == 'spectrum' or self.outType == 'profile' and len(freqs) > 1:
+            if self.data_type == 'spectrum' or self.data_type == 'profile' and len(freqs) > 1:
                 datplt.Tb()
-            if self.outType == 'profile':
+            if self.data_type == 'profile':
                 datplt.profile()
             datplt.show()
 
@@ -212,11 +213,9 @@ class Planet:
             self.header['orientation'] = '# orientation:   {}\n'.format(repr(self.config.orientation))
             self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}\n'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
             self.header['rNorm'] = '# rNorm: {}\n'.format(self.rNorm)
-            if self.bType:
-                self.header['bType'] = '# bType:  {}\n'.format(self.bType)
-            if self.outType:
-                self.header['outType'] = '# outType:  {}\n'.format(self.outType)
-                if self.outType == 'image':
+            if self.data_type:
+                self.header['data_type'] = '# data_type:  {}\n'.format(self.data_type)
+                if self.data_type == 'image':
                     self.header['imgSize'] = '# imgSize: {}\n'.format(self.imSize)
                     resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
                     print('resolution = ', resolution)
@@ -228,42 +227,51 @@ class Planet:
 
     def set_b(self, b, block):
         """Process b request.
-           bType (see below), outType ('image', 'spectrum', 'profile'), and imSize get set as attributes
-           b is list of ordered pairs on return
+           Sets data_type ('image', 'spectrum', 'profile'), and imSize
+
+           Returns list of b-pairs
 
            Parameters:
            ------------
-           b:   list of ordered pairs -> returns that list (bType='points')
-                float -> returns a full grid (bType='image')
-                'disc' (or 'disk') -> returns [[0.0, 0.0]] (bType='disc')
-                'stamp' -> returns grid of postage stamp (bType='stamp')
-                string defining line: csv list of values or range as <start>:<stop>:<step>
-                                      optional ',angle=DEG' [defaults to 0.0]
-                                      (bType='line')
+           b:   list of  pairs -> returns that list
+                one pair -> returns that as a list
+                float -> returns a full image grid
+                'disc' (or 'disk') -> returns [[0.0, 0.0]]
+                'stamp:bres:xmin,xmax,ymin,ymax' -> returns grid of postage stamp
+                'start:stop:step[<angle] -> string defining line
            block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
            """
         self.header['b'] = '# b request:  {}  {}\n'.format(str(b), str(block))
         self.imSize = None
-        self.outType = 'spectrum'
-        # Do some pre-processing to handle line vs single point and ndarrays
-        if len(np.shape(b)) == 1 and len(b) > 2:
-            b = ','.join([str(x) for x in b])
-        if isinstance(b, six.string_types) and len(b.split(',')) == 2:
-            b = b.split(',')
-
-        # Handle lists/arrays
-        if len(np.shape(b)) > 0:
-            if len(np.shape(b)) == 1 and len(b) == 2:
-                b = [b]
-            if len(np.shape(b)) == 2:  # This is just a list of b pairs, so return.
-                self.bType = 'points'
+        # Deal with strings
+        if isinstance(b, six.string_types):
+            b = b.lower()
+            if b.startswith('dis'):
+                self.data_type = 'spectrum'
+                return [[0.0, 0.0]]
+            elif b.startswith('stamp'):
+                bres = float(b.split(':')[1])
+                bext = [float(x) for x in b.split(':')[2].split(',')]
+                b = []
+                for x in np.arange(bext[0], bext[1] + bres / 2.0, bres):
+                    for y in np.arange(bext[2], bext[3] + bres / 2.0, bres):
+                        b.append([y, x])
+                xbr = len(np.arange(bext[2], bext[3] + bres / 2.0, bres))
+                self.imSize = [xbr, len(b) / xbr]
+                self.data_type = 'image'
                 return b
             else:
-                raise ValueError("Invalid b request.")
-
-        if isinstance(b, float):  # this generates a grid at that spacing and blocking
-            self.bType = 'image'
-            self.outType = 'image'
+                b = b.split('<')
+                angle_b = 0.0 if len(b) == 1 else float(b[1])
+                pro = [float(x) for x in b[0].split(':')]
+                mag_b = np.arange(pro[0], pro[1] + pro[2] / 2.0, pro[2])
+                ab = self.config.Rpol / self.config.Req
+                rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
+                i_b = np.where(mag_b < rab)
+                b = [mag_b[i_b] * np.cos(angle_b), mag_b[i_b] * np.sin(angle_b)]
+                self.data_type = 'profile'
+                return b
+        elif isinstance(b, float):  # this generates a grid at that spacing and blocking
             grid = -1.0 * np.flipud(np.arange(b, 1.5 + b, b))
             grid = np.concatenate((grid, np.arange(0.0, 1.5 + b, b)))
             # get blocks
@@ -278,52 +286,14 @@ class Planet:
                 for vcol in grid:
                     b.append([vcol, vrow])
             self.imSize = [len(grid), len(b) / len(grid)]
+            self.data_type = 'image'
             return b
-
-        if not isinstance(b, six.string_types):
-            raise ValueError("Invalid b request.")
-        self.bType = b.lower()
-
-        if self.bType == 'disc' or self.bType == 'disk':
-            self.bType = 'disc'
-            return [[0.0, 0.0]]
-
-        if self.bType == 'stamp':
-            self.outType = 'image'
-            print('Setting to postage stamp.  Need more information')
-            bres = float(raw_input('...Input postage stamp resolution in b-units:  '))
-            bx = [float(x) for x in raw_input('...Input bx_min, bx_max:  ').split(',')]
-            by = [float(x) for x in raw_input('...Input by_min, by_max:  ').split(',')]
-            b = []
-            for x in np.arange(bx[0], bx[1] + bres / 2.0, bres):
-                for y in np.arange(by[0], by[1] + bres / 2.0, bres):
-                    b.append([y, x])
-            xbr = len(np.arange(by[0], by[1] + bres / 2.0, bres))
-            self.imSize = [xbr, len(b) / xbr]
-            return b
-
-        # It is a line request
-        line = {'mag_b': [], 'angle_b': 0.0, 'range': ':' in self.bType}
-        cmd = self.bType.split(',')
-        self.bType = 'line'
-        self.outType = 'profile'
-        for v in cmd:
-            if '<' in v:
-                line['angle_b'] = utils.d2r(float(v.split('<')[1]))
-                v = v.split('<')[0]
-            if ':' in v:
-                start, stop, step = [float(x) for x in v.split(':')]
-                line['mag_b'] = np.arange(start, stop + step / 2.0, step)
-            if not line['range'] and len(v):
-                line['mag_b'].append(float(v))
-        b = []
-        for v in line['mag_b']:
-            ang = line['angle_b']
-            ab = self.config.Rpol / self.config.Req
-            rrr = ab / np.sqrt(np.power(np.sin(ang), 2.0) + np.power(ab * np.cos(ang), 2.0))
-            if abs(v) < rrr:
-                b.append([v * np.cos(ang), v * np.sin(ang)])
-        return b
+        else:
+            shape_b = np.shape(b)
+            if len(shape_b) == 1:
+                return [b]
+            else:
+                return b
 
     def set_freq(self, freqs, freqUnit):
         """ Process frequency request.

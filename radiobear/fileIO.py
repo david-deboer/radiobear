@@ -11,18 +11,18 @@ class FileIO(object):
         self.directory = directory
         self.header = {}
 
-    def write(self, outputFile, outType, freqs, freqUnit, b, Tb, header):
-        with open(outputFile, 'w') as fp:
+    def write(self, output_file, data_type, freqs, freqUnit, b, Tb, header):
+        with open(output_file, 'w') as fp:
             self.writeHeader(header, fp)
-            if outType.lower() == 'image':
+            if data_type.lower() == 'image':
                 self.writeImage(fp, Tb)
-            elif outType.lower() == 'spectrum':
+            elif data_type.lower() == 'spectrum':
                 self.writeSpectrum(fp, freqs, freqUnit, b, Tb)
-            elif outType.lower() == 'profile':
+            elif data_type.lower() == 'profile':
                 self.writeProfile(fp, freqs, freqUnit, b, Tb)
             else:
-                print("Invalid output type: {}".format(outType))
-        return outputFile
+                print("Invalid output type: {}".format(data_type))
+        return output_file
 
     def writeSpectrum(self, fp, freqs, freqUnit, b, Tb, xaxis='frequency', lineoutput='Scratch/specoutputline.dat'):
         fp_lineoutput = open(lineoutput, 'w')
@@ -215,7 +215,7 @@ class FileIO(object):
                         continue
                     else:
                         break
-                types_in_file = [x.lower() for x in self.header[filename]['outType']]
+                types_in_file = [x.lower() for x in self.header[filename]['data_type']]
                 is_spectrum = 'spectrum' in types_in_file
                 is_profile = 'profile' in types_in_file
                 is_image = 'image' in types_in_file
