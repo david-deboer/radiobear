@@ -9,7 +9,7 @@ class Data:
     This holds the data that one may wish to use as output.  Data are stored as numpy arrays
     """
 
-    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'type']
+    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'type', 'logfile']
 
     def __init__(self):
         for a in self.allowed_parameters:
@@ -31,15 +31,18 @@ class Data:
             print("{} not in valid data return list.".format(par))
             return
         val = copy.copy(val)
-        if par == 'b' and isinstance(val[0], six.string_types) and val[0].startswith('d'):
+        if par == 'b' and utils.b_type(val).startswith('dis'):
             self.b = ['disc']
         elif isinstance(val, list):
             setattr(self, par, np.asarray(val, dtype=np.float32))
         else:
             setattr(self, par, val)
 
-    def show(self, include=['header', 'start', 'stop', 'f', 'b', 'Tb']):
+    def show(self, include=['header', 'start', 'stop', 'f', 'b', 'Tb', 'log']):
         for v in include:
+            if v == 'log':
+                self.show_log()
+                continue
             if v not in self.allowed_parameters:
                 continue
             if v == 'header':
@@ -52,14 +55,12 @@ class Data:
     def show_header(self):
         print('Header')
         for k, v in six.iteritems(self.header):
-            print("\t{}     {}".format(k, v))
+            print("\t{:20s}     {}".format(k, v))
 
     def show_log(self):
-        if self.log is None:
-            print("No log file.")
-            return
-        print('Log')
-        self.log.close()
-        with open(self.log.logfile) as fp:
+        if self.log is not None:
+            self.log.close()
+        print('Log:  {}'.format(self.logfile))
+        with open(self.logfile) as fp:
             for line in fp:
                 print(line.strip())

@@ -177,7 +177,6 @@ class Planet:
                 brtplt.intW()
                 brtplt.W(self.normalize_weighting)
         self.data_return.set('Tb', self.Tb)
-        self.data_return.header = self.header
         missed_planet = self.rNorm is None
 
         if self.generate_alpha:
@@ -187,13 +186,15 @@ class Planet:
         self.log.add('Run stop ' + str(runStop), self.verbose)
         self.data_return.set('stop', runStop)
         self.data_return.set('type', self.data_type)
+        self.set_header(missed_planet)
+        self.data_return.set('header', self.header)
+        self.data_return.set('logfile', self.log.logfile)
 
         #  ##Write output files
         if self.write_output_files:
             output_file = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.data_type, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.data_type, output_file))
-            self.set_header(missed_planet)
             self.fIO.write(output_file, self.data_return)
         if self.plot_bright:
             brtplt.alpha()
@@ -208,25 +209,25 @@ class Planet:
 
     def set_header(self, missed_planet):
         if missed_planet:
-            self.header['orientation'] = '# orientation not set\n'
-            self.header['aspect'] = '# aspect tip, rotate not set\n'
-            self.header['rNorm'] = '# rNorm not set\n'
+            self.header['orientation'] = '# orientation not set'
+            self.header['aspect'] = '# aspect tip, rotate not set'
+            self.header['rNorm'] = '# rNorm not set'
         else:
-            self.header['orientation'] = '# orientation:   {}\n'.format(repr(self.config.orientation))
-            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}\n'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
-            self.header['rNorm'] = '# rNorm: {}\n'.format(self.rNorm)
-            self.header['data_type'] = '# data_type:  {}\n'.format(self.data_type)
+            self.header['orientation'] = '# orientation:   {}'.format(repr(self.config.orientation))
+            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
+            self.header['rNorm'] = '# rNorm: {}'.format(self.rNorm)
+            self.header['data_type'] = '#* type:  {}'.format(self.data_type)
             if self.data_type == 'image':
-                self.header['imgSize'] = '# imgSize: {}\n'.format(self.imSize)
+                self.header['imgSize'] = '# imgSize: {}'.format(self.imSize)
                 resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
                 print('resolution = ', resolution)
-                self.header['res'] = '# res:  {} arcsec\n'.format(resolution)
-        self.header['gtype'] = '# gtype: {}\n'.format(self.config.gtype)
-        self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km\n'.format(self.config.Req, self.config.Rpol)
-        self.header['distance'] = '# distance:  {} km\n'.format(self.config.distance)
-        self.header['log-file:'] = '# logfile: {}\n'.format(self.log.logfile)
-        self.header['start'] = "# start: {:%Y-%m-%d %H:%M:%S}\n".format(self.data_return.start)
-        self.header['stop'] = "# stop: {:%Y-%m-%d %H:%M:%S}\n".format(self.data_return.stop)
+                self.header['res'] = '# res:  {} arcsec'.format(resolution)
+        self.header['gtype'] = '# gtype: {}'.format(self.config.gtype)
+        self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req, self.config.Rpol)
+        self.header['distance'] = '# distance:  {} km'.format(self.config.distance)
+        self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
+        self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.start)
+        self.header['stop'] = "#* stop: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.stop)
 
     def set_b(self, b, block):
         """Process b request.
@@ -245,7 +246,7 @@ class Planet:
                 'n1,n2,n3[<angle]' -> csv list of b magnitudes
            block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
            """
-        self.header['b'] = '# b request:  {}  {}\n'.format(str(b), str(block))
+        self.header['b'] = '# b request:  {}  {}'.format(str(b), str(block))
         # Deal with strings
         if isinstance(b, six.string_types):
             b = b.lower()
@@ -317,7 +318,7 @@ class Planet:
                     '<filename>' -> returns loadtxt of that
             freqUnit:  frequency unit of supplied freqs
         """
-        self.header['freqs'] = '# freqs request: {} {}\n'.format(str(freqs), freqUnit)
+        self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
         # ## Process frequency range "request"
         if isinstance(freqs, list):
             pass

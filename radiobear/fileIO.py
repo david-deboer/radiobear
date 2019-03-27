@@ -96,7 +96,7 @@ class FileIO(object):
     def writeHeader(self, header, fp):
         alpha_header = sorted(header.keys())
         for hdr in alpha_header:
-            fp.write(header[hdr])
+            fp.write(header[hdr] + '\n')
 
     def flist(self, files=None, tag=None):
         """
@@ -143,6 +143,28 @@ class FileIO(object):
             ret_files.append(file_list[i])
         return ret_files
 
+    def show(self, prop='all', fkey=None):
+        keys = []
+        if not isinstance(prop, six.string_types):
+            fkey = prop
+            prop = 'header'
+        if fkey is None:
+            keys = list(self.data.keys())
+        elif isinstance(fkey, int):
+            keys = [self.files[fkey]]
+        elif isinstance(fkey, six.string_types):
+            keys = [fkey]
+        logs = []
+        for k in keys:
+            if prop == 'all' or prop == 'header':
+                self.data[k].show_header()
+            if prop == 'all' or prop == 'log':
+                if self.data[k].log not in logs:
+                    self.data[k].show_log()
+                    logs.append(self.data[k].log)
+                else:
+                    print("{} already shown.".format(self.data[k].log))
+
     def read(self, fn=None, tag='dat', file_type='spectrum'):
         """
         Reads brightness temperature file(s):
@@ -176,10 +198,9 @@ class FileIO(object):
                     header_text.append(line)
             fp.close()
             self.data[filename] = data_handling.Data()
-            self.data[filename].header = self.parseHeader(header_text)
-        for k, v in six.iteritems(self.data[filename].header):
-            if k in self.data[filename].allowed_parameters:
-                setattr(self.data[filename], k, v)
+            self.data[filename].header = self.read_header(header_text)
+            self.set_header_attr(filename)
+            self.data[filename].show(include=['header', 'start', 'stop', 'logfile'])
 
         for filename in self.files:
             self.data[filename].f = []  # frequencies
@@ -194,10 +215,10 @@ class FileIO(object):
                         continue
                     else:
                         break
-                types_in_file = [x.lower() for x in self.data[filename].header['data_type']]
-                is_type = {'spectrum': 'spectrum' in types_in_file,
-                           'profile': 'profile' in types_in_file,
-                           'image': 'image' in types_in_file}
+                type_in_file = self.data[filename].header['type'].lower()
+                is_type = {'spectrum': 'spectrum' in type_in_file,
+                           'profile': 'profile' in type_in_file,
+                           'image': 'image' in type_in_file}
                 if is_type['image']:
                     valid_data = self._process_image(fp, filename)
                 else:
@@ -277,32 +298,28 @@ class FileIO(object):
         self.data[filename].x = np.array(x)
         self.data[filename].y = np.array(y)
 
-    def parseHeader(self, headerText):
-        """Parses the pyPlanet image header"""
+    def set_header_attr(self, filename):
+        for key in self.data[filename].header.keys():
+            if key in self.data[filename].allowed_parameters:
+                self.data[filename].set(key, self.data[filename].header[key])
+
+    def read_header(self, header_text):
+        """Reads the radiobear header"""
         _header = {}
-        for hdr in headerText:
-            hdr = hdr.strip('#').strip()
-            updateKey = False
-            if ':' in hdr:
-                updateKey = True
-                hdrkey = hdr.split(':')[0]
-                hdr = ':'.join(hdr.split(':')[1:])
-                h = []
-                hdr = hdr.split()
-                for dat in hdr:
-                    dat = dat.strip('[').strip(']').strip(',')
-                    try:
-                        h.append(float(dat))
-                    except ValueError:
-                        h.append(dat)
-            else:
-                hdrkey = hdr.split()[0]
-                if hdrkey not in _header.keys():
-                    updateKey = True
-                    h = [None]
-            if updateKey:
-                _header[hdrkey] = h
-                self.__dict__[hdrkey] = h
+        for hdr in header_text:
+            if 'K@' in hdr:
+                continue
+            hdrproc = hdr.strip('#').strip()
+            split_on = ':' if ':' in hdr else None
+            hdrkey = hdrproc.split(split_on)[0]
+            if split_on is not None:
+                hdrproc = hdrproc[(hdrproc.find(split_on) + 1):].strip()
+            if hdrkey in _header.keys():
+                print("'{}' already included. Pushed to 'other_'".format(hdr, hdrkey))
+                hdrkey = 'other_{}'.format(hdrkey)
+            if hdrkey.strip().startswith('*'):
+                hdrkey = hdrkey.strip().strip('*').strip()
+            _header[hdrkey] = hdrproc
         # ## set any header-derived values
         if 'res' in _header.keys():
             self.resolution = _header['res'][0]   # keep this for backward compatibility

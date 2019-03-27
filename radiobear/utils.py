@@ -102,14 +102,14 @@ def ls(directory='Output', tag='dat', show=True, returnList=False):
 
 def b_type(b):
     if isinstance(b, six.string_types):
-        return b
+        return b.lower()
     if isinstance(b[0], six.string_types):
-        return b[0]
+        return b[0].lower()
     if len(b) > 20:
         return 'image'
     if len(b) > 9:
         return 'profile'
-    return 'points'
+    return 'spectrum'
 
 
 def get_data_from(line):
