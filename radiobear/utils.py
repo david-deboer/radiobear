@@ -100,6 +100,18 @@ def ls(directory='Output', tag='dat', show=True, returnList=False):
         return files
 
 
+def b_type(b):
+    if isinstance(b, six.string_types):
+        return b
+    if isinstance(b[0], six.string_types):
+        return b[0]
+    if len(b) > 20:
+        return 'image'
+    if len(b) > 9:
+        return 'profile'
+    return 'points'
+
+
 def get_data_from(line):
     if line[0] in commentChars or len(line) < 4:
         return None

@@ -135,7 +135,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     tip, rotate = computeAspect(orientation, f)
     if verbose:
         print('intersection:  ({:.3f}, {:.3f})    '.format(b[0], b[1]), end='')
-        print('aspect:  ({:%.4f},  {:.4f})'.format(tip * 180.0 / np.pi, rotate * 180.0 / np.pi))
+        print('aspect:  ({:.4f},  {:.4f})'.format(tip * 180.0 / np.pi, rotate * 180.0 / np.pi))
         print('Finding atmospheric edge', end='')
     edge, b = findEdge(atm, b, rNorm, tip, rotate, gtype)
     if edge is None:
@@ -176,7 +176,7 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     while inAtmosphere:
         if verbose:
             print('------------------')
-            print('\tstep {d}:  layer {d} {s} '.format(i, layer, direction))
+            print('\tstep {}:  layer {} {} '.format(i, layer, direction))
             print('\ts = [{:.4f}, {:.4f}, {:.4f}],  ds = {:.4f}'.format(s[-1][_X], s[-1][_Y], s[-1][_Z], ds[-1]))
             geoid.print_a_step()
             print('\tt_inc, tran:  {:.8f} -> {:.8f}'.format(utils.r2d(t_inc[-1]), utils.r2d(t_tran[-1])))

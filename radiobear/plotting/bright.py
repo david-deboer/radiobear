@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from radiobear import utils
+import six
 
 
 # ##############################################################################################################
@@ -61,6 +63,9 @@ class plots:
             plt.axis(ymin=ray.P4ds[-1], ymax=ray.P4ds[0])
 
     def observer(self, b, req=None, rpol=None):
+        if utils.b_type(b) == 'disc':
+            print("Disc average")
+            return
         plt.figure('Observer')
         if req is not None and rpol is not None:
             prod = req * rpol

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from radiobear import utils
 
 
 # ##############################################################################################################
@@ -14,6 +15,9 @@ class plots:
         plt.show()
 
     def profile(self):
+        if utils.b_type(self.data.b) == 'disc':
+            print("Disc average")
+            return
         plt.figure('Profile')
         b = self.data.b.transpose()
         bvec = np.sqrt(b[0] * b[0] + b[1] * b[1])

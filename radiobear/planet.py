@@ -55,7 +55,7 @@ class Planet:
             self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
-        self.data_return = data_handling.DataReturn()
+        self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
         #  ## Get config
@@ -126,7 +126,6 @@ class Planet:
             brtplt = bright.plots(self.bright)
 
         #  ##Set b, etc
-        disc_average = False if not isinstance(b, six.string_types) else b.startswith('dis')
         b = self.set_b(b, block)
         self.data_return.set('b', b)
         if self.data_type == 'image' and len(freqs) > 1:
@@ -156,8 +155,8 @@ class Planet:
         self.data_return.set('start', runStart)
         for i, bv in enumerate(b):
             if self.verbose == 'loud':
-                print('{} of {} (view [{:.4f}, {:.4f}])  '.format(i + 1, len(b), bv[0], bv[1]), end='')
-            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation, discAverage=disc_average)
+                print('{} of {} (view {})  '.format(i + 1, len(b), bv), end='')
+            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation)
             if self.bright.travel is not None:
                 if self.rNorm is None:
                     self.rNorm = self.bright.travel.rNorm
@@ -184,13 +183,18 @@ class Planet:
         if self.generate_alpha:
             self.alpha.complete_generate_alpha()
 
+        runStop = datetime.datetime.now()
+        self.log.add('Run stop ' + str(runStop), self.verbose)
+        self.data_return.set('stop', runStop)
+        self.data_return.set('type', self.data_type)
+
         #  ##Write output files
         if self.write_output_files:
             output_file = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.data_type, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
             if self.verbose == 'loud':
-                print('\nWriting {} data to {}'.format(self.data_type, datFile))
+                print('\nWriting {} data to {}'.format(self.data_type, output_file))
             self.set_header(missed_planet)
-            self.fIO.write(output_file, self.data_type, freqs, freqUnit, b, self.Tb, self.header)
+            self.fIO.write(output_file, self.data_return)
         if self.plot_bright:
             brtplt.alpha()
             datplt = data.plots(self.data_return)
@@ -200,9 +204,6 @@ class Planet:
                 datplt.profile()
             datplt.show()
 
-        runStop = datetime.datetime.now()
-        self.log.add('Run stop ' + str(runStop), self.verbose)
-        self.data_return.set('stop', runStop)
         return self.data_return
 
     def set_header(self, missed_planet):
@@ -248,8 +249,8 @@ class Planet:
             b = b.lower()
             if b.startswith('dis'):
                 self.data_type = 'spectrum'
-                b = [[0.0, 0.0]]
-            elif b.startswith('stamp'):
+                return [b]
+            if b.startswith('stamp'):
                 bres = float(b.split(':')[1])
                 bext = [float(x) for x in b.split(':')[2].split(',')]
                 b = []
@@ -271,7 +272,7 @@ class Planet:
                 rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
                 b = []
                 for v in mag_b:
-                    if v < rab:
+                    if v < 0.99 * rab:
                         b.append([v * np.cos(angle_b), v * np.sin(angle_b)])
                 self.data_type = 'profile'
             return b

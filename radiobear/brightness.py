@@ -39,9 +39,12 @@ class Brightness():
     def state(self):
         state_variables.show_state(self)
 
-    def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0, discAverage=False):
+    def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0):
         """This computes the brightness temperature along one ray path"""
 
+        disc_average = False if not isinstance(b, six.string_types) else b.startswith('dis')
+        if disc_average:
+            b = [0.0, 0.0]
         if self.layerAlpha is None:
             self.layerAbsorption(freqs, atm, alpha)
         # get path lengths (ds_layer) vs layer number (num_layer) - currently frequency independent refractivity
@@ -95,7 +98,7 @@ class Brightness():
                                         atm.config.Cl, units=utils.alphaUnit)
                 dtau = (a0 + a1) * ds / 2.0
                 taus.append(self.tau[i][j] + dtau)         # this is tau_(i+1)
-                if discAverage is True:
+                if disc_average:
                     Ws.append(2.0 * a1 * ss.expn(2, taus[j]))  # this is W_(i+1) for disc average
                 else:
                     Ws.append(a1 * np.exp(-taus[j]))  # this is W_(i+1) for non disc average

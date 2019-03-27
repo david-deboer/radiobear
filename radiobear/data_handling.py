@@ -1,14 +1,15 @@
 import numpy as np
 import six
 import copy
+from radiobear import utils
 
 
-class DataReturn:
+class Data:
     """
     This holds the data that one may wish to use as output.  Data are stored as numpy arrays
     """
 
-    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'data_type']
+    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'type']
 
     def __repr__(self):
         s = ''
@@ -26,7 +27,9 @@ class DataReturn:
             print("{} not in valid data return list.".format(par))
             return
         val = copy.copy(val)
-        if isinstance(val, list):
+        if par == 'b' and isinstance(val[0], six.string_types) and val[0].startswith('d'):
+            self.b = ['disc']
+        elif isinstance(val, list):
             setattr(self, par, np.asarray(val, dtype=np.float32))
         else:
             setattr(self, par, val)

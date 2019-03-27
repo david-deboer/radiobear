@@ -8,7 +8,7 @@ from radiobear import utils
 # ##############################################################################################################
 #                                          GENERAL FILE PLOTTING
 # ##############################################################################################################
-def TB(fn=None, xaxis='Frequency', directory='Output', **kwargs):
+def Tb(fn=None, xaxis='Frequency', directory='Output', **kwargs):
     """plots brightness temperature against frequency and disc location:
            fn = filename to read (None will search...)
            xaxis = 'f[requency]' | 'w[avelength' ['freq']
