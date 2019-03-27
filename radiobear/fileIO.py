@@ -177,6 +177,9 @@ class FileIO(object):
             fp.close()
             self.data[filename] = data_handling.Data()
             self.data[filename].header = self.parseHeader(header_text)
+        for k, v in six.iteritems(self.data[filename].header):
+            if k in self.data[filename].allowed_parameters:
+                setattr(self.data[filename], k, v)
 
         for filename in self.files:
             self.data[filename].f = []  # frequencies
@@ -211,7 +214,7 @@ class FileIO(object):
         del(labels[0:3])
         # Process label_line
         if is_type['spectrum']:
-            self.data[filename].b = labels.split()
+            self.data[filename].b = labels
             print('b = ', self.data[filename].b)
             if not isinstance(self.data[filename].b[0], six.string_types):
                 self.data[filename].b = [float(x) for x in self.data[filename].b]

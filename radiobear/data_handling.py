@@ -11,6 +11,10 @@ class Data:
 
     allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'type']
 
+    def __init__(self):
+        for a in self.allowed_parameters:
+            setattr(self, a, None)
+
     def __repr__(self):
         s = ''
         for i, b in enumerate(self.b):
@@ -48,7 +52,7 @@ class Data:
     def show_header(self):
         print('Header')
         for k, v in six.iteritems(self.header):
-            print("\t{}".format(v.strip()))
+            print("\t{}     {}".format(k, v))
 
     def show_log(self):
         if self.log is None:

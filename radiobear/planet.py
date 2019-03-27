@@ -225,6 +225,8 @@ class Planet:
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km\n'.format(self.config.Req, self.config.Rpol)
         self.header['distance'] = '# distance:  {} km\n'.format(self.config.distance)
         self.header['log-file:'] = '# logfile: {}\n'.format(self.log.logfile)
+        self.header['start'] = "# start: {:%Y-%m-%d %H:%M:%S}\n".format(self.data_return.start)
+        self.header['stop'] = "# stop: {:%Y-%m-%d %H:%M:%S}\n".format(self.data_return.stop)
 
     def set_b(self, b, block):
         """Process b request.

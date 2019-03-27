@@ -25,15 +25,15 @@ def Tb(fn=None, xaxis='Frequency', directory='Output', **kwargs):
     # Frequency plot
     plt.figure('TB')
     for filen in fio.files:
-        for i, b in enumerate(fio.b[filen]):
+        for i, b in enumerate(fio.data[filen].b):
             if xaxis[0].lower() == 'f':
-                plotx = fio.freqs[filen]
+                plotx = fio.data[filen].f
                 xlabel = 'Frequency [GHz]'
             else:
-                plotx = (utils.speedOfLight / 1E7) / fio.freqs[filen]
+                plotx = (utils.speedOfLight / 1E7) / fio.data[filen].f
                 xlabel = 'Wavelength [cm]'
             label = "{}: {}".format(b, os.path.basename(filen))
-            plt.plot(plotx, fio.TB[filen][i], label=label)
+            plt.plot(plotx, fio.data[filen].Tb[i], label=label)
             if 'xlog' in kwargs.keys() and kwargs['xlog']:
                 plt.xscale('log')
             if 'ylog' in kwargs.keys() and kwargs['ylog']:
