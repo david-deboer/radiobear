@@ -159,11 +159,11 @@ class FileIO(object):
             if prop == 'all' or prop == 'header':
                 self.data[k].show_header()
             if prop == 'all' or prop == 'log':
-                if self.data[k].log not in logs:
+                if self.data[k].logfile not in logs:
                     self.data[k].show_log()
-                    logs.append(self.data[k].log)
+                    logs.append(self.data[k].logfile)
                 else:
-                    print("{} already shown.".format(self.data[k].log))
+                    print("{} already shown.".format(self.data[k].logfile))
 
     def read(self, fn=None, tag='dat', file_type='spectrum'):
         """
@@ -180,6 +180,7 @@ class FileIO(object):
         self.logs = []
         self.data = {}
         # ## Read in two passes:  first header and get files
+        print('\n')
         for i, filename in enumerate(try_files):
             try:
                 fp = open(filename, 'r')
@@ -188,7 +189,7 @@ class FileIO(object):
                 continue
             if file_type.lower() != 'all' and file_type.lower() not in filename.lower():
                 continue
-            print("\tReading " + filename)
+            print("Reading " + filename)
             self.files.append(filename)
 
             # ## Get past any header and get first line
@@ -299,17 +300,19 @@ class FileIO(object):
         self.data[filename].y = np.array(y)
 
     def set_header_attr(self, filename):
-        for key in self.data[filename].header.keys():
+        for key in self.starred_header_keys:
             if key in self.data[filename].allowed_parameters:
                 self.data[filename].set(key, self.data[filename].header[key])
 
     def read_header(self, header_text):
         """Reads the radiobear header"""
         _header = {}
+        self.starred_header_keys = []
         for hdr in header_text:
-            if 'K@' in hdr:
-                continue
             hdrproc = hdr.strip('#').strip()
+            if 'K@' in hdr:
+                _header['label-line'] = hdrproc
+                continue
             split_on = ':' if ':' in hdr else None
             hdrkey = hdrproc.split(split_on)[0]
             if split_on is not None:
@@ -319,6 +322,7 @@ class FileIO(object):
                 hdrkey = 'other_{}'.format(hdrkey)
             if hdrkey.strip().startswith('*'):
                 hdrkey = hdrkey.strip().strip('*').strip()
+                self.starred_header_keys.append(hdrkey)
             _header[hdrkey] = hdrproc
         # ## set any header-derived values
         if 'res' in _header.keys():

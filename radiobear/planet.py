@@ -216,12 +216,12 @@ class Planet:
             self.header['orientation'] = '# orientation:   {}'.format(repr(self.config.orientation))
             self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
             self.header['rNorm'] = '# rNorm: {}'.format(self.rNorm)
-            self.header['data_type'] = '#* type:  {}'.format(self.data_type)
             if self.data_type == 'image':
                 self.header['imgSize'] = '# imgSize: {}'.format(self.imSize)
                 resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
                 print('resolution = ', resolution)
                 self.header['res'] = '# res:  {} arcsec'.format(resolution)
+        self.header['data-type'] = '#* type:  {}'.format(self.data_type)
         self.header['gtype'] = '# gtype: {}'.format(self.config.gtype)
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req, self.config.Rpol)
         self.header['distance'] = '# distance:  {} km'.format(self.config.distance)

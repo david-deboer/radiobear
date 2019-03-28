@@ -38,29 +38,34 @@ class Data:
         else:
             setattr(self, par, val)
 
-    def show(self, include=['header', 'start', 'stop', 'f', 'b', 'Tb', 'log']):
+    def show(self, include=['header', 'start', 'stop', 'f', 'b', 'Tb', 'log'], indent=1):
+        tab = indent * '\t'
         for v in include:
             if v == 'log':
-                self.show_log()
+                self.show_log(indent=indent)
                 continue
             if v not in self.allowed_parameters:
                 continue
             if v == 'header':
-                self.show_header()
+                self.show_header(indent=indent)
             elif v == 'f':
-                print("freq: {} {}".format(self.f, self.freqUnit))
+                print("{}freq: {} {}".format(tab, self.f, self.freqUnit))
             else:
-                print("{}:  {}".format(v, getattr(self, v)))
+                print("{}{}:  {}".format(tab, v, getattr(self, v)))
 
-    def show_header(self):
-        print('Header')
+    def show_header(self, indent=1):
+        tab = indent * '\t'
+        print('{}Header'.format(tab))
+        tab1 = (indent + 1) * '\t'
         for k, v in six.iteritems(self.header):
-            print("\t{:20s}     {}".format(k, v))
+            print("{}{:20s}     {}".format(tab1, k, v))
 
-    def show_log(self):
+    def show_log(self, indent=1):
+        tab = indent * '\t'
         if self.log is not None:
             self.log.close()
-        print('Log:  {}'.format(self.logfile))
+        print('{}Log:  {}'.format(tab, self.logfile))
         with open(self.logfile) as fp:
             for line in fp:
                 print(line.strip())
+        print("-----------------------------------")
