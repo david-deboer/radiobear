@@ -150,5 +150,5 @@ class planetConfig:
         keys = list(self.toks.keys())
         keys.sort()
         for key in keys:
-            s += '\t{:15s}:  {}\n'.format(key, str(getattr(self, self.toks[key]['name'])))
+            s += '\t{:20s}:  {}\n'.format(key, str(getattr(self, self.toks[key]['name'])))
         return s

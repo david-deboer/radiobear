@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import glob
 import io
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from radiobear import version
 

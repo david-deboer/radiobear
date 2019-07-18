@@ -6,7 +6,10 @@ GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 
 def alpha(freq, T, P, cloud, cloud_dict, other_dict, **kwargs):
-    """Adapted from Imke's code, but used Ulaby, Moore and Fung (see e.g. p310)."""
+    """
+    Adapted from Imke's code, but used Ulaby, Moore and Fung (see e.g. p310).
+    'fraction' below scales the absorption cross-section relative to water.
+    """
     alpha_cloud = []
     par = parameters.setpar(kwargs)
     for f in freq:
