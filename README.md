@@ -8,12 +8,13 @@ atmospheres in the meter-millimeter-wave regions.
 
 Installing:
 1. Pull radioBEAR from github
-2. From the top-level 'radiobear' directory, install (`pip install .`, or `python setup.py install`)
+2. From the top-level 'radiobear' directory, install (`pip install .``)*
 3. Create/move to your working directory (so, outside of the radiobear installation)
 4. Initialize your working directory with various directories/planet files
       - from within your working directory type `initial_planet_setup.py`
 5. If you have other .par, tweak, atmosphere, etc files, move them to the planet sub-directory in the new working area
 
+*NB: python setup.py install does not work.
 
 Before you start:
 1. Set up your **config file**
