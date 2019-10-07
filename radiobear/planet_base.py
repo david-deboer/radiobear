@@ -14,29 +14,94 @@ from . import fileIO
 from . import state_variables
 from . import logging
 from . import version
-from . import planet_base
 
 
-class Planet(planet_base.PlanetBase):
+class PlanetBase:
     def __init__(self, name, mode='normal', config_file='config.par', **kwargs):
-        """This is the 'executive' function class to compute overall planetary emission.
+        """This is the base planet class to compute overall planetary emission.
            For both mode and kwargs look at state_variables.py
            Inputs:
                 name:  'Jupiter', 'Saturn', 'Uranus', 'Neptune'
                 config_file:  config file name.  If 'planet' sets to <name>/config.par
                 mode:  sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
                 kwargs: 'verbose' and 'plot_amt', etc (and other state_vars - see show_state())"""
-        super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
-        self.setup_logfile()
-        self.get_configfile()
-        if self.initialize:
-            self.initialize_atm()
-            self.initialize_alpha()
-            self.initialize_brightness()
-            self.initialize_IO()
-            self.set_plots()
 
-    def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
+        planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
+        self.planet = name.capitalize()
+        self.header = {}
+        self.freqs = None
+        self.freqUnit = None
+        self.b = None
+        self.data_type = None
+        self.imSize = None
+        self.config_file = config_file
+
+        print('Planetary modeling  (ver {})'.format(version.VERSION))
+        if self.planet not in planet_list:
+            print("{} not found.".format(self.planet))
+            return
+
+        # Set up state_variables
+        kwargs = state_variables.init_state_variables(mode.lower(), **kwargs)
+        self.state_vars = kwargs.keys()
+        state_variables.set_state(self, set_mode='init', **kwargs)
+        self.mode = mode
+        self.kwargs = kwargs
+
+    def setup_logfile(self):
+        if self.write_log_file:
+            runStart = datetime.datetime.now()
+            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M%S"))
+            self.log = logging.LogIt(logFile)
+            self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
+        else:
+            self.log = None
+        self.data_return = data_handling.Data()
+        self.data_return.set('log', self.log)
+
+    def get_configfile(self):
+        self.config_file = os.path.join(self.planet, self.config_file)
+        if self.verbose:
+            print('Reading config file:  ', self.config_file)
+            print("\t'{}.config.display()' to see config parameters.".format(self.planet[0].lower()))
+        self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
+        self.config.show()
+
+    def state(self):
+        state_variables.show_state(self)
+
+    def initialize_atm(self):
+        #  ## Create atmosphere:  attributes are self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
+        self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+        self.atmos.run()
+
+    def initialize_alpha(self):
+        #  ## Read in absorption modules:  to change absorption, edit files under /constituents'
+        self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+
+    def initialize_brightness(self):
+        #  ## Next compute radiometric properties - initialize bright and return data class
+        self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
+
+    def initialize_IO(self):
+        # ## Create fileIO class
+        self.fIO = fileIO.FileIO(directory=self.output_directory)
+
+    def set_plots(self):
+        # ## Set plots
+        if self.plot_atm:
+            from radiobear.plotting import atm
+            atmplt = atm.plots(self.atmos)
+            atmplt.TP()
+            atmplt.Gas()
+            atmplt.Cloud()
+            atmplt.Properties()
+            atmplt.show()
+        if self.plot_bright:
+            from radiobear.plotting import bright, data
+            brtplt = bright.plots(self.bright)
+
+    def generate_freqs(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
             freqs:  frequency request as set in set_freq.  If 'reuse' it won't recompute absorption/layer (allows many b)
             b:  "impact parameter" request as set in set_b
@@ -61,10 +126,8 @@ class Planet(planet_base.PlanetBase):
             self.bright.resetLayers()
         self.data_return.set('f', freqs)
         self.data_return.set('freqUnit', freqUnit)
-        if self.plot_bright:
-            from radiobear.plotting import bright, data
-            brtplt = bright.plots(self.bright)
 
+    def generate_b(self):
         #  ##Set b, etc
         b = self.set_b(b, block)
         self.data_return.set('b', b)
