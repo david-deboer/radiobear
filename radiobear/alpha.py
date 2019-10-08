@@ -78,6 +78,20 @@ class Alpha:
                 for oc in other_to_copy[absorber]:
                     self.other_dict[absorber][oc] = getattr(self.config, oc)
 
+    def reset_layers(self):
+        self.layerAlpha = None
+
+    def get_layers(self, freqs, atm):
+        self.freqs = freqs
+        numLayers = len(atm.gas[0])
+        layerAlp = []
+        self.log.add('{} layers'.format(numLayers), self.verbose)
+        for layer in range(numLayers):
+            layerAlp.append(self.getAlpha(freqs, layer, atm, units=utils.alphaUnit))
+            if self.verbose == 'loud':
+                print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
+        self.layerAlpha = np.array(layerAlp).transpose()
+
     def start_generate_alpha(self):
         np.savez('{}/constituents'.format(self.scratch_directory), alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
         self.fp_gen_alpha = open('{}/absorb.dat'.format(self.scratch_directory), 'w')

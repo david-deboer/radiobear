@@ -27,14 +27,14 @@ class Planet(planet_base.PlanetBase):
                 mode:  sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
                 kwargs: 'verbose' and 'plot_amt', etc (and other state_vars - see show_state())"""
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
-        self.setup_logfile()
-        self.get_configfile()
+        self.set_logfile()
+        self.set_configfile()
+        self.set_data_return()
         if self.initialize:
-            self.initialize_atm()
-            self.initialize_alpha()
-            self.initialize_brightness()
-            self.initialize_IO()
-            self.set_plots()
+            self.init_atm()
+            self.init_alpha()
+            self.init_brightness()
+            self.init_IO()
 
     def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
@@ -43,36 +43,19 @@ class Planet(planet_base.PlanetBase):
             freqUnit:  unit that freqs is in
             block:  blocks to produce image (related to memory error...)"""
 
-        #  ##Set freqs
-        if self.use_existing_alpha or self.scale_existing_alpha:
-            freqs_read = np.load('{}/freqs.npy'.format(self.scratch_directory))
-            freqs = [f for f in freqs_read]
-            if self.verbose == 'loud':
-                print("Setting frequencies to ", freqs)
-        reuse = False
-        if isinstance(freqs, six.string_types) and freqs.lower() == 'reuse':
-            if self.freqs is None:
-                raise ValueError('Must set frequencies.')
-            reuse = True
-            freqs = self.freqs
-            freqUnit = self.freqUnit
-        else:
-            freqs, freqUnit = self.set_freq(freqs, freqUnit)
-            self.bright.resetLayers()
-        self.data_return.set('f', freqs)
-        self.data_return.set('freqUnit', freqUnit)
-        if self.plot_bright:
-            from radiobear.plotting import bright, data
-            brtplt = bright.plots(self.bright)
+        self.atmos.run()
+        atmplt = self.atm_plots()
+        if atmplot is not None:
+            atmp
 
-        #  ##Set b, etc
-        b = self.set_b(b, block)
-        self.data_return.set('b', b)
-        if self.data_type == 'image' and len(freqs) > 1:
-            print('Warning:  Image must be at only one frequency')
-            print('Using {} {}'.format(freqs[0], freqUnit))
-            self.freqs = list(freqs[0])
-            freqs = self.freqs
+
+        self.generate_freqs(freqs=freqs, freqUnit=freqUnit)
+        self.generate_b(b=b, block=block)
+
+        brtplt = self.bright_plots()
+
+        if self.data_type == 'image' and len(self.freqs) > 1:
+            raise ValueError('Warning:  Image must be at only one frequency')
         if self.verbose == 'loud':
             print('data_type = {}'.format(self.data_type))
 
@@ -146,146 +129,3 @@ class Planet(planet_base.PlanetBase):
             datplt.show()
 
         return self.data_return
-
-    def set_header(self, missed_planet):
-        if missed_planet:
-            self.header['orientation'] = '# orientation not set'
-            self.header['aspect'] = '# aspect tip, rotate not set'
-            self.header['rNorm'] = '# rNorm not set'
-        else:
-            self.header['orientation'] = '# orientation:   {}'.format(repr(self.config.orientation))
-            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
-            self.header['rNorm'] = '# rNorm: {}'.format(self.rNorm)
-            if self.data_type == 'image':
-                self.header['imgSize'] = '# imgSize: {}'.format(self.imSize)
-                resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
-                print('resolution = ', resolution)
-                self.header['res'] = '# res:  {} arcsec'.format(resolution)
-        self.header['data-type'] = '#* type:  {}'.format(self.data_type)
-        self.header['gtype'] = '# gtype: {}'.format(self.config.gtype)
-        self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req, self.config.Rpol)
-        self.header['distance'] = '# distance:  {} km'.format(self.config.distance)
-        self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
-        self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.start)
-        self.header['stop'] = "#* stop: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.stop)
-
-    def set_b(self, b, block):
-        """Process b request.
-           Sets data_type ('image', 'spectrum', 'profile'), and imSize
-
-           Returns list of b-pairs
-
-           Parameters:
-           ------------
-           b:   list of  pairs -> returns that list
-                one pair -> returns that as a list
-                float -> returns a full image grid
-                'disc' (or 'disk') -> returns [[0.0, 0.0]]
-                'stamp:bres:xmin,xmax,ymin,ymax' -> returns grid of postage stamp
-                'start:stop:step[<angle] -> string defining line
-                'n1,n2,n3[<angle]' -> csv list of b magnitudes
-           block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
-           """
-        self.header['b'] = '# b request:  {}  {}'.format(str(b), str(block))
-        # Deal with strings
-        if isinstance(b, six.string_types):
-            b = b.lower()
-            if b.startswith('dis'):
-                self.data_type = 'spectrum'
-                return [b]
-            if b.startswith('stamp'):
-                bres = float(b.split(':')[1])
-                bext = [float(x) for x in b.split(':')[2].split(',')]
-                b = []
-                for x in np.arange(bext[0], bext[1] + bres / 2.0, bres):
-                    for y in np.arange(bext[2], bext[3] + bres / 2.0, bres):
-                        b.append([y, x])
-                xbr = len(np.arange(bext[2], bext[3] + bres / 2.0, bres))
-                self.imSize = [xbr, len(b) / xbr]
-                self.data_type = 'image'
-            else:
-                b = b.split('<')
-                angle_b = 0.0 if len(b) == 1 else utils.d2r(float(b[1]))
-                if ',' in b[0]:
-                    mag_b = [float(x) for x in b[0].split(',')]
-                elif ':' in b[0]:
-                    mag_b = [float(x) for x in b[0].split(':')]
-                    mag_b = np.arange(mag_b[0], mag_b[1] + mag_b[2] / 2.0, mag_b[2])
-                ab = self.config.Rpol / self.config.Req
-                rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
-                b = []
-                for v in mag_b:
-                    if v < 0.99 * rab:
-                        b.append([v * np.cos(angle_b), v * np.sin(angle_b)])
-                self.data_type = 'profile'
-            return b
-        if isinstance(b, float):  # this generates a grid at that spacing and blocking
-            grid = -1.0 * np.flipud(np.arange(b, 1.5 + b, b))
-            grid = np.concatenate((grid, np.arange(0.0, 1.5 + b, b)))
-            # get blocks
-            bsplit = len(grid) / abs(block[1])
-            lastRow = block[0] / abs(block[1])
-            if abs(block[1]) == 1:
-                lastRow = 0
-            b = []
-            for i in range(int(bsplit + lastRow)):
-                ii = i + int((block[0] - 1) * bsplit)
-                vrow = grid[ii]
-                for vcol in grid:
-                    b.append([vcol, vrow])
-            self.imSize = [len(grid), len(b) / len(grid)]
-            self.data_type = 'image'
-            return b
-        shape_b = np.shape(b)
-        if len(shape_b) == 1:
-            self.data_type = 'spectrum'
-            return [b]
-        else:
-            self.data_type = 'spectrum' if shape_b[0] < 5 else 'profile'
-            return b
-
-    def set_freq(self, freqs, freqUnit):
-        """ Process frequency request.
-            Return a list converted from freqUnit to processingFreqUnit and reassigns freqUnit procUnit.
-
-            Parameters:
-            ------------
-            freqs:  list -> returns that list
-                    csv list of values -> converts to list
-                    float/int -> returns that one value as a list
-                    '<start>:<stop>:<step>' -> returns arange of that
-                    '<start>;<stop>;<nstep>' -> returns logspace of that
-                    '<filename>' -> returns loadtxt of that
-            freqUnit:  frequency unit of supplied freqs
-        """
-        self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
-        # ## Process frequency range "request"
-        if isinstance(freqs, list):
-            pass
-        elif isinstance(freqs, np.ndarray):
-            freqs = list(freqs)
-        elif isinstance(freqs, six.string_types) and ',' in freqs:
-            freqs = [float(x) for x in freqs.split(',')]
-        elif isinstance(freqs, (float, int)):
-            freqs = [float(freqs)]
-        elif isinstance(freqs, six.string_types) and ':' in freqs:
-            fstart, fstop, fstep = [float(x) for x in freqs.split(':')]
-            freqs = list(np.arange(fstart, fstop + fstep / 2.0, fstep))
-        elif isinstance(freqs, six.string_types) and ';' in freqs:
-            fstart, fstop, nstep = [float(x) for x in freqs.split(';')]
-            freqs = list(np.logspace(np.log10(fstart), np.log10(fstop), nstep))
-        elif isinstance(freqs, six.string_types):
-            freqs = list(np.loadtxt(freqs))
-        else:
-            raise ValueError('Invalid format for frequency request')
-
-        for i in range(len(freqs)):
-            freqs[i] = utils.convert_unit(freqs[i], freqUnit)
-        if len(freqs) > 1:
-            s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs), freqs[0], freqs[-1], utils.proc_unit(freqUnit))
-        else:
-            s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
-        self.log.add(s, self.verbose)
-        self.freqs = freqs
-        self.freqUnit = utils.proc_unit(freqUnit)
-        return freqs, self.freqUnit

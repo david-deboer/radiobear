@@ -48,7 +48,7 @@ class PlanetBase:
         self.mode = mode
         self.kwargs = kwargs
 
-    def setup_logfile(self):
+    def set_logfile(self):
         if self.write_log_file:
             runStart = datetime.datetime.now()
             logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M%S"))
@@ -56,10 +56,12 @@ class PlanetBase:
             self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
+
+    def set_data_return(self):
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
-    def get_configfile(self):
+    def set_configfile(self):
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
@@ -70,43 +72,47 @@ class PlanetBase:
     def state(self):
         state_variables.show_state(self)
 
-    def initialize_atm(self):
+    def init_atm(self):
         #  ## Create atmosphere:  attributes are self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
-        self.atmos.run()
 
-    def initialize_alpha(self):
+    def init_alpha(self):
         #  ## Read in absorption modules:  to change absorption, edit files under /constituents'
         self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **self.kwargs)
 
-    def initialize_brightness(self):
+    def init_brightness(self):
         #  ## Next compute radiometric properties - initialize bright and return data class
         self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
 
-    def initialize_IO(self):
+    def init_IO(self):
         # ## Create fileIO class
         self.fIO = fileIO.FileIO(directory=self.output_directory)
 
-    def set_plots(self):
+    def set_bright_plots(self):
+        if self.plot_bright:
+            from radiobear.plotting import bright, data
+            return bright.plots(self.bright)
+        else:
+            return None
+
+    def set_atm_plots(self):
         # ## Set plots
         if self.plot_atm:
             from radiobear.plotting import atm
-            atmplt = atm.plots(self.atmos)
-            atmplt.TP()
-            atmplt.Gas()
-            atmplt.Cloud()
-            atmplt.Properties()
-            atmplt.show()
-        if self.plot_bright:
-            from radiobear.plotting import bright, data
-            brtplt = bright.plots(self.bright)
+            return atm.plots(self.atmos)
+        else:
+            return None
 
-    def generate_freqs(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
-        """Runs the model to produce the brightness temperature, weighting functions etc etc
-            freqs:  frequency request as set in set_freq.  If 'reuse' it won't recompute absorption/layer (allows many b)
-            b:  "impact parameter" request as set in set_b
-            freqUnit:  unit that freqs is in
-            block:  blocks to produce image (related to memory error...)"""
+    def generate_freqs(self, freqs='reuse', freqUnit='GHz'):
+        """
+        Generates the frequencies to use.  Sets self.freqs and self.freqUnit.
+
+        Parameters
+        ----------
+            freqs :
+            freqUnit : str
+                unit for freqs
+        """
 
         #  ##Set freqs
         if self.use_existing_alpha or self.scale_existing_alpha:
@@ -119,38 +125,26 @@ class PlanetBase:
             if self.freqs is None:
                 raise ValueError('Must set frequencies.')
             reuse = True
-            freqs = self.freqs
-            freqUnit = self.freqUnit
         else:
-            freqs, freqUnit = self.set_freq(freqs, freqUnit)
-            self.bright.resetLayers()
-        self.data_return.set('f', freqs)
-        self.data_return.set('freqUnit', freqUnit)
+            self.freqs, self.freqUnit = self.set_freq(freqs, freqUnit)
+            self.alpha.resetLayers()
+        self.data_return.set('f', self.freqs)
+        self.data_return.set('freqUnit', self.freqUnit)
 
-    def generate_b(self):
+    def generate_b(self, b=[0.0, 0.0], block=[1, 1]):
+        """Runs the model to produce the brightness temperature, weighting functions etc etc
+            freqs:  frequency request as set in set_freq.  If 'reuse' it won't recompute absorption/layer (allows many b)
+            b:  "impact parameter" request as set in set_b
+            block:  blocks to produce image (related to memory error...)"""
         #  ##Set b, etc
-        b = self.set_b(b, block)
-        self.data_return.set('b', b)
-        if self.data_type == 'image' and len(freqs) > 1:
-            print('Warning:  Image must be at only one frequency')
-            print('Using {} {}'.format(freqs[0], freqUnit))
-            self.freqs = list(freqs[0])
-            freqs = self.freqs
-        if self.verbose == 'loud':
-            print('data_type = {}'.format(self.data_type))
+        self.b = self.set_b(b, block)
+        self.data_return.set('b', self.b)
 
-        # ##Initialize other stuff
+    def init_run(self):
         self.Tb = []
-        btmp = ''
         self.rNorm = None
         self.tip = None
         self.rotate = None
-        if self.data_type == 'image':  # We now treat it as an image at one frequency
-            if self.verbose == 'loud':
-                print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
-            imtmp = []
-            if abs(block[1]) > 1:
-                btmp = '_{:02d}of{:02d}'.format(block[0], abs(block[1]))
 
         #  ##Start b loop
         runStart = datetime.datetime.now()
