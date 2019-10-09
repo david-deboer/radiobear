@@ -4,6 +4,7 @@ import numpy as np
 import datetime
 import os
 import six
+from argparse import Namespace
 from . import atmosphere
 from . import config
 from . import alpha
@@ -42,13 +43,12 @@ class PlanetBase:
             return
 
         # Set up state_variables
-        kwargs = state_variables.init_state_variables(mode.lower(), **kwargs)
-        self.state_vars = kwargs.keys()
-        state_variables.set_state(self, set_mode='init', **kwargs)
-        self.mode = mode
-        self.kwargs = kwargs
+        self.mode = mode.lower()
+        self.kwargs = state_variables.init_state_variables(self.mode, **kwargs)
+        self.state_vars = self.kwargs.keys()
+        state_variables.set_state(self, set_mode='init', **self.kwargs)
 
-    def set_logfile(self):
+    def set_log(self):
         if self.write_log_file:
             runStart = datetime.datetime.now()
             logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M%S"))
@@ -61,7 +61,7 @@ class PlanetBase:
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
-    def set_configfile(self):
+    def set_config(self):
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
@@ -72,19 +72,20 @@ class PlanetBase:
     def state(self):
         state_variables.show_state(self)
 
-    def init_atm(self):
+    def init_atmos(self):
         #  ## Create atmosphere:  attributes are self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
 
     def init_alpha(self):
         #  ## Read in absorption modules:  to change absorption, edit files under /constituents'
         self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+        self.alpha.reset_layers()
 
-    def init_brightness(self):
+    def init_bright(self):
         #  ## Next compute radiometric properties - initialize bright and return data class
         self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
 
-    def init_IO(self):
+    def init_fIO(self):
         # ## Create fileIO class
         self.fIO = fileIO.FileIO(directory=self.output_directory)
 
@@ -113,8 +114,6 @@ class PlanetBase:
             freqUnit : str
                 unit for freqs
         """
-
-        #  ##Set freqs
         if self.use_existing_alpha or self.scale_existing_alpha:
             freqs_read = np.load('{}/freqs.npy'.format(self.scratch_directory))
             freqs = [f for f in freqs_read]
@@ -138,71 +137,59 @@ class PlanetBase:
             block:  blocks to produce image (related to memory error...)"""
         #  ##Set b, etc
         self.b = self.set_b(b, block)
+        self.block = block
         self.data_return.set('b', self.b)
+
+    def set_image(self):
+        if self.data_type != 'image':
+            return False
+        if len(self.freqs) > 1:
+            raise ValueError('Warning:  Image must be at only one frequency')
+        if self.verbose == 'loud':
+            print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
+        block_postfix = '_'
+        if abs(block[1]) > 1:
+            block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
+        return Namespace(block=block_postfix, imrow=[])
+
+    def alpha_layers(self):
+        self.alpha.get_layers(self.freqs, self.atm)
+        if self.save_alpha:
+            self.alpha.complete_generate_alpha()
 
     def init_run(self):
         self.Tb = []
         self.rNorm = None
         self.tip = None
         self.rotate = None
+        if self.verbose == 'loud':
+            print('data_type = {}'.format(self.data_type))
 
-        #  ##Start b loop
-        runStart = datetime.datetime.now()
-        self.log.add('Run start ' + str(runStart), self.verbose)
+    def get_bright(self, b, is_img):
+        Tb = self.bright.single(self.freqs, self.atmos, b, self.alpha, self.config.orientation)
+        if is_img:
+            is_img.imrow.append(Tb[0])
+            if not (i + 1) % self.imSize[0]:
+                self.Tb.append(is_img.imrow)
+                isimg.imrow = []
+        else:
+            self.Tb.append(Tb)
+        if self.bright.travel is not None:
+            if self.rNorm is None:
+                self.rNorm = self.bright.travel.rNorm
+            if self.tip is None:
+                self.tip = self.bright.travel.tip
+            if self.rotate is None:
+                self.rotate = self.bright.travel.rotate
+        return Tb
+
+    def populate_data_return(self, runStart, runStop):
         self.data_return.set('start', runStart)
-        for i, bv in enumerate(b):
-            if self.verbose == 'loud':
-                print('{} of {} (view {})  '.format(i + 1, len(b), bv), end='')
-            Tbt = self.bright.single(freqs, self.atmos, bv, self.alpha, self.config.orientation)
-            if self.bright.travel is not None:
-                if self.rNorm is None:
-                    self.rNorm = self.bright.travel.rNorm
-                if self.tip is None:
-                    self.tip = self.bright.travel.tip
-                if self.rotate is None:
-                    self.rotate = self.bright.travel.rotate
-            if self.data_type == 'image':
-                imtmp.append(Tbt[0])
-                if not (i + 1) % self.imSize[0]:
-                    self.Tb.append(imtmp)
-                    imtmp = []
-            else:
-                self.Tb.append(Tbt)
-            if self.plot_bright:
-                brtplt.raypath()
-                brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
-                brtplt.intW()
-                brtplt.W(self.normalize_weighting)
-        self.data_return.set('Tb', self.Tb)
-        missed_planet = self.rNorm is None
-
-        if self.generate_alpha:
-            self.alpha.complete_generate_alpha()
-
-        runStop = datetime.datetime.now()
-        self.log.add('Run stop ' + str(runStop), self.verbose)
         self.data_return.set('stop', runStop)
+        self.data_return.set('Tb', self.Tb)
         self.data_return.set('type', self.data_type)
-        self.set_header(missed_planet)
         self.data_return.set('header', self.header)
         self.data_return.set('logfile', self.log.logfile)
-
-        #  ##Write output files
-        if self.write_output_files:
-            output_file = '{}/{}_{}{}_{}.dat'.format(self.output_directory, self.planet, self.data_type, btmp, runStart.strftime("%Y%m%d_%H%M%S"))
-            if self.verbose == 'loud':
-                print('\nWriting {} data to {}'.format(self.data_type, output_file))
-            self.fIO.write(output_file, self.data_return)
-        if self.plot_bright:
-            brtplt.alpha()
-            datplt = data.plots(self.data_return)
-            if self.data_type == 'spectrum' or self.data_type == 'profile' and len(freqs) > 1:
-                datplt.Tb()
-            if self.data_type == 'profile':
-                datplt.profile()
-            datplt.show()
-
-        return self.data_return
 
     def set_header(self, missed_planet):
         if missed_planet:

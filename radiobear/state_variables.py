@@ -4,14 +4,13 @@ import six
 
 def init_state_variables(mode, **kwargs):
     state_vars = {'batch_mode': False,
-                  'initialize': True,
                   'write_output_files': True,
                   'write_log_file': True,
                   'plot': None,  # Provided as a courtesy and for backward compatibility
                   'plot_atm': True,
                   'plot_bright': True,
                   'verbose': True,  # 0/None/False, 'normal'/True, 'loud'
-                  'generate_alpha': False,
+                  'save_alpha': False,
                   'use_existing_alpha': False,
                   'scale_existing_alpha': False,
                   'normalize_weighting': True,

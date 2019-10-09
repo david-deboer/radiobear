@@ -20,21 +20,6 @@ class Brightness():
         self.state_vars = kwargs.keys()
         state_variables.set_state(self, set_mode='init', **kwargs)
         self.log = logging.setup(log)
-        self.layerAlpha = None
-
-    def resetLayers(self):
-        self.layerAlpha = None
-
-    def layerAbsorption(self, freqs, atm, alpha):
-        self.freqs = freqs
-        numLayers = len(atm.gas[0])
-        layerAlp = []
-        self.log.add('{} layers'.format(numLayers), self.verbose)
-        for layer in range(numLayers):
-            layerAlp.append(alpha.getAlpha(freqs, layer, atm, units=utils.alphaUnit))
-            if self.verbose == 'loud':
-                print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
-        self.layerAlpha = np.array(layerAlp).transpose()
 
     def state(self):
         state_variables.show_state(self)
@@ -43,10 +28,11 @@ class Brightness():
         """This computes the brightness temperature along one ray path"""
 
         disc_average = utils.b_type(b).startswith('dis')
+        self.alpha = alpha
         if disc_average:
             b = [0.0, 0.0]
-        if self.layerAlpha is None:
-            self.layerAbsorption(freqs, atm, alpha)
+        if self.alpha.layers is None:
+            self.alpha.get_layers(freqs, atm)
         # get path lengths (ds_layer) vs layer number (num_layer) - currently frequency independent refractivity
         print_meta = (self.verbose == 'loud')
         travel = ray.compute_ds(atm, b, orientation, gtype=None, verbose=print_meta)
@@ -82,12 +68,12 @@ class Brightness():
             self.P.append((P_layers[ii] + P_layers[ii1]) / 2.0)
             self.z.append((z_layers[ii] + z_layers[ii1]) / 2.0)
 
-            if self.layerAlpha is None:
+            if self.alpha.layers is None:
                 print("is None at ", i)
             for j, f in enumerate(freqs):
                 if not alpha.config.Doppler:
-                    a1 = self.layerAlpha[j][ii1]
-                    a0 = self.layerAlpha[j][ii]
+                    a1 = self.alpha.layers[j][ii1]
+                    a0 = self.alpha.layers[j][ii]
                 else:
                     print("\n\nDoppler currently broken since the getAlpha call is different.")
                     fshifted = [[f / travel.doppler[i]], [f / travel.doppler[i + 1]]]
@@ -159,7 +145,7 @@ class Brightness():
             print("{}:  Pressure, alpha, weight, tau, Tb".format(filename))
             for j in range(len(self.P)):
                 s = '{}\t'.format(repr(self.P[j]))
-                s += '{}\t'.format(repr(self.layerAlpha[i][j]))
+                s += '{}\t'.format(repr(self.alpha.layers[i][j]))
                 s += '{}\t'.format(repr(self.W[i][j]))
                 s += '{}\t'.format(repr(self.tau[i][j]))
                 s += '{}\n'.format(repr(self.Tb_lyr[i][j]))
@@ -179,7 +165,7 @@ class Brightness():
         for j in range(len(self.P)):
             s = ('{}\t{:.2f}\t').format(repr(self.P[j]), self.z[j])
             for i in range(len(self.freqs)):
-                s += '{}\t'.format(repr(self.layerAlpha[i][j]))
+                s += '{}\t'.format(repr(self.alpha.layers[i][j]))
             s += '\n'
             fp.write(s)
         s = ('{} ({} x {})').format(filename, i + 1, j + 1)

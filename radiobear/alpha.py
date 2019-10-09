@@ -79,7 +79,7 @@ class Alpha:
                     self.other_dict[absorber][oc] = getattr(self.config, oc)
 
     def reset_layers(self):
-        self.layerAlpha = None
+        self.layers = None
 
     def get_layers(self, freqs, atm):
         self.freqs = freqs
@@ -90,7 +90,7 @@ class Alpha:
             layerAlp.append(self.getAlpha(freqs, layer, atm, units=utils.alphaUnit))
             if self.verbose == 'loud':
                 print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
-        self.layerAlpha = np.array(layerAlp).transpose()
+        self.layers = np.array(layerAlp).transpose()
 
     def start_generate_alpha(self):
         np.savez('{}/constituents'.format(self.scratch_directory), alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
