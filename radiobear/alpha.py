@@ -54,6 +54,7 @@ class Alpha:
         self.log = logging.setup(log)
         self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
+        self.absorb_layer_save_data = []
 
         # get config
         if config is None or isinstance(config, six.string_types):
@@ -65,8 +66,6 @@ class Alpha:
             self.existing_alpha_setup()
         else:
             self.formalisms()
-        if self.save_alpha:
-            self.start_generate_alpha()
         # copy config back into other_dict as needed
         other_to_copy = {}
         other_to_copy['h2'] = ['h2state', 'h2newset']
@@ -80,6 +79,7 @@ class Alpha:
 
     def reset_layers(self):
         self.layers = None
+        self.absorb_layer_save_data = []
 
     def get_layers(self, freqs, atm):
         self.freqs = freqs
@@ -92,27 +92,14 @@ class Alpha:
                 print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
         self.layers = np.array(layerAlp).transpose()
 
-    def start_generate_alpha(self):
-        np.savez('{}/constituents'.format(self.scratch_directory), alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
-        self.fp_gen_alpha = open('{}/absorb.dat'.format(self.scratch_directory), 'w')
-
-    def complete_generate_alpha(self):
-        self.fp_gen_alpha.close()
-        data = []
-        n_freqs = len(self.freqs)
-        with open('{}/absorb.dat'.format(self.scratch_directory), 'r') as fp:
-            for i, line in enumerate(fp):
-                if not i % n_freqs:
-                    if i:
-                        data.append(layer)
-                    layer = []
-                v = [float(x) for x in line.split()]
-                layer.append(v)
-            data.append(layer)
-        data = np.array(data)
-        np.save('{}/absorb'.format(self.scratch_directory), data)
-        os.remove('{}/absorb.dat'.format(self.scratch_directory))
-        np.save('{}/freqs'.format(self.scratch_directory), self.freqs)
+    def write_alpha(self):
+        constfile = os.path.join(self.scratch_directory, 'constituents')
+        absorbfile = os.path.join(self.scratch_directory, 'absorb')
+        freqfile = os.path.join(self.scratch_directory, 'freqs')
+        np.savez(constfile, alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
+        self.absorb_layer_save_data = np.array(self.absorb_layer_save_data)
+        np.save(absorbfile, self.absorb_layer_save_data)
+        np.save(freqfile, self.freqs)
 
     def existing_alpha_setup(self):
         if self.alpha_data is None:
@@ -225,17 +212,17 @@ class Alpha:
         for i in range(len(freqs)):
             totalAbsorption[i] = absorb[i].sum()
         if self.save_alpha:
-            self.write_layer(absorb, totalAbsorption)
+            self.data_layer(absorb, totalAbsorption)
         del absorb
         return totalAbsorption
 
-    def write_layer(self, absorb, totalAbsorption):
+    def data_layer(self, absorb, totalAbsorption):
+        this_layer = []
         for i in range(len(absorb)):
-            s = ''
             for a2 in absorb[i]:
-                s += '{} '.format(a2)
-            s += '{}\n'.format(totalAbsorption[i])
-            self.fp_gen_alpha.write(s)
+                this_layer.append(a2)
+            this_layer.append(totalAbsorption[i])
+        self.absorb_layer_save_data.append(this_layer)
 
     def state(self):
         state_variables.show_state(self)

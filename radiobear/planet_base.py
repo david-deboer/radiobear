@@ -156,7 +156,7 @@ class PlanetBase:
     def alpha_layers(self):
         self.alpha.get_layers(self.freqs, self.atmos)
         if self.save_alpha:
-            self.alpha.complete_generate_alpha()
+            self.alpha.write_alpha()
 
     def init_run(self):
         self.Tb = []
