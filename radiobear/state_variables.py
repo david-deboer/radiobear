@@ -57,7 +57,7 @@ def init_state_variables(mode, **kwargs):
             raise ValueError("Aborting since you probably wanted this keyword")
 
     # check various constraints
-    only_one_allowed = ['batch_mode', 'generate_alpha', 'use_existing_alpha', 'scale_existing_alpha']
+    only_one_allowed = ['batch_mode', 'save_alpha', 'use_existing_alpha', 'scale_existing_alpha']
     xxx = [state_vars[x] for x in only_one_allowed]
     if xxx.count(True) > 1:
         print(only_one_allowed)

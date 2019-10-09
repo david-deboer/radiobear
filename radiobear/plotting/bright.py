@@ -22,7 +22,7 @@ class plots:
                 label = ('a: {:.1f} GHz').format(f)
             else:
                 label = ('{:.1f} cm').format(30.0 / f)
-            plt.loglog(self.bright.layerAlpha[i][1:], self.bright.P, label=label)
+            plt.loglog(self.bright.alpha.layers[i][1:], self.bright.P, label=label)
         self._frame_plot('dB/km', True)
 
     def intW(self):

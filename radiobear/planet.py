@@ -42,8 +42,8 @@ class Planet(planet_base.PlanetBase):
             freqUnit:  unit that freqs is in
             block:  blocks to produce image (related to memory error...)"""
 
-        atmplt = self.atm_plots()
-        if atmplot is not None:
+        atmplt = self.set_atm_plots()
+        if atmplt is not None:
             atmplt.TP()
             atmplt.Gas()
             atmplt.Cloud()
@@ -52,7 +52,7 @@ class Planet(planet_base.PlanetBase):
         self.generate_freqs(freqs=freqs, freqUnit=freqUnit)
         self.generate_b(b=b, block=block)
 
-        brtplt = self.bright_plots()
+        brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
 
         # For now just one profile, but can extend...
@@ -72,9 +72,9 @@ class Planet(planet_base.PlanetBase):
                 brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
                 brtplt.intW()
                 brtplt.W(self.normalize_weighting)
-        missed_planet = self.rNorm is None
-        self.set_header(missed_planet)
         runStop = datetime.datetime.now()
+        missed_planet = self.rNorm is None
+        self.set_header(missed_planet, runStart, runStop)
         self.log.add('Run stop ' + str(runStop), self.verbose)
         self.populate_data_return(runStart, runStop)
 
@@ -87,7 +87,6 @@ class Planet(planet_base.PlanetBase):
             self.fIO.write(output_file, self.data_return)
         if brtplt is not None:
             brtplt.alpha()
-            datplt = data.plots(self.data_return)
             if self.data_type == 'spectrum' or self.data_type == 'profile' and len(freqs) > 1:
                 datplt.Tb()
             if self.data_type == 'profile':

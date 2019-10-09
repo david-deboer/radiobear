@@ -65,7 +65,7 @@ class Alpha:
             self.existing_alpha_setup()
         else:
             self.formalisms()
-        if self.generate_alpha:
+        if self.save_alpha:
             self.start_generate_alpha()
         # copy config back into other_dict as needed
         other_to_copy = {}
@@ -167,7 +167,7 @@ class Alpha:
     def getAlpha(self, freqs, layer, atm, units='invcm'):
         """This is a wrapper to get the absorption coefficient, either from calculating from formalisms
            or reading from file"""
-        if self.freqs is None and self.generate_alpha:
+        if self.freqs is None and self.save_alpha:
             self.freqs = freqs
         if self.use_existing_alpha or self.scale_existing_alpha:
             if len(self.alpha_data) != len(atm.gas[0]):
@@ -224,7 +224,7 @@ class Alpha:
         totalAbsorption = np.zeros_like(freqs)
         for i in range(len(freqs)):
             totalAbsorption[i] = absorb[i].sum()
-        if self.generate_alpha:
+        if self.save_alpha:
             self.write_layer(absorb, totalAbsorption)
         del absorb
         return totalAbsorption

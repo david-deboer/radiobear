@@ -92,7 +92,7 @@ class PlanetBase:
     def set_bright_plots(self):
         if self.plot_bright:
             from radiobear.plotting import bright, data
-            return bright.plots(self.bright)
+            return bright.plots(self.bright), data.plots(self.data_return)
         else:
             return None
 
@@ -126,7 +126,7 @@ class PlanetBase:
             reuse = True
         else:
             self.freqs, self.freqUnit = self.set_freq(freqs, freqUnit)
-            self.alpha.resetLayers()
+            self.alpha.reset_layers()
         self.data_return.set('f', self.freqs)
         self.data_return.set('freqUnit', self.freqUnit)
 
@@ -141,19 +141,20 @@ class PlanetBase:
         self.data_return.set('b', self.b)
 
     def set_image(self):
+        block_postfix = '_'
         if self.data_type != 'image':
-            return False
+            return Namespace(true=False, block=block_postfix, imrow=[])
+
         if len(self.freqs) > 1:
             raise ValueError('Warning:  Image must be at only one frequency')
         if self.verbose == 'loud':
             print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
-        block_postfix = '_'
         if abs(block[1]) > 1:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
-        return Namespace(block=block_postfix, imrow=[])
+        return Namespace(true=True, block=block_postfix, imrow=[])
 
     def alpha_layers(self):
-        self.alpha.get_layers(self.freqs, self.atm)
+        self.alpha.get_layers(self.freqs, self.atmos)
         if self.save_alpha:
             self.alpha.complete_generate_alpha()
 
@@ -167,7 +168,7 @@ class PlanetBase:
 
     def get_bright(self, b, is_img):
         Tb = self.bright.single(self.freqs, self.atmos, b, self.alpha, self.config.orientation)
-        if is_img:
+        if is_img.true:
             is_img.imrow.append(Tb[0])
             if not (i + 1) % self.imSize[0]:
                 self.Tb.append(is_img.imrow)
@@ -191,7 +192,7 @@ class PlanetBase:
         self.data_return.set('header', self.header)
         self.data_return.set('logfile', self.log.logfile)
 
-    def set_header(self, missed_planet):
+    def set_header(self, missed_planet, run_start, run_stop):
         if missed_planet:
             self.header['orientation'] = '# orientation not set'
             self.header['aspect'] = '# aspect tip, rotate not set'
@@ -210,8 +211,8 @@ class PlanetBase:
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req, self.config.Rpol)
         self.header['distance'] = '# distance:  {} km'.format(self.config.distance)
         self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
-        self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.start)
-        self.header['stop'] = "#* stop: {:%Y-%m-%d %H:%M:%S}".format(self.data_return.stop)
+        self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(run_start)
+        self.header['stop'] = "#* stop: {:%Y-%m-%d %H:%M:%S}".format(run_stop)
 
     def set_b(self, b, block):
         """Process b request.

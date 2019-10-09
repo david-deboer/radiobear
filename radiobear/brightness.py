@@ -28,9 +28,12 @@ class Brightness():
         """This computes the brightness temperature along one ray path"""
 
         disc_average = utils.b_type(b).startswith('dis')
-        self.alpha = alpha
         if disc_average:
             b = [0.0, 0.0]
+        self.alpha = alpha
+        self.freqs = freqs
+        self.b = b
+
         if self.alpha.layers is None:
             self.alpha.get_layers(freqs, atm)
         # get path lengths (ds_layer) vs layer number (num_layer) - currently frequency independent refractivity
