@@ -69,8 +69,11 @@ class Planet(planet_base.PlanetBase):
         is_img = self.set_image()
 
         # For now just one profile, but can extend...
+        runStart = datetime.datetime.now()
         if not reuse:
             self.alpha_layers()
+        runStop = datetime.datetime.now()
+        print("Absoprtion calc took {:.1f} s".format((runStop - runStart).microseconds / 1e5))
 
         #  Loop over b values
         self.init_run()
@@ -80,12 +83,13 @@ class Planet(planet_base.PlanetBase):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')
-            self.bright_run(b=bv, is_img=is_img, brtplt=brtplot)
+            self.bright_run(b=bv, is_img=is_img, brtplt=brtplt)
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)
         self.log.add('Run stop ' + str(runStop), self.verbose)
         self.populate_data_return(runStart, runStop)
+        print("RT calc took {:.1f} s".format((runStop - runStart).microseconds / 1e5))
 
         #  ##Write output files
         if self.write_output_files:

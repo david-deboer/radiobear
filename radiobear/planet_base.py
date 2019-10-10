@@ -58,7 +58,7 @@ class PlanetBase:
         self.kwargs = state_variables.init_state_variables(self.mode, **kwargs)
         self.state_vars = self.kwargs.keys()
         state_variables.set_state(self, set_mode='init', **self.kwargs)
-        print("\n'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
+        print("\t'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
 
     def set_log(self):
         """
@@ -286,7 +286,7 @@ class PlanetBase:
                 self.rotate = self.bright.travel.rotate
         if brtplt is not None:
             brtplt.raypath()
-            brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
+            brtplt.observer(b=b, req=self.config.Req, rpol=self.config.Rpol)
             brtplt.intW()
             brtplt.W(self.normalize_weighting)
 
