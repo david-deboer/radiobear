@@ -104,7 +104,7 @@ class PlanetBase:
         else:
             return None
 
-    def generate_freqs(self, freqs='reuse', freqUnit='GHz'):
+    def generate_freqs(self, freqs, freqUnit='GHz'):
         """
         Generates the frequencies to use.  Sets self.freqs and self.freqUnit.
 
@@ -119,16 +119,13 @@ class PlanetBase:
             freqs = [f for f in freqs_read]
             if self.verbose == 'loud':
                 print("Setting frequencies to ", freqs)
-        reuse = False
-        if isinstance(freqs, six.string_types) and freqs.lower() == 'reuse':
-            if self.freqs is None:
-                raise ValueError('Must set frequencies.')
-            reuse = True
+            self.freqs = freqs
         else:
-            self.freqs, self.freqUnit = self.set_freq(freqs, freqUnit)
+            self.freqs, self.freqUnit, reuse = self.set_freq(freqs, freqUnit)
             self.alpha.reset_layers()
         self.data_return.set('f', self.freqs)
         self.data_return.set('freqUnit', self.freqUnit)
+        return reuse
 
     def generate_b(self, b=[0.0, 0.0], block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
@@ -326,11 +323,22 @@ class PlanetBase:
 
         for i in range(len(freqs)):
             freqs[i] = utils.convert_unit(freqs[i], freqUnit)
-        if len(freqs) > 1:
-            s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs), freqs[0], freqs[-1], utils.proc_unit(freqUnit))
+        reuse = False
+        if len(self.freqs) == len(freqs):
+            reuse = True
+            for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
+                if (fslf - flcl) / fslf > 0.01:
+                    reuse = False
+                    break
+        if reuse:
+            freqs = self.freqs
+            freqUnit = self.freqUnit
         else:
-            s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
-        self.log.add(s, self.verbose)
-        self.freqs = freqs
-        self.freqUnit = utils.proc_unit(freqUnit)
-        return freqs, self.freqUnit
+            if len(freqs) > 1:
+                s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs), freqs[0], freqs[-1], utils.proc_unit(freqUnit))
+            else:
+                s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
+            self.log.add(s, self.verbose)
+            self.freqs = freqs
+            self.freqUnit = utils.proc_unit(freqUnit)
+        return freqs, self.freqUnit, reuse

@@ -35,11 +35,11 @@ class Planet(planet_base.PlanetBase):
         if run_atmos:
             self.atmos.run()
 
-    def run(self, freqs='reuse', b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
+    def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """Runs the model to produce the brightness temperature, weighting functions etc etc
-            freqs:  frequency request as set in set_freq.  If 'reuse' it won't recompute absorption/layer (allows many b)
+            freqs:  frequency request as set in set_freq.
             b:  "impact parameter" request as set in set_b
-            freqUnit:  unit that freqs is in
+            freqUnit:  unit of freqs
             block:  blocks to produce image (related to memory error...)"""
 
         atmplt = self.set_atm_plots()
@@ -49,14 +49,15 @@ class Planet(planet_base.PlanetBase):
             atmplt.Cloud()
             atmplt.Properties()
             atmplt.show()
-        self.generate_freqs(freqs=freqs, freqUnit=freqUnit)
+        reuse = self.generate_freqs(freqs=freqs, freqUnit=freqUnit)
         self.generate_b(b=b, block=block)
 
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
 
         # For now just one profile, but can extend...
-        self.alpha_layers()
+        if not self.reuse:
+            self.alpha_layers()
 
         #  Loop over b values
         self.init_run()
