@@ -39,7 +39,7 @@ class PlanetBase:
     def __init__(self, name, mode='normal', config_file='config.par', **kwargs):
         self.planet = name.capitalize()
         self.header = {}
-        self.freqs = None
+        self.freqs = []
         self.freqUnit = None
         self.b = None
         self.data_type = None
@@ -280,8 +280,8 @@ class PlanetBase:
         run_stop : datetime
             Time run ended
         """
-        self.data_return.set('start', runStart)
-        self.data_return.set('stop', runStop)
+        self.data_return.set('start', run_start)
+        self.data_return.set('stop', run_stop)
         self.data_return.set('Tb', self.Tb)
         self.data_return.set('type', self.data_type)
         self.data_return.set('header', self.header)

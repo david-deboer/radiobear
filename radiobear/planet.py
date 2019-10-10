@@ -39,6 +39,13 @@ class Planet(planet_base.PlanetBase):
             getattr(self, 'init_{}'.format(init))()
         if run_atmos:
             self.atmos.run()
+            atmplt = self.set_atm_plots()
+            if atmplt is not None:
+                atmplt.TP()
+                atmplt.Gas()
+                atmplt.Cloud()
+                atmplt.Properties()
+                atmplt.show()
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """
@@ -60,13 +67,6 @@ class Planet(planet_base.PlanetBase):
         data_return object
         """
 
-        atmplt = self.set_atm_plots()
-        if atmplt is not None:
-            atmplt.TP()
-            atmplt.Gas()
-            atmplt.Cloud()
-            atmplt.Properties()
-            atmplt.show()
         reuse = self.set_freqs(freqs=freqs, freqUnit=freqUnit)
         self.set_b(b=b, block=block)
 

@@ -1,6 +1,10 @@
 from __future__ import print_function, absolute_import, division
 
 from argparse import Namespace
+import numpy as np
+import six
+
+from . import utils
 
 
 def set_b(b, block=[1, 1]):
@@ -76,7 +80,7 @@ def set_b(b, block=[1, 1]):
     shape_b = np.shape(b)
     if len(shape_b) == 1:
         return_value.data_type = 'spectrum'
-        return.value.b = [b]
+        return_value.b = [b]
     else:
         return_value.data_type = 'spectrum' if shape_b[0] < 5 else 'profile'
         return_value.b = b
