@@ -2,31 +2,36 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
-import os
+import os.path
 import six
-from . import atmosphere
-from . import config
-from . import alpha
-from . import brightness
-from . import data_handling
-from . import utils
-from . import fileIO
-from . import state_variables
-from . import logging
-from . import version
 from . import planet_base
 
 
 class Planet(planet_base.PlanetBase):
+    """
+    This is the 'executive' function class to compute overall planetary emission.
+    For both mode and kwargs look at state_variables.py
+
+    Parameters
+    ----------
+        name : str
+            Planet name.  One of [Jupiter, Saturn, Uranus, Neptune]
+        mode : str
+            Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
+        config_file : str
+            Config file name.  If 'planet' sets to <name>/config.par
+        i_set : list
+            List of str of modules to run on setup
+        initialize : list
+            List of str of modules to initialize on setup
+        run_atmos : bool
+            Flag to generate the atmosphere on setup
+        kwargs
+            'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
+    """
     def __init__(self, name, mode='normal', config_file='config.par', i_set=['log', 'config', 'data_return'],
                  initialize=['atmos', 'alpha', 'bright', 'fIO'], run_atmos=True, **kwargs):
-        """This is the 'executive' function class to compute overall planetary emission.
-           For both mode and kwargs look at state_variables.py
-           Inputs:
-                name:  'Jupiter', 'Saturn', 'Uranus', 'Neptune'
-                config_file:  config file name.  If 'planet' sets to <name>/config.par
-                mode:  sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
-                kwargs: 'verbose' and 'plot_amt', etc (and other state_vars - see show_state())"""
+
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
         for ix in i_set:
             getattr(self, 'set_{}'.format(ix))()
@@ -36,11 +41,24 @@ class Planet(planet_base.PlanetBase):
             self.atmos.run()
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
-        """Runs the model to produce the brightness temperature, weighting functions etc etc
-            freqs:  frequency request as set in set_freq.
-            b:  "impact parameter" request as set in set_b
-            freqUnit:  unit of freqs
-            block:  blocks to produce image (related to memory error...)"""
+        """
+        Runs the model to produce the brightness temperature, weighting functions etc etc
+
+        Parameters
+        ----------
+        freqs : *
+            frequency request as set in set_freq.
+        b : *
+            "impact parameter" request as set in set_b
+        freqUnit : str
+            unit of freqs
+        block :  list
+            blocks to produce image (related to memory error...)
+
+        Returns
+        -------
+        data_return object
+        """
 
         atmplt = self.set_atm_plots()
         if atmplt is not None:
@@ -49,14 +67,14 @@ class Planet(planet_base.PlanetBase):
             atmplt.Cloud()
             atmplt.Properties()
             atmplt.show()
-        reuse = self.generate_freqs(freqs=freqs, freqUnit=freqUnit)
-        self.generate_b(b=b, block=block)
+        reuse = self.set_freqs(freqs=freqs, freqUnit=freqUnit)
+        self.set_b(b=b, block=block)
 
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
 
         # For now just one profile, but can extend...
-        if not self.reuse:
+        if not reuse:
             self.alpha_layers()
 
         #  Loop over b values
