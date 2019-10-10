@@ -58,6 +58,7 @@ class PlanetBase:
         self.kwargs = state_variables.init_state_variables(self.mode, **kwargs)
         self.state_vars = self.kwargs.keys()
         state_variables.set_state(self, set_mode='init', **self.kwargs)
+        print("\n'{}.state()' to see/modify state variables.\n".format(name.lower()))
 
     def set_log(self):
         """
@@ -89,10 +90,12 @@ class PlanetBase:
         self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
         self.config.show()
 
-    def state(self):
+    def state(self, **kwargs):
         """
-        Shortcut method to show the state_variables
+        Shortcut method to show/edit the state_variables
         """
+        if len(kwargs.keys()):
+            state_variables.set_state(self, 'set', **kwargs)
         state_variables.show_state(self)
 
     def init_atmos(self):
