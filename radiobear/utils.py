@@ -59,6 +59,10 @@ rfBands = {'HF': [0.003, 0.03], 'VHF': [0.03, 0.3], 'UHF': [0.3, 1.0], 'L': [1.0
            'Q': [40.0, 50.0], 'V': [50.0, 75.0], 'W': [75.0, 110.0]}
 
 
+def timer(dt):
+    return dt.seconds + dt.microseconds / 1e6
+
+
 def r2d(a):
     return a * 180.0 / np.pi
 

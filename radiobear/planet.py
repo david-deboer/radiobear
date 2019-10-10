@@ -7,6 +7,7 @@ import datetime
 import os.path
 import six
 from . import planet_base
+from . import utils
 
 
 class Planet(planet_base.PlanetBase):
@@ -61,24 +62,23 @@ class Planet(planet_base.PlanetBase):
         -------
         data_return object
         """
-
         reuse = self.set_freqs(freqs=freqs, freqUnit=freqUnit)
         self.set_b(b=b, block=block)
 
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
+        C_timer = datetime.datetime.now()
 
         # For now just one profile, but can extend...
-        runStart = datetime.datetime.now()
         if not reuse:
             self.alpha_layers()
-        runStop = datetime.datetime.now()
-        print("Absoprtion calc took {:.1f} s".format((runStop - runStart).microseconds / 1e5))
+        D_timer = datetime.datetime.now()
+        print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
 
         #  Loop over b values
         self.init_run()
         runStart = datetime.datetime.now()
-        self.log.add('Run start ' + str(runStart), self.verbose)
+        self.log.add('Run start ' + str(runStart), False)
         for i, bv in enumerate(self.b):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
@@ -87,9 +87,9 @@ class Planet(planet_base.PlanetBase):
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)
-        self.log.add('Run stop ' + str(runStop), self.verbose)
+        self.log.add('Run stop ' + str(runStop), False)
         self.populate_data_return(runStart, runStop)
-        print("RT calc took {:.1f} s".format((runStop - runStart).microseconds / 1e5))
+        print("RT calc took {:.1f} s".format(utils.timer(runStop - runStart)))
 
         #  ##Write output files
         if self.write_output_files:
