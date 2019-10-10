@@ -58,7 +58,7 @@ class PlanetBase:
         self.kwargs = state_variables.init_state_variables(self.mode, **kwargs)
         self.state_vars = self.kwargs.keys()
         state_variables.set_state(self, set_mode='init', **self.kwargs)
-        print("\n'{}.state()' to see/modify state variables.\n".format(name.lower()))
+        print("\n'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
 
     def set_log(self):
         """
