@@ -1,3 +1,7 @@
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
+
 from __future__ import print_function, absolute_import, division
 import six
 

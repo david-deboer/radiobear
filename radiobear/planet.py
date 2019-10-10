@@ -1,4 +1,6 @@
-#  This is the 'executive' class for planets
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
@@ -38,14 +40,7 @@ class Planet(planet_base.PlanetBase):
         for init in initialize:
             getattr(self, 'init_{}'.format(init))()
         if run_atmos:
-            self.atmos.run()
-            atmplt = self.set_atm_plots()
-            if atmplt is not None:
-                atmplt.TP()
-                atmplt.Gas()
-                atmplt.Cloud()
-                atmplt.Properties()
-                atmplt.show()
+            self.atm_run()
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """
@@ -85,12 +80,7 @@ class Planet(planet_base.PlanetBase):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')
-            self.get_bright(b=bv, is_img=is_img)
-            if self.plot_bright:
-                brtplt.raypath()
-                brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
-                brtplt.intW()
-                brtplt.W(self.normalize_weighting)
+            self.bright_run(b=bv, is_img=is_img, brtplt=brtplot)
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)

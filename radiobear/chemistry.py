@@ -1,3 +1,7 @@
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
+
 import numpy as np
 GravConst = 6.6738e-20  # km3/kg/s2
 R = 8.314462            # Universal gas constant [J/K/mol]

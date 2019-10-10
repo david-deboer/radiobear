@@ -1,4 +1,6 @@
-# ## This is the file to calculate the radiometric properties of the planets
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import scipy.special as ss

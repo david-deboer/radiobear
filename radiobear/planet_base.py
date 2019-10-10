@@ -1,4 +1,6 @@
-#  This is the 'executive' class for planets
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
@@ -236,7 +238,17 @@ class PlanetBase:
         if self.verbose == 'loud':
             print('data_type = {}'.format(self.data_type))
 
-    def get_bright(self, b, is_img):
+    def atm_run(self):
+        self.atmos.run()
+        atmplt = self.set_atm_plots()
+        if atmplt is not None:
+            atmplt.TP()
+            atmplt.Gas()
+            atmplt.Cloud()
+            atmplt.Properties()
+            atmplt.show()
+
+    def bright_run(self, b, is_img, brtplt):
         """
         Computes the brightness temperature for that "b" and updates self.Tb.
 
@@ -246,6 +258,8 @@ class PlanetBase:
             Current "impact parameter"
         is_img : Namespace
             Contains parameters if image.
+        brtplt : class
+            Content for plotting
 
         Returns
         -------
@@ -267,6 +281,12 @@ class PlanetBase:
                 self.tip = self.bright.travel.tip
             if self.rotate is None:
                 self.rotate = self.bright.travel.rotate
+        if brtplt is not None:
+            brtplt.raypath()
+            brtplt.observer(b=bv, req=self.config.Req, rpol=self.config.Rpol)
+            brtplt.intW()
+            brtplt.W(self.normalize_weighting)
+
         return Tb
 
     def populate_data_return(self, run_start, run_stop):

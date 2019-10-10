@@ -1,9 +1,13 @@
+# -*- mode: python; coding: utf-8 -*-
+# Copyright 2018 David DeBoer
+# Licensed under the 2-clause BSD license.
+
 """Version definition for radioBEAR."""
 
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 1
-_version_minor = 0
-_version_micro = 3
+_version_minor = 1
+_version_micro = 0
 _version_extra = ''
 
 # Construct full version string from these.
