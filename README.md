@@ -6,6 +6,10 @@ Radio BErkeley Atmospheric Radiative-transfer (RadioBEAR)
 planetary atmosphere code to calculate the brightness temperature of planetary
 atmospheres in the meter-millimeter-wave regions.
 
+If used, please reference de Pater et al 2019:   de Pater, I., R. J. Sault, M. H. Wong, L. N. Fletcher, D. DeBoer,
+B. Butler,  2019. Jupiter's ammonia distribution derived from VLA maps
+at 3--37 GHz. {\it Icarus}, {\bf 322}, 168-191.
+
 Installing:
 1. Pull radioBEAR from github
 2. From the top-level 'radiobear' directory, install (`pip install .`)*
