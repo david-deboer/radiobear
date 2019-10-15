@@ -6,9 +6,11 @@ Radio BErkeley Atmospheric Radiative-transfer (RadioBEAR)
 planetary atmosphere code to calculate the brightness temperature of planetary
 atmospheres in the meter-millimeter-wave regions.
 
-If used, please reference de Pater et al 2019:   de Pater, I., R. J. Sault, M. H. Wong, L. N. Fletcher, D. DeBoer,
+If used, please reference
+1. de Pater et al 2019:   de Pater, I., R. J. Sault, M. H. Wong, L. N. Fletcher, D. DeBoer,
 B. Butler,  2019. Jupiter's ammonia distribution derived from VLA maps
-at 3--37 GHz. {\it Icarus}, {\bf 322}, 168-191.
+at 3--37 GHz. Icarus, 322, 168-191.
+2. de Pater et al.(2014)] de Pater, I.,  Fletcher, L. N., Luszcz-Cook, S., DeBoer, D., Butler, B., Hammel, H. B., Sitko, M. L., Orton, G., Marcus, P. S.}, Neptune's global circulation deduced from multi-wavelength observations. Icarus 237, 211
 
 Installing:
 1. Pull radioBEAR from github
