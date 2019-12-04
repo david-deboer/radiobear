@@ -34,6 +34,7 @@
 # %       written by Kiruthika Devaraj at Georgia Tech,  June, 2011
 # %       converted to python by David DeBoer at UC Berkeley,  July 2012
 # %       updated to Bellotti results DDB Aug 2016
+# %       updated per Bellotti erratum DDB Nov 2016 (Icarus 284 (2017) 491-492)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 from __future__ import absolute_import, division, print_function
 import numpy as np
@@ -129,7 +130,7 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     eta = 3.0 / 2.0
 
     # ###################INVERSION LINES
-    # % Pressure Dependent Switch for the parameters of the inversion transitions
+    # % Frequency Dependent Switch for the parameters of the inversion transitions
     # updated to new measurements from Bellotti/Steffes ppt March 11, 2016
     all_over_f_split = np.all([x > f_split for x in freq])
     all_under_f_split = np.all([x <= f_split for x in freq])
@@ -144,7 +145,7 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
         zeta_He = 0.1607
         zeta_NH3 = 0.6162
         Z_H2 = 0.8199
-        Z_He = -0.7269
+        Z_He = 0.0  # was -0.7269
         Z_NH3 = 1.3832
         d = -0.0139
         Con = 0.9619
