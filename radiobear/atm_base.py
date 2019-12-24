@@ -74,7 +74,7 @@ class AtmosphereBase:
             raise ValueError("Pressure not monotonically increasing in {}.".format(gasFile))
 
         # ## Renormalize so that deepest z is 0 and set DZ
-        self.renorm_z('gas')
+        self._renorm_z('gas')
 
     def readCloud(self, cloudFile=None, Cldict=None):
         """Reads in cloud data if we have it..."""
@@ -118,22 +118,7 @@ class AtmosphereBase:
             raise ValueError("Pressure not monotonically increasing in {}".format(cloudFile))
 
         # ## Renormalize so that deepest z is 0 and set DZ
-        self.renorm_z('cloud')
-
-    def renorm_z(self, gctype):
-        if gctype == 'gas':
-            ind = self.config.C
-            atm_gc = self.gas
-        else:
-            ind = self.config.Cl
-            atm_gc = self.cloud
-        zDeep = atm_gc[ind['Z']][-1]
-        for i in range(len(atm_gc[ind['Z']])):
-            atm_gc[ind['Z']][i] -= zDeep
-
-        # put in DZ
-        dz = np.abs(np.diff(atm_gc[ind['Z']])) * 1.0E5  # convert from km to cm - no unit checking!!
-        atm_gc[ind['DZ']] = np.append(np.array([0.0]), dz)
+        self._renorm_z('cloud')
 
     def computeProp(self):
         """This module computes derived atmospheric properties (makes self.property)"""
@@ -217,3 +202,18 @@ class AtmosphereBase:
         v = [tiny if x <= tiny else x for x in c]
         present = bool(len(np.where(np.array(v) > tiny)[0]))
         return present, v
+
+    def _renorm_z(self, gctype):
+        if gctype == 'gas':
+            ind = self.config.C
+            atm_gc = self.gas
+        else:
+            ind = self.config.Cl
+            atm_gc = self.cloud
+        zDeep = atm_gc[ind['Z']][-1]
+        for i in range(len(atm_gc[ind['Z']])):
+            atm_gc[ind['Z']][i] -= zDeep
+
+        # put in DZ
+        dz = np.abs(np.diff(atm_gc[ind['Z']])) * 1.0E5  # convert from km to cm - no unit checking!!
+        atm_gc[ind['DZ']] = np.append(np.array([0.0]), dz)
