@@ -100,6 +100,7 @@ class Atmosphere:
         # ## Put onto common grid
         if self.verbose:
             print("Regrid:  {}".format(regridType))
+            print("HAVE AN OPTION TO SKIP REGRID")
         regridded = regrid.regrid(self, regridType=regridType, Pmin=Pmin, Pmax=Pmax)  # noqa
         self.nAtm = len(self.gas[0])
 
