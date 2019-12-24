@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from radiobear import utils
-import six
 
 
 # ##############################################################################################################
