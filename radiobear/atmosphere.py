@@ -3,15 +3,13 @@
 # Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
 import numpy as np
-import sys
-import os
-import six
 
 # ##local imports
 from . import utils
 from . import regrid
 from . import state_variables
 from . import atm_base
+from . import atm_modify
 
 
 class Atmosphere(atm_base.AtmosphereBase):
@@ -89,7 +87,7 @@ class Atmosphere(atm_base.AtmosphereBase):
         self.nAtm = len(self.gas[0])
 
         if tweak:  # This loads/calls the module as given in the config.par tweakmodule parameter
-            self.tweakAtm()
+            atm_modify.tweakAtm(self)
 
         # ## Compute other parameters that are needed
         if self.config.otherType not in self.propGen.keys():
@@ -104,52 +102,3 @@ class Atmosphere(atm_base.AtmosphereBase):
             print('angular radius = {} arcsec'.format(utils.r2asec(angularDiameter / 2.0)))
 
         return self.nAtm
-
-    def tweakAtm(self):
-        """Tweaks the atmosphere data..."""
-        if self.batch_mode:
-            return 0
-
-        # Import tweakmodule
-        sys.path.append(self.config.path)
-        try:
-            __import__(self.config.tweakmodule)
-            tweakModule = sys.modules[self.config.tweakmodule]
-        except SyntaxError:
-            self.log.add("Syntax Error:  check " + self.config.tweakmodule, True)
-            raise ValueError("Error in tweakmodule")
-
-        # Run module then log
-        self.tweakComment, self.gas, self.cloud = tweakModule.modify(self.gas, self.cloud,
-                                                                     self.config.C, self.config.Cl)
-        if self.verbose:
-            print('---tweakComment')
-            print(self.tweakComment)
-            print('---')
-        self.log.add(self.tweakComment, False)
-        tf = os.path.join(self.config.path, self.config.tweakmodule + '.py')
-        tp = open(tf, 'r')
-        dt = tp.read()
-        self.log.add('======================' + tf + '=====================', False)
-        self.log.add(dt, False)
-        self.log.add('====================================================================', False)
-        tp.close()
-
-    def scaleAtm(self, scale_info='Scratch/scale.dat'):
-        """
-        This is a built-in tweak module.
-        """
-        if isinstance(scale_info, six.string_types):
-            import alpha
-            col, scale_info = alpha.read_scalefile(scale_info)
-        else:
-            col = scale_info.keys()
-
-        if len(scale_info[col[0]]) != self.nAtm:
-            print("Warning - scale file doesn't match atmosphere.  Not applying.")
-            return None
-
-        for i in range(self.nAtm):
-            for gas in col:
-                if gas.lower() != 'p':
-                    self.gas[self.config.C[gas.upper()]][i] *= scale_info[gas][i]
