@@ -18,7 +18,7 @@ from . import logging
 
 class Atmosphere:
     def __init__(self, planet, mode='normal', config='config.par', log=None, **kwargs):
-        """reads/computes atmospheres.  This returns:
+        """reads/computes atmospheres.  This computes:
                self.gas
                self.cloud
                self.layerProperty

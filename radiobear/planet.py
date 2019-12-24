@@ -33,7 +33,6 @@ class Planet(planet_base.PlanetBase):
     def __init__(self, name, mode='normal', config_file='config.par',
                  i_set=['log', 'config', 'data_return'],
                  initialize=['atmos', 'alpha', 'bright', 'fIO'], run_atmos=True, **kwargs):
-
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
         for ix in i_set:
             getattr(self, 'set_{}'.format(ix))()

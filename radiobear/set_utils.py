@@ -11,7 +11,7 @@ import six
 from . import utils
 
 
-def set_b(b, block=[1, 1], config=None):
+def set_b(b, block=[1, 1], **kwargs):
     """
     Process b request.  Sets data_type ('image', 'spectrum', 'profile'), and imSize
 
@@ -25,6 +25,7 @@ def set_b(b, block=[1, 1], config=None):
             'start:stop:step[<angle] -> string defining line
             'n1,n2,n3[<angle]' -> csv list of b magnitudes
        block:  image block as pair, e.g. [4, 10] is "block 4 of 10"
+       kwargs : other args as necessary
 
        Returns
        -------
@@ -56,7 +57,7 @@ def set_b(b, block=[1, 1], config=None):
             elif ':' in b[0]:
                 mag_b = [float(x) for x in b[0].split(':')]
                 mag_b = np.arange(mag_b[0], mag_b[1] + mag_b[2] / 2.0, mag_b[2])
-            ab = config.Rpol / config.Req
+            ab = kwargs['Rpol'] / kwargs['Req']
             rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
             return_value.b = []
             for v in mag_b:

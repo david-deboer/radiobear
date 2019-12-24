@@ -203,7 +203,7 @@ class PlanetBase:
                 blocks to produce image (related to memory error...)
         """
         self.header['b'] = '# b request:  {}  {}'.format(str(b), str(block))
-        rv = set_utils.set_b(b, block)
+        rv = set_utils.set_b(b, block, Rpol=self.config.Rpol, Req=self.config.Req)
         self.b = rv.b
         self.block = rv.block
         self.data_type = rv.data_type

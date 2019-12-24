@@ -98,8 +98,8 @@ class Shape:
             self.referenceRadius = planet.config.Req
             self.__calcGeoid(planet, planet.config.Req, 90, 0.0)
             self.referenceGeoid = np.array(self.referenceGeoid)
-        rlat = np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 1])
-                         * (r / self.referenceRadius)
+        rlat = (np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 1])
+                * (r / self.referenceRadius))
         gamma = np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 2])
 
         lat = u.d2r(pclat)
@@ -186,14 +186,11 @@ class Shape:
             dP *= 0.5
             Sp += Jn[i] * pow(RJ / r, i) * dP
         # g(r)
-        gr = (self.g_static * (1.0 - Sr) - (2.0 / 3.0) * (omega**2.0) *
-             r * (1.0 - scisp.legendre(2)(sp)))
-        h = 'xyz'
+        gr = ((self.g_static * (1.0 - Sr) - (2.0 / 3.0) * (omega**2.0) *
+              r * (1.0 - scisp.legendre(2)(sp))))
         # g(phi)
         dP = (3.0 * sp * np.sqrt(1.0 - sp**2))
-        k = 'bhg'
         gp = (1.0 / 3.0) * (omega**2.0) * r * dP + self.g_static * Sp
-        b = 'xj'
         gt = np.sqrt(gr**2 + gp**2)
         # geoid
         gamma = np.arctan2(gp, gr)
