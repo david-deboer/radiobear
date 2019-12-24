@@ -29,7 +29,8 @@ class plots:
         if plot == 'auto':
             plt.figure(self.atm.planet + ': T-P')
         plt.title(self.atm.planet + ':  T-P profile')
-        plt.loglog(self.atm.gas[self.atm.config.C['T']], self.atm.gas[self.atm.config.C['P']], label='T')
+        plt.loglog(self.atm.gas[self.atm.config.C['T']], self.atm.gas[self.atm.config.C['P']],
+                   label='T')
         self._frame_plot('T [K]', show_legend=False)
 
     def Cloud(self, dontPlot=['Z', 'P', 'T', 'DZ'], plot='auto'):
@@ -61,7 +62,7 @@ class plots:
             plt.figure(self.atm.planet + ': Properties')
         plt.title(self.atm.planet + ': other')
         for other in self.atm.config.LP:
-            present, g = self.atm.is_present(self.atm.layerProperty[self.atm.config.LP[other]])
+            present, g = self.atm.is_present(self.atm.property[self.atm.config.LP[other]])
             if other in dontPlot or not present:
                 continue
             plt.loglog(g, self.atm.gas[self.atm.config.C['P']], label=other)

@@ -31,7 +31,7 @@ class AtmosphereBase:
         self.nConstituent = 0
         self.cloud = []
         self.nCloud = 0
-        self.layerProperty = []
+        self.property = []
 
     def readGas(self, gasFile=None, Cdict=None):
         """Reads gas profile file as self.gas"""
@@ -136,7 +136,7 @@ class AtmosphereBase:
         atm_gc[ind['DZ']] = np.append(np.array([0.0]), dz)
 
     def computeProp(self):
-        """This module computes derived atmospheric properties (makes self.layerProperty)"""
+        """This module computes derived atmospheric properties (makes self.property)"""
         self.chem = {}
         for key in self.config.C:
             if key in ['P', 'T', 'Z', 'DZ']:
@@ -144,9 +144,9 @@ class AtmosphereBase:
             self.chem[key] = chemistry.ConstituentProperties(key)
 
         # nAtm = len(self.gas[self.config.C['P']])
-        self.layerProperty = []
+        self.property = []
         for op in self.config.LP:
-            self.layerProperty.append([])
+            self.property.append([])
         zOffset = 0.0
         iOffset = 0
         psep = 1.0E6
@@ -161,55 +161,55 @@ class AtmosphereBase:
         for i, zv in enumerate(self.gas[self.config.C['Z']]):
             T = self.gas[self.config.C['T']][i]
             P = self.gas[self.config.C['P']][i]
-            self.layerProperty[self.config.LP['P']].append(P)
-            self.layerProperty[self.config.LP['Z']].append(zv)
+            self.property[self.config.LP['P']].append(P)
+            self.property[self.config.LP['Z']].append(zv)
             rr = z_at_p_ref + zv - zOffset
             # note that this is the "actual"z along equator referenced to planet center (aka radius)
-            self.layerProperty[self.config.LP['R']].append(rr)
+            self.property[self.config.LP['R']].append(rr)
             # ##set mean amu
             amulyr = 0.0
             for key in self.chem:
                 amulyr += self.chem[key].amu * self.gas[self.config.C[key]][i]
-            self.layerProperty[self.config.LP['AMU']].append(amulyr)
+            self.property[self.config.LP['AMU']].append(amulyr)
             # ##set GM pre-calc (normalized further down) and get lapse rate
             if not i:
-                self.layerProperty[self.config.LP['GM']].append(0.0)
-                self.layerProperty[self.config.LP['LAPSE']].append(0.0)
-                self.layerProperty[self.config.LP['LAPSEP']].append(0.0)
+                self.property[self.config.LP['GM']].append(0.0)
+                self.property[self.config.LP['LAPSE']].append(0.0)
+                self.property[self.config.LP['LAPSEP']].append(0.0)
             else:
                 rho = (amulyr * P) / (chemistry.R * T)
                 dr = abs(zv - self.gas[self.config.C['Z']][i - 1])
                 dV = 4.0 * np.pi * (rr**2) * dr
                 dM = 1.0e11 * rho * dV
-                GdM = self.layerProperty[self.config.LP['GM']][i - 1] + chemistry.GravConst * dM
+                GdM = self.property[self.config.LP['GM']][i - 1] + chemistry.GravConst * dM
                 # in km3/s2
                 # mass added as you make way into atmosphere by radius r (times G)
-                self.layerProperty[self.config.LP['GM']].append(GdM)
+                self.property[self.config.LP['GM']].append(GdM)
                 dT = abs(T - self.gas[self.config.C['T']][i - 1])
                 dP = abs(P - self.gas[self.config.C['P']][i - 1])
-                self.layerProperty[self.config.LP['LAPSE']].append(dT / dr)
-                self.layerProperty[self.config.LP['LAPSEP']].append(dT / dP)
+                self.property[self.config.LP['LAPSE']].append(dT / dr)
+                self.property[self.config.LP['LAPSEP']].append(dT / dP)
             # ##set refractivity and index of refraction
             refrlyr = 0.0
             for key in self.chem:
                 refrlyr += self.chem[key].refractivity(T=T) * self.gas[self.config.C[key]][i]
             refrlyr = refrlyr * P * (293.0 / T)
-            self.layerProperty[self.config.LP['REFR']].append(refrlyr)
+            self.property[self.config.LP['REFR']].append(refrlyr)
             nlyr = refrlyr / 1.0E6 + 1.0
-            self.layerProperty[self.config.LP['N']].append(nlyr)
+            self.property[self.config.LP['N']].append(nlyr)
 
         # ##Now need to normalize GM to planet and calculate scale height (H)
-        GMnorm = self.layerProperty[self.config.LP['GM']][iOffset]  # G*(Mass added by p_ref)
-        for i, mv in enumerate(self.layerProperty[self.config.LP['GM']]):
+        GMnorm = self.property[self.config.LP['GM']][iOffset]  # G*(Mass added by p_ref)
+        for i, mv in enumerate(self.property[self.config.LP['GM']]):
             gm = self.config.GM_ref - (mv - GMnorm)
-            self.layerProperty[self.config.LP['GM']][i] = gm
-            little_g = gm / self.layerProperty[self.config.LP['R']][i]**2
-            m_bar = self.layerProperty[self.config.LP['AMU']][i]
+            self.property[self.config.LP['GM']][i] = gm
+            little_g = gm / self.property[self.config.LP['R']][i]**2
+            m_bar = self.property[self.config.LP['AMU']][i]
             T = self.gas[self.config.C['T']][i]
-            self.layerProperty[self.config.LP['H']].append((chemistry.R * T) /
-                                                           (little_g * m_bar) / 1000.0)
-            self.layerProperty[self.config.LP['g']].append(little_g)
-        self.layerProperty = np.array(self.layerProperty)
+            self.property[self.config.LP['H']].append((chemistry.R * T) /
+                                                      (little_g * m_bar) / 1000.0)
+            self.property[self.config.LP['g']].append(little_g)
+        self.property = np.array(self.property)
 
     def is_present(self, c, tiny=1.0E-30):
         """This checks to see if a constituent is there and sets 0.0 or negative values to tiny.

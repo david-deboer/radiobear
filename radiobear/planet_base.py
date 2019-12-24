@@ -102,7 +102,7 @@ class PlanetBase:
     def init_atmos(self):
         """
         Instantiates atmosphere.  Attributes are:
-            self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
+            self.atmos.gas, self.atmos.cloud and self.atmos.property
         """
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
                                            log=self.log, **self.kwargs)
