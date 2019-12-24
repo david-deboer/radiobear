@@ -24,17 +24,20 @@ solar_abundance = {'H2': 0.835, 'HE': 0.195, 'H2O': 1.70E-3, 'CH4': 7.94E-4, 'NH
 triple_point = {'H2S': 187.61, 'NH3': 195.5, 'CH4': 90.7, 'PH3': 0.0, 'H2O': 273.16, 'NULL': 0.0}
 
 # specific heat at constant pressure over R.  High-T limit for H2
-specific_heat = {'H2': 3.5, 'HE': 2.50, 'H2O': 4.00, 'NH3': 4.46, 'H2S': 4.01, 'CH4': 4.50, 'NULL': 0.0}
+specific_heat = {'H2': 3.5, 'HE': 2.50, 'H2O': 4.00, 'NH3': 4.46, 'H2S': 4.01,
+                 'CH4': 4.50, 'NULL': 0.0}
 
 
 def REFR_H2O(T, f=1.0):
+    # Janssen p218--or is the h2o cloud really almost an ocean,see liquid water p298 UFM*/
     if T is None:
         T = 100.0
-    return (245.0 + 1.28E6 / T)  # Janssen p218--or is the h2o cloud really almost an ocean,see liquid water p298 UFM*/
+    return (245.0 + 1.28E6 / T)
 
 
 # refractivity coefficients (Rc) R = Rc*P*(293/T) then n = (R/1E6) + 1. Average values of microwave
-refractivity = {'H2': 124.43, 'HE': 35.832, 'H2O': REFR_H2O, 'H2S': 2247.0, 'NH3': 2700.0, 'CH4': 413.0, 'NULL': NULL}
+refractivity = {'H2': 124.43, 'HE': 35.832, 'H2O': REFR_H2O, 'H2S': 2247.0, 'NH3': 2700.0,
+                'CH4': 413.0, 'NULL': NULL}
 
 
 def NH3_over_NH3_ice(T):  # Briggs and Sackett

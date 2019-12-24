@@ -7,7 +7,6 @@ import numpy as np
 import six
 import scipy.special as scisp
 from . import utils as u
-from . import atmosphere
 _X = 0
 _Y = 1
 _Z = 2
@@ -30,36 +29,46 @@ class Shape:
         self.g = []
         self.gmag = 0.0
         self.g_static = 0.0
-        self.default_gravcalc_latstep = 0.01  # it needs to be this small to be accurate, but then the gravity calc is too slow
+        # it needs to be this small to be accurate, but then the gravity calc is too slow
+        self.default_gravcalc_latstep = 0.01
         self.referenceGeoid = False
         self.referenceRadius = 0.0
         self.calcCounter = 0
         self.colorCounter = 0
-        self.saveShape = False  # This is the one concession to get a gravity profile without looping many times...so fake it for ellipse
+        # This is the one concession to get a gravity profile without looping many times
+        # ...so fake it for ellipse
+        self.saveShape = False
 
     def __str__(self):
         s = '-------------------------Geoid---------------------------\n'
-        s += 'type:  %s, gamma = %.2f deg, lat = %.2f deg, lng = %.2f\n' % (self.gtype, u.r2d(self.gamma), u.r2d(self.pclat), u.r2d(self.delta_lng))
-        s += 'r = [%.2f,  %.2f,  %.2f] km, |r| = %.2f km\n' % (self.r[_X], self.r[_Y], self.r[_Z], self.rmag)
-        s += 'n = [%.4f,  %.4f,  %.4f]\n' % (self.n[_X], self.n[_Y], self.n[_Z])
-        s += 't = [%.4f,  %.4f,  %.4f]\n' % (self.t[_X], self.t[_Y], self.t[_Z])
-        s += 'g = [%.6f,  %.6f], |g| = %.6f\n' % (self.g[0], self.g[1], self.gmag)
+        s += ('type:  {}, gamma = {:.2f} deg, lat = {:.2f} deg, lng = {:.2f}\n'
+              .format(self.gtype, u.r2d(self.gamma), u.r2d(self.pclat), u.r2d(self.delta_lng)))
+        s += ('r = [{:.2f},  {:.2f},  {:.2f}] km, |r| = {:.2f} km\n'
+              .format(self.r[_X], self.r[_Y], self.r[_Z], self.rmag))
+        s += 'n = [{:.4f},  {:.4f},  {:.4f}]\n'.format(self.n[_X], self.n[_Y], self.n[_Z])
+        s += 't = [{:.4f},  {:.4f},  {:.4f}]\n'.format(self.t[_X], self.t[_Y], self.t[_Z])
+        s += 'g = [{:.6f},  {:.6f}], |g| = {:.6f}\n'.format(self.g[0], self.g[1], self.gmag)
         s += '---------------------------------------------------------\n'
         return s
 
     def printShort(self):
-        s = '%s:  gamma = %.2f, lat = %.2f, lng = %.2f, |r|=%.2f km\n' % (self.gtype, u.r2d(self.gamma), u.r2d(self.pclat), u.r2d(self.delta_lng), self.rmag)
+        s = ('{}:  gamma = {:.2f}, lat = {:.2f}, lng = {:.2f}, |r|={:.2f} km\n'
+             .format(self.gtype, u.r2d(self.gamma), u.r2d(self.pclat),
+                     u.r2d(self.delta_lng), self.rmag))
         print(s)
         return s
 
     def print_a_step(self):
-        s = '\ttype:  %s, gamma = %.2f deg, lat = %.2f deg, lng = %.2f  |g| = %.2f\n' % (self.gtype, u.r2d(self.gamma), u.r2d(self.pclat), u.r2d(self.delta_lng), self.gmag * 1000.0)
-        s += '\tr = [%.2f,  %.2f,  %.2f] km, |r| = %.2f km\n' % (self.r[_X], self.r[_Y], self.r[_Z], self.rmag)
-        s += '\tn = [%.4f,  %.4f,  %.4f]' % (self.n[_X], self.n[_Y], self.n[_Z])
+        s = '\ttype:  {}, gamma = {:.2f} deg, '.format(self.gtype, u.r2d(self.gamma))
+        s += 'lat = {:.2f} deg, lng = {:.2f}, '.format(u.r2d(self.pclat), u.r2d(self.delta_lng))
+        s += '|g| = {:.2f}\n'.format(self.gmag * 1000.0)
+        s += ('\tr = [{:.2f},  {:.2f},  {:.2f}] km, |r| = {:.2f} km\n'
+              .format(self.r[_X], self.r[_Y], self.r[_Z], self.rmag))
+        s += '\tn = [{:.4f},  {:.4f},  {:.4f}]'.format(self.n[_X], self.n[_Y], self.n[_Z])
         print(s)
         return s
 
-    # ##------------------------------------General handling function----------------------------------------
+    # ##---------------------------General handling function-------------------------------
     def calcShape(self, planet, r, pclat=90.0, delta_lng=0.0, gtype=None, latstep='default'):
         # set/reset gtype and latstep (ellipse doesn't need latstep)
         if gtype is None:
@@ -89,7 +98,8 @@ class Shape:
             self.referenceRadius = planet.config.Req
             self.__calcGeoid(planet, planet.config.Req, 90, 0.0)
             self.referenceGeoid = np.array(self.referenceGeoid)
-        rlat = np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 1]) * (r / self.referenceRadius)
+        rlat = np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 1])
+                         * (r / self.referenceRadius)
         gamma = np.interp(pclat, self.referenceGeoid[:, 0], self.referenceGeoid[:, 2])
 
         lat = u.d2r(pclat)
@@ -135,7 +145,8 @@ class Shape:
         if self.gtype == 'reference' and type(self.referenceGeoid) == bool:
             self.referenceGeoid = []
 
-        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']], planet.layerProperty[planet.config.LP['GM']])
+        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']],
+                       planet.layerProperty[planet.config.LP['GM']])
         for latv in pclatSteps:
             radlatv = u.d2r(latv)
             vw = np.interp(latv, planet.config.vwlat, planet.config.vwdat) / 1000.0
@@ -175,10 +186,14 @@ class Shape:
             dP *= 0.5
             Sp += Jn[i] * pow(RJ / r, i) * dP
         # g(r)
-        gr = self.g_static * (1.0 - Sr) - (2.0 / 3.0) * (omega**2.0) * r * (1.0 - scisp.legendre(2)(sp))
+        gr = (self.g_static * (1.0 - Sr) - (2.0 / 3.0) * (omega**2.0) *
+             r * (1.0 - scisp.legendre(2)(sp)))
+        h = 'xyz'
         # g(phi)
         dP = (3.0 * sp * np.sqrt(1.0 - sp**2))
+        k = 'bhg'
         gp = (1.0 / 3.0) * (omega**2.0) * r * dP + self.g_static * Sp
+        b = 'xj'
         gt = np.sqrt(gr**2 + gp**2)
         # geoid
         gamma = np.arctan2(gp, gr)
@@ -223,13 +238,16 @@ class Shape:
         r_vec = np.array([0.0, b * np.sin(lat), a * np.cos(lat)])
         r_vec = rotY(lng, r_vec)
         self.rmag = np.linalg.norm(r_vec)
-        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']], planet.layerProperty[planet.config.LP['GM']])
+        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']],
+                       planet.layerProperty[planet.config.LP['GM']])
         self.g_static = GM / self.rmag**2
         try:
-            self.gamma = nsl * np.arccos(np.dot(r_vec, norm) / self.rmag)  # don't need to worry about direction here, since norm etc defined
+            # don't need to worry about direction here, since norm etc defined
+            self.gamma = nsl * np.arccos(np.dot(r_vec, norm) / self.rmag)
         except ValueError:
             arg = np.dot(r_vec, norm) / self.rmag
-            print('gamma warning (%s):  [{:.2f},{:.2f},{:.2f},{:.2f}]'.format(self.gtype, arg, a, b, pclat), end='')
+            print('gamma warning (%s):  [{:.2f},{:.2f},{:.2f},{:.2f}]'
+                  .format(self.gtype, arg, a, b, pclat), end='')
             print('...but proceeding anyway by setting gamma=0.0')
             self.gamma = 0.0
         self.pclat = lat

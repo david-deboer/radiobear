@@ -4,8 +4,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import scipy.special as ss
-import sys
-import six
 import os.path
 from . import utils
 from . import raypath as ray
@@ -38,7 +36,8 @@ class Brightness():
 
         if self.alpha.layers is None:
             self.alpha.get_layers(freqs, atm)
-        # get path lengths (ds_layer) vs layer number (num_layer) - currently frequency independent refractivity
+        # get path lengths (ds_layer) vs layer number (num_layer)
+        #     currently frequency independent refractivity
         print_meta = (self.verbose == 'loud')
         travel = ray.compute_ds(atm, b, orientation, gtype=None, verbose=print_meta)
         self.travel = travel
@@ -83,9 +82,11 @@ class Brightness():
                     print("\n\nDoppler currently broken since the getAlpha call is different.")
                     fshifted = [[f / travel.doppler[i]], [f / travel.doppler[i + 1]]]
                     print('\rdoppler corrected frequency at layer', i, end='')
-                    a1 = alpha.getAlpha(fshifted[0], T_layers[ii1], P_layers[ii1], atm.gas[:, ii1], atm.config.C, atm.cloud[:, ii1],
+                    a1 = alpha.getAlpha(fshifted[0], T_layers[ii1], P_layers[ii1], atm.gas[:, ii1],
+                                        atm.config.C, atm.cloud[:, ii1],
                                         atm.config.Cl, units=utils.alphaUnit)
-                    a0 = alpha.getAlpha(fshifted[1], T_layers[ii], P_layers[ii], atm.gas[:, ii], atm.config.C, atm.cloud[:, ii],
+                    a0 = alpha.getAlpha(fshifted[1], T_layers[ii], P_layers[ii], atm.gas[:, ii],
+                                        atm.config.C, atm.cloud[:, ii],
                                         atm.config.Cl, units=utils.alphaUnit)
                 dtau = (a0 + a1) * ds / 2.0
                 taus.append(self.tau[i][j] + dtau)         # this is tau_(i+1)
@@ -109,7 +110,8 @@ class Brightness():
             else:
                 top_Tb_lyr /= integrated_W[j]  # Normalize by integrated weights (makes assumptions)
                 if integrated_W[j] < 0.96 and self.verbose:
-                    print("Weight correction at {:.2f} is {:.4f} (showing below 0.96)".format(freqs[j], integrated_W[j]))
+                    print("Weight correction at {:.2f} is {:.4f} (showing below 0.96)"
+                          .format(freqs[j], integrated_W[j]))
             self.Tb.append(top_Tb_lyr)
         self.tau = np.array(self.tau).transpose()
         self.W = np.array(self.W).transpose()
@@ -121,7 +123,7 @@ class Brightness():
         del taus, Tbs, Ws, travel
         return self.Tb
 
-    def savertm(self, tag=None):
+    def savertm(self, tag=None, path=None):
         if tag is None:
             filename = None
         else:

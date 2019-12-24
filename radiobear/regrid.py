@@ -5,15 +5,16 @@
 from __future__ import absolute_import, division, print_function
 from scipy.interpolate import interp1d
 import numpy as np
-from . import atmosphere
 from . import chemistry
 import six
 import os.path
 
 
 def regrid(atm, regridType=None, Pmin=None, Pmax=None):
-    """This puts atm and cloud on the same grid used later for calculations.  It has three different regimes:
-        1 - interpolating within given points:  currently linear -- moving to: P,T,z are assumed to follow given adiabat
+    """This puts atm and cloud on the same grid used later for calculations.
+       It has three different regimes:
+        1 - interpolating within given points:  currently linear -- moving to:
+            P,T,z are assumed to follow given adiabat
         2 - extrapolating outward:  project last slope out for everything
         3 - extrapolating inward:  uses a dry adiabat
        It has two regridTypes:
@@ -29,8 +30,10 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
     # set regridType/regrid
     if regridType is None:
         regridType = atm.config.regridType
-    if (isinstance(regridType, six.string_types) and regridType.lower() == 'none') or regridType is None:
-        print('Warning:  No regridding.  Note that there is a risk that not everything is on the same grid...\n')
+    if (isinstance(regridType, six.string_types) and regridType.lower() == 'none') or\
+       regridType is None:
+        print('Warning:  No regridding.  Note that there is a risk that not everything '
+              'is on the same grid...\n')
         return 0
 
     # set default Pmin/Pmax
@@ -69,8 +72,8 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
         raise ValueError("fillval still in gas!")
     atm.gas = gas
 
-    # ## Interpolate cloud onto the grid - fillval=0.0 extrapolates since we assume no clouds outside range and
-    # ##      don't care about other stuff then either
+    # ## Interpolate cloud onto the grid - fillval=0.0 extrapolates since we
+    # ##      assume no clouds outside range and don't care about other stuff then either
     fillval = 0.0
     atm.cloud = interpolate('cloud', cloud, fillval, atm, Pgrid)
 
@@ -108,7 +111,8 @@ def interpolate(gctype, gas_or_cloud, fillval, atm, Pgrid):
     for yvar in ind:
         if yvar in ['P', 'DZ']:
             continue
-        fv = interp1d(Pinput, atm_gc[ind[yvar]], kind=interpType, fill_value=fillval, bounds_error=berr)
+        fv = interp1d(Pinput, atm_gc[ind[yvar]], kind=interpType,
+                      fill_value=fillval, bounds_error=berr)
         gas_or_cloud[ind[yvar]] = fv(Pgrid)
 
     return gas_or_cloud
@@ -154,7 +158,8 @@ def extrapolate(gas, fillval, atm):
         for yvar in atm.config.C:
             if yvar in ['P', 'DZ']:
                 continue
-            gas[atm.config.C[yvar]] = extrapolate_outward(gas[atm.config.C['P']], gas[atm.config.C[yvar]], fillval)
+            gas[atm.config.C[yvar]] = extrapolate_outward(gas[atm.config.C['P']],
+                                                          gas[atm.config.C[yvar]], fillval)
 
     return gas
 

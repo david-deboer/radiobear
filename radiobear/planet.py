@@ -2,10 +2,8 @@
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
-import numpy as np
 import datetime
 import os.path
-import six
 from . import planet_base
 from . import utils
 
@@ -32,7 +30,8 @@ class Planet(planet_base.PlanetBase):
         kwargs
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
-    def __init__(self, name, mode='normal', config_file='config.par', i_set=['log', 'config', 'data_return'],
+    def __init__(self, name, mode='normal', config_file='config.par',
+                 i_set=['log', 'config', 'data_return'],
                  initialize=['atmos', 'alpha', 'bright', 'fIO'], run_atmos=True, **kwargs):
 
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
@@ -83,7 +82,7 @@ class Planet(planet_base.PlanetBase):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')
-            self.bright_run(b=bv, is_img=is_img, brtplt=brtplt)
+            self.bright_run(b=bv, is_img=is_img, brtplt=brtplt, ibv=i)
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)
@@ -93,7 +92,8 @@ class Planet(planet_base.PlanetBase):
 
         #  ##Write output files
         if self.write_output_files:
-            output_file = '{}_{}{}{}.dat'.format(self.planet, self.data_type, is_img.block, runStart.strftime("%Y%m%d_%H%M%S"))
+            output_file = '{}_{}{}{}.dat'.format(self.planet, self.data_type, is_img.block,
+                                                 runStart.strftime("%Y%m%d_%H%M%S"))
             output_file = os.path.join(self.output_directory, output_file)
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.data_type, output_file))

@@ -98,7 +98,8 @@ class Alpha:
         constfile = os.path.join(self.scratch_directory, 'constituents')
         absorbfile = os.path.join(self.scratch_directory, 'absorb')
         freqfile = os.path.join(self.scratch_directory, 'freqs')
-        np.savez(constfile, alpha_dict=self.config.constituent_alpha, alpha_sort=self.ordered_constituents)
+        np.savez(constfile, alpha_dict=self.config.constituent_alpha,
+                 alpha_sort=self.ordered_constituents)
         self.absorb_layer_save_data = np.array(self.absorb_layer_save_data)
         np.save(absorbfile, self.absorb_layer_save_data)
         np.save(freqfile, self.freqs)
@@ -109,7 +110,8 @@ class Alpha:
             condata = np.load('{}/constituents.npz'.format(self.scratch_directory))
             self.ordered_constituents = condata['alpha_sort']
         if self.scale_existing_alpha:
-            self.scale_constituent_columns, self.scale_constituent_values = read_scalefile(self.config.scale_file_name)
+            self.scale_constituent_columns, self.scale_constituent_values =\
+                                            read_scalefile(self.config.scale_file_name)
 
     def write_scale(self, fn):
         write_scalefile(fn, self.scale_constituent_columns, self.scale_constituent_values)
@@ -139,7 +141,8 @@ class Alpha:
                 self.log.add("Can't load " + absorber, True)
             self.truncate_freq[c] = None
             self.truncate_strength[c] = None
-            if c in self.config.truncate_method.keys() and self.config.truncate_method[c] is not None:
+            if c in self.config.truncate_method.keys() and\
+                    self.config.truncate_method[c] is not None:
                 trunc_methods = self.config.truncate_method[c].split(",")
                 for tm in trunc_methods:
                     getattr(self, tm)[c] = getattr(self.config, tm)[c]
@@ -154,8 +157,8 @@ class Alpha:
             self.log.add(s, self.verbose)
 
     def getAlpha(self, freqs, layer, atm, units='invcm'):
-        """This is a wrapper to get the absorption coefficient, either from calculating from formalisms
-           or reading from file"""
+        """This is a wrapper to get the absorption coefficient, either from
+           calculating from formalisms or reading from file"""
         if self.freqs is None and self.save_alpha:
             self.freqs = freqs
         if self.use_existing_alpha or self.scale_existing_alpha:
@@ -173,7 +176,8 @@ class Alpha:
             T = atm.gas[atm.config.C['T']][layer]
             gas = atm.gas[:, layer]
             cloud = atm.cloud[:, layer]
-            return self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C, cloud, atm.config.Cl, units)
+            return self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C,
+                                            cloud, atm.config.Cl, units)
 
     def get_alpha_from_file(self, freqs, layer, units='invcm'):
         totalAbsorption = np.zeros_like(freqs)
@@ -193,7 +197,8 @@ class Alpha:
         return totalAbsorption
 
     def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
-        """This gets the total absoprtion coefficient from gas.  It assumes the correct frequency units, but maybe should correct that.
+        """This gets the total absoprtion coefficient from gas.  It assumes the correct
+           frequency units, but maybe should correct that.
            Returns total absorption at that layer."""
         absorb = []
         print_meta = self.verbose == 'loud'
@@ -206,7 +211,8 @@ class Alpha:
                 X = gas
                 D = gas_dict
             absorb.append(self.absorptionModule[c].alpha(freqs, T, P, X, D, self.other_dict[c],
-                          truncate_freq=self.truncate_freq[c], truncate_strength=self.truncate_strength[c],
+                          truncate_freq=self.truncate_freq[c],
+                          truncate_strength=self.truncate_strength[c],
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()

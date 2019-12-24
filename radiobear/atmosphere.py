@@ -10,7 +10,6 @@ import six
 # ##local imports
 from . import utils
 from . import config as pcfg
-from . import raypath as ray
 from . import chemistry
 from . import regrid
 from . import state_variables
@@ -57,7 +56,8 @@ class Atmosphere:
     def state(self):
         state_variables.show_state(self)
 
-    def run(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None, otherType=None, tweak=True):
+    def run(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None,
+            otherType=None, tweak=True):
         """This is the standard pipeline"""
         # ##Set run defaults
         if Pmin is None:
@@ -100,10 +100,10 @@ class Atmosphere:
         # ## Put onto common grid
         if self.verbose:
             print("Regrid:  {}".format(regridType))
-        regridded = regrid.regrid(self, regridType=regridType, Pmin=Pmin, Pmax=Pmax)
+        regridded = regrid.regrid(self, regridType=regridType, Pmin=Pmin, Pmax=Pmax)  # noqa
         self.nAtm = len(self.gas[0])
 
-        if tweak:  # This loads and calls the module as given in the config.par tweakmodule parameter
+        if tweak:  # This loads/calls the module as given in the config.par tweakmodule parameter
             self.tweakAtm()
 
         # ## Compute other parameters that are needed
@@ -113,7 +113,8 @@ class Atmosphere:
         else:
             self.propGen[otherType]()
 
-        angularDiameter = 2.0 * np.arctan(self.layerProperty[self.config.LP['R']][0] / self.config.distance)
+        angularDiameter = 2.0 * np.arctan(self.layerProperty[self.config.LP['R']][0] /
+                                          self.config.distance)
         if self.verbose == 'loud':
             print('angular radius = {} arcsec'.format(utils.r2asec(angularDiameter / 2.0)))
 
@@ -264,7 +265,7 @@ class Atmosphere:
             atm_gc[ind['Z']][i] -= zDeep
 
         # put in DZ
-        dz = np.abs(np.diff(atm_gc[ind['Z']])) * 1.0E5  # convert from km to cm (so no unit checking!!!)
+        dz = np.abs(np.diff(atm_gc[ind['Z']])) * 1.0E5  # convert from km to cm - no unit checking!!
         atm_gc[ind['DZ']] = np.append(np.array([0.0]), dz)
 
     def tweakAtm(self):
@@ -282,7 +283,8 @@ class Atmosphere:
             raise ValueError("Error in tweakmodule")
 
         # Run module then log
-        self.tweakComment, self.gas, self.cloud = tweakModule.modify(self.gas, self.cloud, self.config.C, self.config.Cl)
+        self.tweakComment, self.gas, self.cloud = tweakModule.modify(self.gas, self.cloud,
+                                                                     self.config.C, self.config.Cl)
         if self.verbose:
             print('---tweakComment')
             print(self.tweakComment)
@@ -319,14 +321,14 @@ class Atmosphere:
         """This module computes derived atmospheric properties (makes self.layerProperty)"""
         if self.batch_mode:
             return 0
-        nAtm = len(self.gas[self.config.C['P']])
+        # nAtm = len(self.gas[self.config.C['P']])
         self.layerProperty = []
         for op in self.config.LP:
             self.layerProperty.append([])
         zOffset = 0.0
         iOffset = 0
         psep = 1.0E6
-        for i, zv in enumerate(self.gas[self.config.C['Z']]):     # find the nearest z value at p_ref
+        for i, zv in enumerate(self.gas[self.config.C['Z']]):  # find the nearest z value at p_ref
             P = self.gas[self.config.C['P']][i]
             if abs(P - self.config.p_ref) < psep:
                 psep = abs(P - self.config.p_ref)
@@ -342,7 +344,8 @@ class Atmosphere:
             self.layerProperty[self.config.LP['P']].append(P)
             self.layerProperty[self.config.LP['Z']].append(zv)
             rr = z_at_p_ref + zv - zOffset
-            self.layerProperty[self.config.LP['R']].append(rr)   # note that this is the "actual" z along equator  referenced to planet center (aka radius)
+            # note that this is the "actual"z along equator referenced to planet center (aka radius)
+            self.layerProperty[self.config.LP['R']].append(rr)
             # ##set mean amu
             amulyr = 0.0
             for key in self.chem:
@@ -358,8 +361,10 @@ class Atmosphere:
                 dr = abs(zv - self.gas[self.config.C['Z']][i - 1])
                 dV = 4.0 * np.pi * (rr**2) * dr
                 dM = 1.0e11 * rho * dV
-                GdM = self.layerProperty[self.config.LP['GM']][i - 1] + chemistry.GravConst * dM    # in km3/s2
-                self.layerProperty[self.config.LP['GM']].append(GdM)  # mass added as you make way into atmosphere by radius r (times G)
+                GdM = self.layerProperty[self.config.LP['GM']][i - 1] + chemistry.GravConst * dM
+                # in km3/s2
+                # mass added as you make way into atmosphere by radius r (times G)
+                self.layerProperty[self.config.LP['GM']].append(GdM)
                 dT = abs(T - self.gas[self.config.C['T']][i - 1])
                 dP = abs(P - self.gas[self.config.C['P']][i - 1])
                 self.layerProperty[self.config.LP['LAPSE']].append(dT / dr)
@@ -381,7 +386,8 @@ class Atmosphere:
             little_g = gm / self.layerProperty[self.config.LP['R']][i]**2
             m_bar = self.layerProperty[self.config.LP['AMU']][i]
             T = self.gas[self.config.C['T']][i]
-            self.layerProperty[self.config.LP['H']].append((chemistry.R * T) / (little_g * m_bar) / 1000.0)
+            self.layerProperty[self.config.LP['H']].append((chemistry.R * T) /
+                                                           (little_g * m_bar) / 1000.0)
             self.layerProperty[self.config.LP['g']].append(little_g)
         self.layerProperty = np.array(self.layerProperty)
 

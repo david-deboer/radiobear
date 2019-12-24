@@ -3,7 +3,6 @@
 # Licensed under the 2-clause BSD license.
 
 from __future__ import print_function, absolute_import, division
-import os.path
 import numpy as np
 import copy
 from . import utils
@@ -235,8 +234,6 @@ class FileIO(object):
 
     def _process_other(self, fp, filename, is_type, label_line):
         labels = label_line.split()
-        xlabel = labels[1]
-        ylabel = labels[2].split('@')[1]
         del(labels[0:3])
         # Process label_line
         if is_type['spectrum']:
@@ -267,12 +264,11 @@ class FileIO(object):
             self.data[filename].b = xxx
         return True
 
-    def _process_image(self, fp, filename):
+    def _process_image(self, fp, filename, resolution):
         print("NOT IMPLEMENTED YET")
         return False
         imRow = imCol = 0
         self.data[filename].b = self.resolution
-        bmag = b
         for line in fp:
             if line[0] == '#':
                 continue
@@ -293,8 +289,10 @@ class FileIO(object):
             print(self.data[filename].header['img_size'])
             print('should equal ', imRow, imCol)
         self.data[filename].Tb = np.array(self.data[filename].Tb)
-        xyextents = [-self.resolution * len(self.data[filename].Tb) / 2.0, self.resolution * len(self.data[filename].Tb) / 2.0,
-                     -self.resolution * len(self.data[filename].Tb) / 2.0, self.resolution * len(self.data[filename].Tb) / 2.0]
+        xyextents = [-self.resolution * len(self.data[filename].Tb) / 2.0, self.resolution *
+                     len(self.data[filename].Tb) / 2.0,
+                     -self.resolution * len(self.data[filename].Tb) / 2.0, self.resolution *
+                     len(self.data[filename].Tb) / 2.0]
         x = []
         y = []
         for i in range(len(self.TB)):

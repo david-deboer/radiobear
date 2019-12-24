@@ -13,7 +13,8 @@ class Data:
     This holds the data that one may wish to use as output.  Data are stored as numpy arrays
     """
 
-    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop', 'log', 'type', 'logfile']
+    allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop',
+                          'log', 'type', 'logfile']
 
     def __init__(self):
         for a in self.allowed_parameters:

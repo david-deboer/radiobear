@@ -10,7 +10,8 @@ import six
 import os.path
 
 
-def set_single_val(val, unit=None, special={'true': True, 'false': False, 'none': None, 'null': None}):
+def set_single_val(val, unit=None,
+                   special={'true': True, 'false': False, 'none': None, 'null': None}):
     if isinstance(val, six.string_types):
         if val.lower() in special.keys():
             val = special[str(val).lower()]
@@ -59,7 +60,8 @@ class planetConfig:
         self.log.add(pars, False)
 
     def setConfig(self, configFile):
-        """Reads in config files and updates after default set in __init__.  These are all shown in display()"""
+        """Reads in config files and updates after default set in __init__.
+        These are all shown in display()"""
         if configFile is None:
             print('Config file not provided.  Using defaults.')
             return 0
@@ -101,7 +103,8 @@ class planetConfig:
                     else:
                         val[v.strip()] = i
             else:
-                print("Incorrect type:  {} <{}>".format(tok, type(self.toks[tok]['default'][self.planet])))
+                print("Incorrect type:  {} <{}>".
+                      format(tok, type(self.toks[tok]['default'][self.planet])))
                 continue
             setattr(self, self.toks[tok]['name'], val)
         fp.close()
@@ -141,7 +144,8 @@ class planetConfig:
             self.toks[k]['name'] = k
             self.toks[k]['unit'] = None
             self.toks[k]['help'] = None
-            self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None, 'Uranus': None, 'Neptune': None}
+            self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
+                                       'Uranus': None, 'Neptune': None}
         return (key, value)
 
     def display(self):

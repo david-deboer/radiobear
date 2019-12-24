@@ -4,7 +4,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import sys
-from . import atmosphere
 from . import shape
 from . import utils
 
@@ -19,7 +18,8 @@ zHat = np.array([0.0, 0.0, 1.0])
 
 
 class Ray:
-    def __init__(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None, tip=None, rotate=None, rNorm=None):
+    def __init__(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None,
+                 tip=None, rotate=None, rNorm=None):
         self.ds = ds
         self.layer4ds = layer4ds
         self.r4ds = r4ds
@@ -29,7 +29,8 @@ class Ray:
         self.rotate = rotate
         self.doppler = doppler
 
-    def update(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None, tip=None, rotate=None, rNorm=None):
+    def update(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None, tip=None,
+               rotate=None, rNorm=None):
         if ds is not None:
             self.ds = ds
         if layer4ds is not None:
@@ -51,7 +52,8 @@ class Ray:
 def computeAspect(Q, f=1.0):
     """Convert the orientation vector [posAng,lat_planetographic] to the rotation angles"""
     tip = -Q[0] * np.pi / 180.0   # 'tip' to north
-    rotate = -np.arctan(np.tan(Q[1] * np.pi / 180.0) * (1.0 - f)**2)   # 'rotate' the sub-earth planetographic latitude
+    # 'rotate' the sub-earth planetographic latitude
+    rotate = -np.arctan(np.tan(Q[1] * np.pi / 180.0) * (1.0 - f)**2)
     return tip, rotate   # planetocentric coordinates
 
 
@@ -117,8 +119,9 @@ def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
 
 def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     """Computes the path length through the atmosphere given:
-            b = impact parameter (fractional distance to outer edge at that latitude in observer's coordinates)
-            orientation = position angle of the planet [0]='tip', [1]='subearth latitude' """
+            b = impact parameter (fractional distance to outer edge at that
+            latitude in observer's coordinates) orientation = position angle of
+            the planet [0]='tip', [1]='subearth latitude' """
     if gtype is None:
         gtype = atm.config.gtype
     if orientation is None:
@@ -127,7 +130,6 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     req = atm.layerProperty[atm.config.LP['R']]   # radius of layers along equator
     rNorm = req[0]
     nr = atm.layerProperty[atm.config.LP['N']]    # refractive index of layers
-    P = atm.gas[atm.config.C['P']]
     if (b[0]**2 + b[1]**2) >= 1.0:
         return path
 
@@ -179,17 +181,21 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
         if verbose:
             print('------------------')
             print('\tstep {}:  layer {} {} '.format(i, layer, direction))
-            print('\ts = [{:.4f}, {:.4f}, {:.4f}],  ds = {:.4f}'.format(s[-1][_X], s[-1][_Y], s[-1][_Z], ds[-1]))
+            print('\ts = [{:.4f}, {:.4f}, {:.4f}],  ds = {:.4f}'.
+                  format(s[-1][_X], s[-1][_Y], s[-1][_Z], ds[-1]))
             geoid.print_a_step()
-            print('\tt_inc, tran:  {:.8f} -> {:.8f}'.format(utils.r2d(t_inc[-1]), utils.r2d(t_tran[-1])))
+            print('\tt_inc, tran:  {:.8f} -> {:.8f}'.
+                  format(utils.r2d(t_inc[-1]), utils.r2d(t_tran[-1])))
         # update s-vector
-        s.append(nratio * s[i] + raypathdir[direction] * (nratio * np.cos(t_inc[i]) * n[i] - np.cos(t_tran[i]) * n[i]))
+        s.append(nratio * s[i] + raypathdir[direction] *
+                 (nratio * np.cos(t_inc[i]) * n[i] - np.cos(t_tran[i]) * n[i]))
         rNowMag = geoid.rmag
         rNextMag = geoid.calcShape(atm, req[layer + raypathdir[direction]], pclat, delta_lng)
         rdots = np.dot(r[i], s[i + 1])
 
         vw = np.interp(pclat, atm.config.vwlat, atm.config.vwdat) / 1000.0
-        dopp = 1.0 - (atm.config.omega_m * rNowMag * np.cos(utils.d2r(pclat)) + vw) * np.sin(utils.d2r(delta_lng)) / 3.0E5
+        dopp = (1.0 - (atm.config.omega_m * rNowMag * np.cos(utils.d2r(pclat)) + vw) *
+                np.sin(utils.d2r(delta_lng)) / 3.0E5)
 
         # get ds, checking for exit, errors and warnings...
         try:
@@ -212,9 +218,11 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
             else:
                 inAtmosphere = False
                 break
-        if ds_step < 0.0:   # What is correct here?  Is this true for egress, or only in error?  8/1/14 I commented out if statement,
-                            # but only print statement was indented
-            print('Error:  ds < 0  ({}:  r.s={}, ds={}, [{},{}])'.format(direction, rdots, ds_step, dsp, dsm))
+        # What is correct here?  Is this true for egress, or only in error?
+        # 8/1/14 I commented out if statement, but only print statement was indented
+        if ds_step < 0.0:
+            print('Error:  ds < 0  ({}:  r.s={}, ds={}, [{},{}])'
+                  .format(direction, rdots, ds_step, dsp, dsm))
             inAtmosphere = False
             break
 
@@ -234,7 +242,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
         delta_lng = utils.r2d(np.arctan2(np.dot(rnext, xHat), np.dot(rnext, zHat)))
         r2 = geoid.calcShape(atm, req[layer + raypathdir[direction]], pclat, delta_lng)
         if abs(r2 - rNextMag) > 2.0 and layer != 0:
-            print('Warning:  {} != {} ({} km) at layer {}'.format(r2, rNextMag, r2 - rNextMag, layer))
+            print('Warning:  {} != {} ({} km) at layer {}'
+                  .format(r2, rNextMag, r2 - rNextMag, layer))
         r.append(rnext)  # which is also geoid.r, or should be
         n.append(geoid.n)
 
@@ -247,7 +256,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
             try:
                 t_inc.append(np.arccos(-raypathdir[direction] * np.dot(s[i + 1], n[i + 1])))
             except ValueError:
-                print('t_inc ValueError |s_(i+1)| = {}, |n_(i+1)| = {} - set to previous'.format(np.linalg.norm(s[i + 1]), np.linalg.norm(n[i + 1])))
+                print('t_inc ValueError |s_(i+1)| = {}, |n_(i+1)| = {} - set to previous'
+                      .format(np.linalg.norm(s[i + 1]), np.linalg.norm(n[i + 1])))
                 t_inc.append(t_inc[i])
                 inAtmosphere = False
                 break
@@ -275,7 +285,8 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
         else:
             dsmuappend = ds[i] / (r4ds[i] - r4ds[i + 1])
         dsmu.append(dsmuappend)
-    path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler, tip=tip, rotate=rotate, rNorm=rNorm)
+    path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler,
+                tip=tip, rotate=rotate, rNorm=rNorm)
 
     del s, r, n, ds, layer4ds, r4ds, P4ds, geoid, req, nr
     return path

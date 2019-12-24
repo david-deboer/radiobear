@@ -5,7 +5,6 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
 import os
-import six
 from argparse import Namespace
 from . import atmosphere
 from . import config
@@ -66,7 +65,8 @@ class PlanetBase:
         """
         if self.write_log_file:
             runStart = datetime.datetime.now()
-            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet, runStart.strftime("%Y%m%d_%H%M%S"))
+            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet,
+                                            runStart.strftime("%Y%m%d_%H%M%S"))
             self.log = logging.LogIt(logFile)
             self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
@@ -86,7 +86,8 @@ class PlanetBase:
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
-            print("\t'{}.config.display()' to see config parameters.".format(self.planet[0].lower()))
+            print("\t'{}.config.display()' to see config parameters."
+                  .format(self.planet[0].lower()))
         self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
         self.config.show()
 
@@ -103,7 +104,8 @@ class PlanetBase:
         Instantiates atmosphere.  Attributes are:
             self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
         """
-        self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+        self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
+                                           log=self.log, **self.kwargs)
 
     def init_alpha(self):
         """
@@ -177,7 +179,9 @@ class PlanetBase:
             s = 'Reuse'
         else:
             if len(freqs) > 1:
-                s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs), freqs[0], freqs[-1], utils.proc_unit(freqUnit))
+                s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs),
+                                                                   freqs[0], freqs[-1],
+                                                                   utils.proc_unit(freqUnit))
             else:
                 s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
         self.log.add(s, self.verbose)
@@ -218,7 +222,7 @@ class PlanetBase:
             raise ValueError('Warning:  Image must be at only one frequency')
         if self.verbose == 'loud':
             print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
-        if abs(block[1]) > 1:
+        if abs(self.block[1]) > 1:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
         return Namespace(true=True, block=block_postfix, imrow=[])
 
@@ -251,7 +255,7 @@ class PlanetBase:
             atmplt.Properties()
             atmplt.show()
 
-    def bright_run(self, b, is_img, brtplt):
+    def bright_run(self, b, is_img, brtplt, ibv):
         """
         Computes the brightness temperature for that "b" and updates self.Tb.
 
@@ -272,9 +276,9 @@ class PlanetBase:
         Tb = self.bright.single(self.freqs, self.atmos, b, self.alpha, self.config.orientation)
         if is_img.true:
             is_img.imrow.append(Tb[0])
-            if not (i + 1) % self.imSize[0]:
+            if not (ibv + 1) % self.imSize[0]:
                 self.Tb.append(is_img.imrow)
-                isimg.imrow = []
+                is_img.imrow = []
         else:
             self.Tb.append(Tb)
         if self.bright.travel is not None:
@@ -329,16 +333,20 @@ class PlanetBase:
             self.header['rNorm'] = '# rNorm not set'
         else:
             self.header['orientation'] = '# orientation:   {}'.format(repr(self.config.orientation))
-            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(utils.r2d(self.tip), utils.r2d(self.rotate))
+            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(
+                                                                            utils.r2d(self.tip),
+                                                                            utils.r2d(self.rotate))
             self.header['rNorm'] = '# rNorm: {}'.format(self.rNorm)
             if self.data_type == 'image':
                 self.header['imgSize'] = '# imgSize: {}'.format(self.imSize)
-                resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) * self.rNorm / self.config.distance))
+                resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) *
+                                          self.rNorm / self.config.distance))
                 print('resolution = ', resolution)
                 self.header['res'] = '# res:  {} arcsec'.format(resolution)
         self.header['data-type'] = '#* type:  {}'.format(self.data_type)
         self.header['gtype'] = '# gtype: {}'.format(self.config.gtype)
-        self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req, self.config.Rpol)
+        self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req,
+                                                                     self.config.Rpol)
         self.header['distance'] = '# distance:  {} km'.format(self.config.distance)
         self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
         self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(run_start)
