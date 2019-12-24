@@ -5,10 +5,9 @@
 
 from __future__ import absolute_import, division, print_function
 
-import os
 import glob
 import io
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from radiobear import version
 
@@ -27,12 +26,13 @@ setup_args = {
     'packages': ['radiobear', 'radiobear.plotting',
                  'radiobear.Jupiter', 'radiobear.Saturn', 'radiobear.Uranus', 'radiobear.Neptune',
                  'radiobear.Constituents',
-                 'radiobear.Constituents.clouds', 'radiobear.Constituents.co', 'radiobear.Constituents.h2',
-                 'radiobear.Constituents.h2o', 'radiobear.Constituents.h2s', 'radiobear.Constituents.nh3',
+                 'radiobear.Constituents.clouds', 'radiobear.Constituents.co',
+                 'radiobear.Constituents.h2', 'radiobear.Constituents.h2o',
+                 'radiobear.Constituents.h2s', 'radiobear.Constituents.nh3',
                  'radiobear.Constituents.ph3'],
     'scripts': glob.glob('scripts/*'),
     'include_package_data': True,
-    'install_requires': ["six", "numpy", "matplotlib", "scipy"],
+    'install_requires': ["numpy", "matplotlib", "scipy"],
     'classifiers': ["Development Status :: 4 - Beta",
                     "Environment :: Console",
                     "Intended Audience :: Science/Research",
