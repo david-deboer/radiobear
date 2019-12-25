@@ -1,7 +1,7 @@
 # plotting routines
 
-from . import bright
-from . import atm
-from . import data
-from . import plt
-from . import shape
+from . import bright  # noqa
+from . import atm  # noqa
+from . import data  # noqa
+from . import plt  # noqa
+from . import shape  # noqa

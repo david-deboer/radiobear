@@ -6,7 +6,6 @@ import numpy as np
 import datetime
 import os
 from argparse import Namespace
-from . import atmosphere
 from . import config
 from . import alpha
 from . import brightness
@@ -99,12 +98,22 @@ class PlanetBase:
             state_variables.set_state(self, 'set', **kwargs)
         state_variables.show_state(self)
 
-    def init_atmos(self):
+    def init_atm(self):
         """
         Instantiates atmosphere.  Attributes are:
-            self.atmos.gas, self.atmos.cloud and self.atmos.layerProperty
+            self.atmos.gas, self.atmos.cloud and self.atmos.property
         """
+        from . import atmosphere
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
+                                           log=self.log, **self.kwargs)
+
+    def init_atm_simple(self):
+        """
+        Instantiates atmosphere.  Attributes are:
+            self.atmos.gas, self.atmos.cloud and self.atmos.property
+        """
+        from . import atm_simple
+        self.atmos = atm_simple.Atmosphere(self.planet, mode=self.mode, config=self.config,
                                            log=self.log, **self.kwargs)
 
     def init_alpha(self):

@@ -78,8 +78,8 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
     atm.cloud = interpolate('cloud', cloud, fillval, atm, Pgrid)
 
     # renormalize such that zDeep = 0.0 and reset DZ
-    atm.renorm_z('gas')
-    atm.renorm_z('cloud')
+    atm._renorm_z('gas')
+    atm._renorm_z('cloud')
 
     return 1
 
@@ -130,8 +130,8 @@ def extrapolate(gas, fillval, atm):
                 gas[atm.config.C[yvar]][i] = val
     # extrapolate T and z as dry adiabat in hydrostatic equilibrium
     pDeep = atm.gas[atm.config.C['P']][-1]
-    g = atm.layerProperty[atm.config.LP['g']][-1]
-    r = atm.layerProperty[atm.config.LP['R']][-1]
+    g = atm.property[atm.config.LP['g']][-1]
+    r = atm.property[atm.config.LP['R']][-1]
     for i, p in enumerate(gas[atm.config.C['P']]):
         if p < pDeep:
             continue

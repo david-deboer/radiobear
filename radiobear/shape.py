@@ -145,8 +145,8 @@ class Shape:
         if self.gtype == 'reference' and type(self.referenceGeoid) == bool:
             self.referenceGeoid = []
 
-        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']],
-                       planet.layerProperty[planet.config.LP['GM']])
+        GM = np.interp(r, planet.property[planet.config.LP['R']],
+                       planet.property[planet.config.LP['GM']])
         for latv in pclatSteps:
             radlatv = u.d2r(latv)
             vw = np.interp(latv, planet.config.vwlat, planet.config.vwdat) / 1000.0
@@ -235,8 +235,8 @@ class Shape:
         r_vec = np.array([0.0, b * np.sin(lat), a * np.cos(lat)])
         r_vec = rotY(lng, r_vec)
         self.rmag = np.linalg.norm(r_vec)
-        GM = np.interp(r, planet.layerProperty[planet.config.LP['R']],
-                       planet.layerProperty[planet.config.LP['GM']])
+        GM = np.interp(r, planet.property[planet.config.LP['R']],
+                       planet.property[planet.config.LP['GM']])
         self.g_static = GM / self.rmag**2
         try:
             # don't need to worry about direction here, since norm etc defined

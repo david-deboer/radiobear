@@ -127,9 +127,9 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
     if orientation is None:
         orientation = atm.config.orientation
     path = Ray()
-    req = atm.layerProperty[atm.config.LP['R']]   # radius of layers along equator
+    req = atm.property[atm.config.LP['R']]   # radius of layers along equator
     rNorm = req[0]
-    nr = atm.layerProperty[atm.config.LP['N']]    # refractive index of layers
+    nr = atm.property[atm.config.LP['N']]    # refractive index of layers
     if (b[0]**2 + b[1]**2) >= 1.0:
         return path
 
