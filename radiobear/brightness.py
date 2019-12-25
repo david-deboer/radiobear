@@ -16,17 +16,16 @@ class Brightness():
     def __init__(self, mode='normal', log=None, **kwargs):
         """This calculates the brightness temperature of the planets.
            It must be used with atmosphere and alpha"""
-        kwargs = state_variables.init_state_variables(mode, **kwargs)
-        self.state_vars = kwargs.keys()
-        state_variables.set_state(self, set_mode='init', **kwargs)
+        state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
 
     def state(self):
         state_variables.show_state(self)
 
-    def single(self, freqs, atm, b, alpha, orientation=None, taulimit=20.0):
+    def single(self, b, freqs, atm, alpha, orientation=None, taulimit=20.0):
         """This computes the brightness temperature along one ray path"""
 
+        print("BRIGHT28:  ",np.shape(alpha.layers), alpha.layers)
         disc_average = utils.b_type(b).startswith('dis')
         if disc_average:
             b = [0.0, 0.0]

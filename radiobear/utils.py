@@ -23,7 +23,7 @@ processingUnits = {'GHz': ['GHz', 'Hz', 'kHz', 'MHz'],
                    'mpersec2': ['mpersec2', 'cmpersec2']}
 
 
-def get_location_for_planet_setup():
+def get_location_for_radiobear_setup():
     return os.path.dirname(__file__)
 
 
@@ -156,46 +156,46 @@ def bang():
         plotting.plotTB(f, xaxis='wavel', xlog=True, justFreq=True)
 
 
-def writeWavel(fn=None, output_file=None, directory='Output'):
-    filename, Tb, f, wavel, b, xlabel, ylabels = readTB(fn=fn, directory=directory)
-    title = filename.split('/')[-1].split('.')[0]
-
-    # Write file
-    title += '_wavel.dat'
-    if output_file is None:
-        output_file = title
-    print('Writing to ', output_file)
-    fp = open(output_file, 'w')
-    for i in range(len(wavel)):
-        s = '%f\t' % (wavel[i])
-        fp.write(s)
-        for j in range(len(b)):
-            s = '%f\t' % (Tb[j][i])
-            fp.write(s)
-        fp.write('\n')
-    fp.close()
-    return n
-
-
-def concatdat(files, directory='Output'):
-    """Given a list of utils.ls indices, returns TB, freq, wavel"""
-    aTB = []
-    bf = []
-    cwavel = []
-    for fil in files:
-        data = readTB(fn=fil)
-        a = list(data[1][0])
-        b = list(data[2])
-        c = list(data[3])
-        aTB += a
-        bf += b
-        cwavel += c
-    sa = np.argsort(np.array(bf))
-    TB = []
-    f = []
-    wavel = []
-    for i in sa:
-        TB.append(aTB[i])
-        f.append(bf[i])
-        wavel.append(cwavel[i])
-    return TB, f, wavel
+# def writeWavel(fn=None, output_file=None, directory='Output'):
+#     filename, Tb, f, wavel, b, xlabel, ylabels = readTB(fn=fn, directory=directory)
+#     title = filename.split('/')[-1].split('.')[0]
+#
+#     # Write file
+#     title += '_wavel.dat'
+#     if output_file is None:
+#         output_file = title
+#     print('Writing to ', output_file)
+#     fp = open(output_file, 'w')
+#     for i in range(len(wavel)):
+#         s = '%f\t' % (wavel[i])
+#         fp.write(s)
+#         for j in range(len(b)):
+#             s = '%f\t' % (Tb[j][i])
+#             fp.write(s)
+#         fp.write('\n')
+#     fp.close()
+#     return n
+#
+#
+# def concatdat(files, directory='Output'):
+#     """Given a list of utils.ls indices, returns TB, freq, wavel"""
+#     aTB = []
+#     bf = []
+#     cwavel = []
+#     for fil in files:
+#         data = readTB(fn=fil)
+#         a = list(data[1][0])
+#         b = list(data[2])
+#         c = list(data[3])
+#         aTB += a
+#         bf += b
+#         cwavel += c
+#     sa = np.argsort(np.array(bf))
+#     TB = []
+#     f = []
+#     wavel = []
+#     for i in sa:
+#         TB.append(aTB[i])
+#         f.append(bf[i])
+#         wavel.append(cwavel[i])
+#     return TB, f, wavel

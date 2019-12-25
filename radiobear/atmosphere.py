@@ -20,9 +20,7 @@ class Atmosphere(atm_base.AtmosphereBase):
                self.property
             on the appropriate grid."""
         super(Atmosphere, self).__init__(planet=planet, config=config, log=log)
-        kwargs = state_variables.init_state_variables(mode, **kwargs)
-        self.state_vars = kwargs.keys()
-        state_variables.set_state(self, set_mode='init', **kwargs)
+        state_variables.init_state_variables(self, mode, **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
 

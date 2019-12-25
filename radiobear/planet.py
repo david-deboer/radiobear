@@ -22,36 +22,33 @@ class Planet(planet_base.PlanetBase):
             Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
-        i_set : list
-            List of str of modules to run on setup
-        initialize : list
-            List of str of modules to initialize on setup
+
         run_atmos : bool
             Flag to generate the atmosphere on setup
         kwargs
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
     def __init__(self, name, mode='normal', config_file='config.par',
-                 set_log='log', set_config='config', set_data='data_return',
-                 init_atm='atm', init_alpha='alpha', init_bright='bright', init_IO='fIO',
+                 log='log', config='config', data='data_return',
+                 atm='atm', alpha='alpha', bright='bright', io='fIO',
                  run_atmos=True, **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
         # set
-        if isinstance(set_log, six.string_types) and set_log not in utils.negative:
-            getattr(self, 'set_{}'.format(set_log))()
-        if isinstance(set_config, six.string_types) and set_config not in utils.negative:
-            getattr(self, 'set_{}'.format(set_config))()
-        if isinstance(set_data, six.string_types) and set_data not in utils.negative:
-            getattr(self, 'set_{}'.format(set_data))()
+        if isinstance(log, six.string_types) and log not in utils.negative:
+            getattr(self, 'setup_{}'.format(log))()
+        if isinstance(config, six.string_types) and config not in utils.negative:
+            getattr(self, 'setup_{}'.format(config))()
+        if isinstance(data, six.string_types) and data not in utils.negative:
+            getattr(self, 'setup_{}'.format(data))()
         # initialize
-        if isinstance(init_atm, six.string_types) and init_atm not in utils.negative:
-            getattr(self, 'init_{}'.format(init_atm))()
-        if isinstance(init_alpha, six.string_types) and init_alpha not in utils.negative:
-            getattr(self, 'init_{}'.format(init_alpha))()
-        if isinstance(init_bright, six.string_types) and init_bright not in utils.negative:
-            getattr(self, 'init_{}'.format(init_bright))()
-        if isinstance(init_IO, six.string_types) and init_IO not in utils.negative:
-            getattr(self, 'init_{}'.format(init_IO))()
+        if isinstance(atm, six.string_types) and atm not in utils.negative:
+            getattr(self, 'setup_{}'.format(atm))(**kwargs)
+        if isinstance(alpha, six.string_types) and alpha not in utils.negative:
+            getattr(self, 'setup_{}'.format(alpha))(**kwargs)
+        if isinstance(bright, six.string_types) and bright not in utils.negative:
+            getattr(self, 'setup_{}'.format(bright))(**kwargs)
+        if isinstance(io, six.string_types) and io not in utils.negative:
+            getattr(self, 'setup_{}'.format(io))(**kwargs)
         # run atmosphere
         if run_atmos:
             self.atm_run()
@@ -84,7 +81,7 @@ class Planet(planet_base.PlanetBase):
 
         # For now just one profile, but can extend...
         if not reuse:
-            self.alpha_layers()
+            self.alpha_layers(freqs=self.freqs, atm=self.atmos)
         D_timer = datetime.datetime.now()
         print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
 
@@ -96,7 +93,8 @@ class Planet(planet_base.PlanetBase):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')
-            self.bright_run(b=bv, is_img=is_img, brtplt=brtplt, ibv=i)
+            self.bright_run(b=bv, freqs=freqs, atm=self.atmos, alpha=self.alpha,
+                            is_img=is_img, brtplt=brtplt)
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)

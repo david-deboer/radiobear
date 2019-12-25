@@ -50,9 +50,7 @@ class Alpha:
         """Reads in absorption formalisms
            Note that they are all in GHz"""
 
-        kwargs = state_variables.init_state_variables(mode, **kwargs)
-        self.state_vars = kwargs.keys()
-        state_variables.set_state(self, set_mode='init', **kwargs)
+        state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
         self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')

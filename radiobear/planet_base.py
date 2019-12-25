@@ -32,7 +32,7 @@ class PlanetBase:
         mode : str
             Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
         kwargs
-            'verbose' and 'plot_amt', etc (and other state_vars - see show_state())
+            'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
@@ -53,12 +53,10 @@ class PlanetBase:
 
         # Set up state_variables
         self.mode = mode.lower()
-        self.kwargs = state_variables.init_state_variables(self.mode, **kwargs)
-        self.state_vars = self.kwargs.keys()
-        state_variables.set_state(self, set_mode='init', **self.kwargs)
+        state_variables.init_state_variables(self, self.mode, **kwargs)
         print("\t'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
 
-    def set_log(self):
+    def setup_log(self):
         """
         Sets up self.log if self.write_log_file is True
         """
@@ -71,14 +69,14 @@ class PlanetBase:
         else:
             self.log = None
 
-    def set_data_return(self):
+    def setup_data_return(self):
         """
         Instantiates and logs the data_return class
         """
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
-    def set_config(self):
+    def setup_config(self):
         """
         Instantiates and reads the config file
         """
@@ -98,38 +96,38 @@ class PlanetBase:
             state_variables.set_state(self, 'set', **kwargs)
         state_variables.show_state(self)
 
-    def init_atm(self):
+    def setup_atm(self, **kwargs):
         """
         Instantiates atmosphere.  Attributes are:
             self.atmos.gas, self.atmos.cloud and self.atmos.property
         """
         from . import atmosphere
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
-                                           log=self.log, **self.kwargs)
+                                           log=self.log, **kwargs)
 
-    def init_atm_simple(self):
+    def setup_atm_simple(self, **kwargs):
         """
         Instantiates atmosphere.  Attributes are:
             self.atmos.gas, self.atmos.cloud and self.atmos.property
         """
         from . import atm_simple
         self.atmos = atm_simple.Atmosphere(self.planet, mode=self.mode, config=self.config,
-                                           log=self.log, **self.kwargs)
+                                           log=self.log, **kwargs)
 
-    def init_alpha(self):
+    def setup_alpha(self, **kwargs):
         """
         Instantiates absorption modules.  To change absorption, edit files under /constituents'
         """
-        self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **self.kwargs)
+        self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **kwargs)
         self.alpha.reset_layers()
 
-    def init_bright(self):
+    def setup_bright(self, **kwargs):
         """
         Instatiates brightness module.
         """
-        self.bright = brightness.Brightness(mode=self.mode, log=self.log, **self.kwargs)
+        self.bright = brightness.Brightness(mode=self.mode, log=self.log, **kwargs)
 
-    def init_fIO(self):
+    def setup_fIO(self, **kwargs):
         """
         Instantiates fileIO class
         """
@@ -235,11 +233,11 @@ class PlanetBase:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
         return Namespace(true=True, block=block_postfix, imrow=[])
 
-    def alpha_layers(self):
+    def alpha_layers(self, freqs, atm):
         """
         Computes the layer absorption.  If save_alpha is set, it will write the profiles.
         """
-        self.alpha.get_layers(self.freqs, self.atmos)
+        self.alpha.get_layers(freqs, atm)
         if self.save_alpha:
             self.alpha.write_alpha()
 
@@ -264,7 +262,7 @@ class PlanetBase:
             atmplt.Properties()
             atmplt.show()
 
-    def bright_run(self, b, is_img, brtplt, ibv):
+    def bright_run(self, b, freqs, atm, alpha, is_img, brtplt):
         """
         Computes the brightness temperature for that "b" and updates self.Tb.
 
@@ -282,9 +280,10 @@ class PlanetBase:
         float
             Brightness temperature at that b
         """
-        Tb = self.bright.single(self.freqs, self.atmos, b, self.alpha, self.config.orientation)
+        Tb = self.bright.single(b, freqs, atm, alpha, self.config.orientation)
         if is_img.true:
             is_img.imrow.append(Tb[0])
+            ibv = self.b.index(b)
             if not (ibv + 1) % self.imSize[0]:
                 self.Tb.append(is_img.imrow)
                 is_img.imrow = []
