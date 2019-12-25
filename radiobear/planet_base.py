@@ -98,7 +98,7 @@ class PlanetBase:
             state_variables.set_state(self, 'set', **kwargs)
         state_variables.show_state(self)
 
-    def init_atmos(self):
+    def init_atm(self):
         """
         Instantiates atmosphere.  Attributes are:
             self.atmos.gas, self.atmos.cloud and self.atmos.property

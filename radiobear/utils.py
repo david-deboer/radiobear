@@ -8,7 +8,8 @@ import numpy as np
 import six
 
 commentChars = ['!', '#', '$', '%', '&', '*']
-affirmative = [1, '1', 'y', 'Y', 't', 'T']
+affirmative = [1, '1', 'yes', 'true', 'y', 't']
+negative = [0, '0', 'none', 'false', 'n', 'f']
 
 Units = {'Frequency': 1, 'Hz': 1.0, 'kHz': 1.0E3, 'MHz': 1.0E6, 'GHz': 1.0E9,
          'Length': 1, 'm': 1.0, 'km': 1.0E3, 'cm': 1.0E-2, 'AU': 149597870691.0,

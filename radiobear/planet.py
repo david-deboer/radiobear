@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 import datetime
 import os.path
+import six
 from . import planet_base
 from . import utils
 
@@ -31,13 +32,27 @@ class Planet(planet_base.PlanetBase):
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
     def __init__(self, name, mode='normal', config_file='config.par',
-                 i_set=['log', 'config', 'data_return'],
-                 initialize=['atmos', 'alpha', 'bright', 'fIO'], run_atmos=True, **kwargs):
+                 set_log='log', set_config='config', set_data='data_return',
+                 init_atm='atm', init_alpha='alpha', init_bright='bright', init_IO='fIO',
+                 run_atmos=True, **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
-        for ix in i_set:
-            getattr(self, 'set_{}'.format(ix))()
-        for init in initialize:
-            getattr(self, 'init_{}'.format(init))()
+        # set
+        if isinstance(set_log, six.string_types) and set_log not in utils.negative:
+            getattr(self, 'set_{}'.format(set_log))()
+        if isinstance(set_config, six.string_types) and set_config not in utils.negative:
+            getattr(self, 'set_{}'.format(set_config))()
+        if isinstance(set_data, six.string_types) and set_data not in utils.negative:
+            getattr(self, 'set_{}'.format(set_data))()
+        # initialize
+        if isinstance(init_atm, six.string_types) and init_atm not in utils.negative:
+            getattr(self, 'init_{}'.format(init_atm))()
+        if isinstance(init_alpha, six.string_types) and init_alpha not in utils.negative:
+            getattr(self, 'init_{}'.format(init_alpha))()
+        if isinstance(init_bright, six.string_types) and init_bright not in utils.negative:
+            getattr(self, 'init_{}'.format(init_bright))()
+        if isinstance(init_IO, six.string_types) and init_IO not in utils.negative:
+            getattr(self, 'init_{}'.format(init_IO))()
+        # run atmosphere
         if run_atmos:
             self.atm_run()
 
