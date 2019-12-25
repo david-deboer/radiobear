@@ -78,8 +78,8 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
     atm.cloud = interpolate('cloud', cloud, fillval, atm, Pgrid)
 
     # renormalize such that zDeep = 0.0 and reset DZ
-    atm.renorm_z('gas')
-    atm.renorm_z('cloud')
+    atm._renorm_z('gas')
+    atm._renorm_z('cloud')
 
     return 1
 
