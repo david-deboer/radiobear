@@ -2,14 +2,10 @@
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
-import numpy as np
 
 # ##local imports
-from . import utils
-from . import regrid
 from . import state_variables
 from . import atm_base
-from . import atm_modify
 
 
 class Atmosphere(atm_base.AtmosphereBase):
@@ -43,8 +39,16 @@ class Atmosphere(atm_base.AtmosphereBase):
     def state(self):
         state_variables.show_state(self)
 
-    def run(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None,
+    def simple(self):
+        self.readGas()
+        self.nAtm = len(self.gas[0])
+        self.readCloud()
+        self.computeProp()
+
+    def std(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None,
             otherType=None, tweak=True):
+        from . import regrid
+        from . import atm_modify
         """This is the standard pipeline"""
         # ##Set run defaults
         if Pmin is None:
@@ -93,10 +97,5 @@ class Atmosphere(atm_base.AtmosphereBase):
             return 0
         else:
             self.propGen[otherType]()
-
-        angularDiameter = 2.0 * np.arctan(self.property[self.config.LP['R']][0] /
-                                          self.config.distance)
-        if self.verbose == 'loud':
-            print('angular radius = {} arcsec'.format(utils.r2asec(angularDiameter / 2.0)))
 
         return self.nAtm

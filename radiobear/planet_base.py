@@ -252,8 +252,8 @@ class PlanetBase:
         if self.verbose == 'loud':
             print('data_type = {}'.format(self.data_type))
 
-    def atm_run(self):
-        self.atmos.run()
+    def atm_run(self, atm_type='std'):
+        getattr(self.atmos, atm_type)()
         atmplt = self.set_atm_plots()
         if atmplt is not None:
             atmplt.TP()

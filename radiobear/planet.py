@@ -31,7 +31,7 @@ class Planet(planet_base.PlanetBase):
     def __init__(self, name, mode='normal', config_file='config.par',
                  log='log', config='config', data='data_return',
                  atm='atm', alpha='alpha', bright='bright', io='fIO',
-                 run_atmos=True, **kwargs):
+                 atm_type='std', **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
         # set
         if isinstance(log, six.string_types) and log not in utils.negative:
@@ -50,8 +50,8 @@ class Planet(planet_base.PlanetBase):
         if isinstance(io, six.string_types) and io not in utils.negative:
             getattr(self, 'setup_{}'.format(io))(**kwargs)
         # run atmosphere
-        if run_atmos:
-            self.atm_run()
+        if isinstance(atm_type, six.string_types) and atm_type not in utils.negative:
+            self.atm_run(atm_type=atm_type)
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """
