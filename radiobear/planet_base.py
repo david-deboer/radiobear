@@ -105,15 +105,6 @@ class PlanetBase:
         self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
                                            log=self.log, **kwargs)
 
-    def setup_atm_simple(self, **kwargs):
-        """
-        Instantiates atmosphere.  Attributes are:
-            self.atmos.gas, self.atmos.cloud and self.atmos.property
-        """
-        from . import atm_simple
-        self.atmos = atm_simple.Atmosphere(self.planet, mode=self.mode, config=self.config,
-                                           log=self.log, **kwargs)
-
     def setup_alpha(self, **kwargs):
         """
         Instantiates absorption modules.  To change absorption, edit files under /constituents'
