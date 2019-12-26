@@ -27,10 +27,10 @@ class PlanetBase:
     ----------
         name : str
             One of [Jupiter, Saturn, Uranus, Neptune]
-        config_file : str
-            Config file name.  If 'planet' sets to <name>/config.par
         mode : str
             Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
+        config_file : str
+            Config file name.  If 'planet' sets to <name>/config.par
         kwargs
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
@@ -261,6 +261,12 @@ class PlanetBase:
         ----------
         b : float
             Current "impact parameter"
+        freq : list
+            List of frequencies
+        atm : Atmosphere class
+            Atmosphere to use
+        alpha : Alpha class
+            Absorption to use
         is_img : Namespace
             Contains parameters if image.
         brtplt : class
