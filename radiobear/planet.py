@@ -93,7 +93,7 @@ class Planet(planet_base.PlanetBase):
             # Figure out which alpha to use for this b.  For now only one.
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')
-            self.bright_run(b=bv, freqs=freqs, atm=self.atmos, alpha=self.alpha,
+            self.bright_run(b=bv, freqs=self.freqs, atm=self.atmos, alpha=self.alpha,
                             is_img=is_img, brtplt=brtplt)
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None

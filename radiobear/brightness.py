@@ -25,7 +25,6 @@ class Brightness():
     def single(self, b, freqs, atm, alpha, orientation=None, taulimit=20.0):
         """This computes the brightness temperature along one ray path"""
 
-        print("BRIGHT28:  ",np.shape(alpha.layers), alpha.layers)
         disc_average = utils.b_type(b).startswith('dis')
         if disc_average:
             b = [0.0, 0.0]
