@@ -5,9 +5,9 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import datetime
 import os
+import sys
 from argparse import Namespace
 from . import config
-from . import alpha
 from . import brightness
 from . import data_handling
 from . import utils
@@ -45,6 +45,7 @@ class PlanetBase:
         self.data_type = None
         self.imSize = None
         self.config_file = config_file
+        self.bmap_loaded = False
 
         print('Planetary modeling  (ver {})'.format(version.VERSION))
         if self.planet not in self.planet_list:
@@ -86,6 +87,8 @@ class PlanetBase:
             print("\t'{}.config.display()' to see config parameters."
                   .format(self.planet[0].lower()))
         self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
+        if self.config.gasType == 'read' and isinstance(self.config.gasFile, str):
+            self.config.gasFile = [self.config.gasFile]
         self.config.show()
 
     def state(self, **kwargs):
@@ -99,18 +102,26 @@ class PlanetBase:
     def setup_atm(self, **kwargs):
         """
         Instantiates atmosphere.  Attributes are:
-            self.atmos.gas, self.atmos.cloud and self.atmos.property
+            self.atmos[].gas, self.atmos[].cloud and self.atmos[].property
         """
         from . import atmosphere
-        self.atmos = atmosphere.Atmosphere(self.planet, mode=self.mode, config=self.config,
-                                           log=self.log, **kwargs)
+        N = len(self.config.gasFile)
+        self.atmos = []
+        for i in range(N):
+            self.atmos.append(atmosphere.Atmosphere(self.planet, mode=self.mode,
+                              config=self.config, log=self.log, **kwargs))
 
     def setup_alpha(self, **kwargs):
         """
         Instantiates absorption modules.  To change absorption, edit files under /constituents'
         """
-        self.alpha = alpha.Alpha(mode=self.mode, config=self.config, log=self.log, **kwargs)
-        self.alpha.reset_layers()
+        from . import alpha
+        N = len(self.atmos)
+        self.alpha = []
+        for i in range(N):
+            self.alpha.append(alpha.Alpha(mode=self.mode, config=self.config, log=self.log,
+                              **kwargs))
+            self.alpha[i].reset_layers()
 
     def setup_bright(self, **kwargs):
         """
@@ -134,13 +145,13 @@ class PlanetBase:
         else:
             return None
 
-    def set_atm_plots(self):
+    def set_atm_plots(self, atmos):
         """
         If plot_atm is True, reads in atmosphere plotting modules.
         """
         if self.plot_atm:
             from radiobear.plotting import atm
-            return atm.plots(self.atmos)
+            return atm.plots(atmos)
         else:
             return None
 
@@ -189,6 +200,17 @@ class PlanetBase:
         self.data_return.set('freqUnit', self.freqUnit)
         return reuse
 
+    def map_b_to_atm(self, b=None):
+        """
+        Given the b index and value, returns the appropriate atmosphere index
+        """
+        if self.config.bmapmodule is None:
+            return 0
+        if not self.bmap_loaded:
+            __import__(self.config.bmapmodule)
+            bmapModule = sys.modules[self.config.tweakmodule]
+        return bmapModule.bmap(b=b)
+
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):
         """
         Sets the "impact parameter".  Sets self.b, self.block, self.data_type, self.imSize
@@ -222,15 +244,16 @@ class PlanetBase:
             print('imgSize = {} x {}'.format(self.imSize[0], self.imSize[1]))
         if abs(self.block[1]) > 1:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
-        return Namespace(true=True, block=block_postfix, imrow=[])
+        return Namespace(true=True, i=None, block=block_postfix, imrow=[])
 
-    def alpha_layers(self, freqs, atm):
+    def alpha_layers(self, freqs, atmos):
         """
         Computes the layer absorption.  If save_alpha is set, it will write the profiles.
         """
-        self.alpha.get_layers(freqs, atm)
-        if self.save_alpha:
-            self.alpha.write_alpha()
+        for i, atm in enumerate(atmos):
+            self.alpha[i].get_layers(freqs, atm)
+            if self.save_alpha:
+                self.alpha[i].write_alpha()
 
     def init_run(self):
         """
@@ -244,14 +267,15 @@ class PlanetBase:
             print('data_type = {}'.format(self.data_type))
 
     def atm_run(self, atm_type='std'):
-        getattr(self.atmos, atm_type)()
-        atmplt = self.set_atm_plots()
-        if atmplt is not None:
-            atmplt.TP()
-            atmplt.Gas()
-            atmplt.Cloud()
-            atmplt.Properties()
-            atmplt.show()
+        for atm in self.atmos:
+            getattr(atm, atm_type)()
+            atmplt = self.set_atm_plots(atmos=atm)
+            if atmplt is not None:
+                atmplt.TP()
+                atmplt.Gas()
+                atmplt.Cloud()
+                atmplt.Properties()
+                atmplt.show()
 
     def bright_run(self, b, freqs, atm, alpha, is_img, brtplt):
         """
@@ -259,7 +283,7 @@ class PlanetBase:
 
         Parameters
         ----------
-        b : float
+        b : list [float<1.0, float<1.0]
             Current "impact parameter"
         freq : list
             List of frequencies
@@ -280,8 +304,7 @@ class PlanetBase:
         Tb = self.bright.single(b, freqs, atm, alpha, self.config.orientation)
         if is_img.true:
             is_img.imrow.append(Tb[0])
-            ibv = self.b.index(b)
-            if not (ibv + 1) % self.imSize[0]:
+            if not (is_img.i + 1) % self.imSize[0]:
                 self.Tb.append(is_img.imrow)
                 is_img.imrow = []
         else:

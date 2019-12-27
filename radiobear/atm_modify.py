@@ -13,13 +13,8 @@ def tweakAtm(self):
         return 0
 
     # Import tweakmodule
-    sys.path.append(self.config.path)
-    try:
-        __import__(self.config.tweakmodule)
-        tweakModule = sys.modules[self.config.tweakmodule]
-    except SyntaxError:
-        self.log.add("Syntax Error:  check " + self.config.tweakmodule, True)
-        raise ValueError("Error in tweakmodule")
+    __import__(self.config.tweakmodule)
+    tweakModule = sys.modules[self.config.tweakmodule]
 
     # Run module then log
     self.tweakComment, self.gas, self.cloud = tweakModule.modify(self.gas, self.cloud,

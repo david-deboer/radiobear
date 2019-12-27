@@ -33,7 +33,7 @@ def set_b(b, block=[1, 1], **kwargs):
            contains b, block, data_type, imSize
        """
     # Deal with strings
-    return_value = Namespace(block=block, imSize=None)
+    return_value = Namespace(b=None, data_type=None, block=block, imSize=None)
     if isinstance(b, six.string_types):
         b = b.lower()
         if b.startswith('dis'):

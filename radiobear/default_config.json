@@ -338,6 +338,17 @@
                 "Neptune": "NeptuneTweak"
             }
         },
+        "bmapmodule": {
+            "name": "bmapmodule",
+            "unit": null,
+            "help": "module that converts b-pair to alpha index",
+            "default": {
+                "Jupiter": null,
+                "Saturn": null,
+                "Uranus": null,
+                "Neptune": null
+            }
+        },
         "scalemodule": {
             "name": "scalemodule",
             "unit": null,

@@ -5,6 +5,7 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import os
 import six
+import sys
 
 # ##local imports
 from . import utils
@@ -32,6 +33,7 @@ class AtmosphereBase:
         self.cloud = []
         self.nCloud = 0
         self.property = []
+        sys.path.append(config.path)
 
     def readGas(self, gasFile=None, Cdict=None):
         """Reads gas profile file as self.gas"""
