@@ -35,15 +35,12 @@ class AtmosphereBase:
         self.property = []
         sys.path.append(config.path)
 
-    def readGas(self, gasFile=None, Cdict=None):
+    def readGas(self):
         """Reads gas profile file as self.gas"""
-        if gasFile is None:
-            gasFile = self.config.gasFile
-        if Cdict is None:
-            Cdict = self.config.C
-        gasFile = os.path.join(self.config.path, gasFile)
+        gasFile = os.path.join(self.config.path, self.config.gasFile[self.idnum])
 
         self.gas = []
+        Cdict = self.config.C
         value_sorted_Cdict_keys = sorted(Cdict, key=lambda k: Cdict[k])
         for k in value_sorted_Cdict_keys:
             self.gas.append([])
@@ -78,14 +75,11 @@ class AtmosphereBase:
         # ## Renormalize so that deepest z is 0 and set DZ
         self._renorm_z('gas')
 
-    def readCloud(self, cloudFile=None, Cldict=None):
+    def readCloud(self):
         """Reads in cloud data if we have it..."""
 
-        if cloudFile is None:
-            cloudFile = self.config.cloudFile
-        if Cldict is None:
-            Cldict = self.config.Cl
-        cloudFile = os.path.join(self.config.path, cloudFile)
+        Cldict = self.config.Cl
+        cloudFile = os.path.join(self.config.path, self.config.cloudFile[self.idnum])
 
         self.cloud = []
         value_sorted_Cldict_keys = sorted(Cldict, key=lambda k: Cldict[k])

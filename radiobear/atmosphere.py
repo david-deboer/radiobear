@@ -9,12 +9,30 @@ from . import atm_base
 
 
 class Atmosphere(atm_base.AtmosphereBase):
-    def __init__(self, planet, mode='normal', config='config.par', log=None, **kwargs):
-        """reads/computes atmospheres.  This computes:
+    def __init__(self, planet, idnum=0, mode='normal', config='config.par', log=None, **kwargs):
+        """
+        Reads/computes the atmosphere to be used.
+
+        This computes:
                self.gas
                self.cloud
                self.property
-            on the appropriate grid."""
+            on the appropriate grid and for the supplied idnum.
+
+        Parameters
+        ----------
+        planet : str
+            Planet name
+        idnum : int
+            For read, index number of the gasFile/cloudFile to be used.
+        mode : str
+            Mode of atmosphere use.  Look under "state_variables."
+        config : str or class
+            Configuration to use
+        log : None or str
+            Log setup
+        **kwargs
+        """
         super(Atmosphere, self).__init__(planet=planet, config=config, log=log)
         state_variables.init_state_variables(self, mode, **kwargs)
         if self.verbose:
@@ -28,22 +46,26 @@ class Atmosphere(atm_base.AtmosphereBase):
         self.propGen = {}
         self.propGen['compute'] = self.computeProp
 
+        self.idnum = idnum
         if self.verbose == 'loud':
             print('Planet ' + self.planet)
             self.config.display()
         if self.config.gasType == 'read':  # this assumes that cloudType is then also 'read'
             self.log.add('\tReading from: ' + self.config.filename, self.verbose)
-            self.log.add('\tAtmosphere file:  ' + self.config.gasFile, self.verbose)
+            self.log.add('\tAtmosphere file:  ' + str(self.config.gasFile), self.verbose)
             self.log.add('\tCloud file:  ' + self.config.cloudFile, self.verbose)
 
     def state(self):
         state_variables.show_state(self)
 
     def simple(self):
+        """
+        This is the simple pipeline, that uses the files as-is
+        """
         self.readGas()
-        self.nAtm = len(self.gas[0])
         self.readCloud()
         self.computeProp()
+        self.nAtm = len(self.gas[0])
 
     def std(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None,
             otherType=None, tweak=True):
