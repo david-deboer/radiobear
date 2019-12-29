@@ -7,14 +7,9 @@ import datetime
 import os
 import sys
 from argparse import Namespace
-from . import config
-from . import brightness
-from . import data_handling
 from . import utils
 from . import set_utils
-from . import fileIO
 from . import state_variables
-from . import logging
 from . import version
 
 
@@ -32,7 +27,7 @@ class PlanetBase:
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
         kwargs
-            'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
+            'verbose' and 'plot_atm', etc (and other state_vars - see self.state())
     """
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
@@ -48,6 +43,8 @@ class PlanetBase:
         self.bmap_loaded = False
 
         print('Planetary modeling  (ver {})'.format(version.VERSION))
+        self.version = version.VERSION
+        self.version_notes = version.version_notes[version.VERSION]
         if self.planet not in self.planet_list:
             print("{} not found.".format(self.planet))
             return
@@ -61,6 +58,7 @@ class PlanetBase:
         """
         Sets up self.log if self.write_log_file is True
         """
+        from . import logging
         if self.write_log_file:
             runStart = datetime.datetime.now()
             logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet,
@@ -74,6 +72,7 @@ class PlanetBase:
         """
         Instantiates and logs the data_return class
         """
+        from . import data_handling
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
@@ -81,15 +80,15 @@ class PlanetBase:
         """
         Instantiates and reads the config file
         """
+        from . import config
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
-            print("\t'{}.config.display()' to see config parameters."
+            print("\t'print({}.config.show())' to see config parameters."
                   .format(self.planet[0].lower()))
         self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
-        if self.config.gasType == 'read' and isinstance(self.config.gasFile, str):
-            self.config.gasFile = [self.config.gasFile]
         self.config.show()
+        sys.path.insert(0, self.config.path)
 
     def state(self, **kwargs):
         """
@@ -108,7 +107,7 @@ class PlanetBase:
         N = len(self.config.gasFile)
         self.atmos = []
         for i in range(N):
-            self.atmos.append(atmosphere.Atmosphere(self.planet, mode=self.mode,
+            self.atmos.append(atmosphere.Atmosphere(self.planet, idnum=i, mode=self.mode,
                               config=self.config, log=self.log, **kwargs))
 
     def setup_alpha(self, **kwargs):
@@ -119,7 +118,7 @@ class PlanetBase:
         N = len(self.atmos)
         self.alpha = []
         for i in range(N):
-            self.alpha.append(alpha.Alpha(mode=self.mode, config=self.config, log=self.log,
+            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode, config=self.config, log=self.log,
                               **kwargs))
             self.alpha[i].reset_layers()
 
@@ -127,12 +126,14 @@ class PlanetBase:
         """
         Instatiates brightness module.
         """
+        from . import brightness
         self.bright = brightness.Brightness(mode=self.mode, log=self.log, **kwargs)
 
     def setup_fIO(self, **kwargs):
         """
         Instantiates fileIO class
         """
+        from . import fileIO
         self.fIO = fileIO.FileIO(directory=self.output_directory)
 
     def set_bright_plots(self):
@@ -173,7 +174,8 @@ class PlanetBase:
                 print("Setting frequencies to ", freqs)
         else:
             freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
-            self.alpha.reset_layers()
+            for this_alpha in self.alpha:
+                this_alpha.reset_layers()
 
         reuse = False
         if len(self.freqs) == len(freqs):
@@ -188,9 +190,9 @@ class PlanetBase:
             s = 'Reuse'
         else:
             if len(freqs) > 1:
-                s = '{} in {} frequency steps ({} - {} {})'.format(self.planet, len(freqs),
-                                                                   freqs[0], freqs[-1],
-                                                                   utils.proc_unit(freqUnit))
+                s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
+                                                               freqs[0], freqs[-1],
+                                                               utils.proc_unit(freqUnit))
             else:
                 s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
         self.log.add(s, self.verbose)
@@ -204,11 +206,11 @@ class PlanetBase:
         """
         Given the b index and value, returns the appropriate atmosphere index
         """
-        if self.config.bmapmodule is None:
+        if self.config.bmapmodule is None or b is None:
             return 0
         if not self.bmap_loaded:
             __import__(self.config.bmapmodule)
-            bmapModule = sys.modules[self.config.tweakmodule]
+            bmapModule = sys.modules[self.config.bmapmodule]
         return bmapModule.bmap(b=b)
 
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):

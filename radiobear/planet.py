@@ -90,7 +90,7 @@ class Planet(planet_base.PlanetBase):
         self.log.add('Run start ' + str(runStart), False)
         for i, bv in enumerate(self.b):
             # Figure out which alpha to use for this b.  For now only one.
-            j = self.map_b_to_atm(i, bv)
+            j = self.map_b_to_atm(bv)
             is_img.i = i
             if self.verbose == 'loud':
                 print('{} of {} (view {})  '.format(i + 1, len(self.b), bv), end='')

@@ -15,6 +15,8 @@ def set_single_val(val, unit=None,
     if isinstance(val, six.string_types):
         if val.lower() in special.keys():
             val = special[str(val).lower()]
+        elif ',' in val:
+            val = val.split(',')
         elif '.' in val or 'e' in val or 'E' in val:
             try:
                 val = float(val)
@@ -93,6 +95,8 @@ class planetConfig:
                     print("Using default:  {}".format(self.toks[tok]['default'][self.planet]))
                     continue
             elif isinstance(self.toks[tok]['default'][self.planet], list):
+                if len(data) == 1 and ',' in data[0]:
+                    data = data[0].split(',')
                 val = [set_single_val(x) for x in data]
             elif isinstance(self.toks[tok]['default'][self.planet], dict):
                 val = {}
@@ -147,10 +151,6 @@ class planetConfig:
             self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
                                        'Uranus': None, 'Neptune': None}
         return (key, value)
-
-    def display(self):
-        printout = self.show()
-        print(printout)
 
     def show(self):
         """Returns string containing configuration"""

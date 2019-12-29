@@ -46,7 +46,7 @@ def read_scalefile(fn):
 
 
 class Alpha:
-    def __init__(self, mode='normal', config=None, log=None, **kwargs):
+    def __init__(self, idnum=0, mode='normal', config=None, log=None, **kwargs):
         """Reads in absorption formalisms
            Note that they are all in GHz"""
 
@@ -60,6 +60,7 @@ class Alpha:
         if config is None or isinstance(config, six.string_types):
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
+        self.idnum = idnum  # This is strictly needed, but prudent
 
         self.alpha_data = None
         if self.use_existing_alpha or self.scale_existing_alpha:

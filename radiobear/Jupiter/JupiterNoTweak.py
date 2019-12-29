@@ -4,8 +4,8 @@ def modify(gas, cloud, C, Cl):
 
     nAtm = len(gas[C['P']])
     for i in range(nAtm):
-        Plyr = gas[C['P']][i]
-        Tlyr = gas[C['T']][i]
+        # Plyr = gas[C['P']][i]
+        # Tlyr = gas[C['T']][i]
 
         # ## Process H2S
 

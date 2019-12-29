@@ -53,7 +53,7 @@ class Atmosphere(atm_base.AtmosphereBase):
         if self.config.gasType == 'read':  # this assumes that cloudType is then also 'read'
             self.log.add('\tReading from: ' + self.config.filename, self.verbose)
             self.log.add('\tAtmosphere file:  ' + str(self.config.gasFile), self.verbose)
-            self.log.add('\tCloud file:  ' + self.config.cloudFile, self.verbose)
+            self.log.add('\tCloud file:  ' + str(self.config.cloudFile), self.verbose)
 
     def state(self):
         state_variables.show_state(self)

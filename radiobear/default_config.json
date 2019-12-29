@@ -68,10 +68,10 @@
             "unit": null,
             "help": "atmospheric constituent file - column order set by C",
             "default": {
-                "Jupiter": "jupiter.paulSolar",
-                "Saturn": "saturn.Solar",
-                "Uranus": "uranus.paul10xsolar_wet.dat",
-                "Neptune": "neptune.paulCO_cloud21_fletcher_best_dry"
+                "Jupiter": ["jupiter.paulSolar"],
+                "Saturn": ["saturn.Solar"],
+                "Uranus": ["uranus.paul10xsolar_wet.dat"],
+                "Neptune": ["neptune.paulCO_cloud21_fletcher_best_dry"]
             }
         },
         "gastype": {
@@ -101,10 +101,10 @@
             "unit": null,
             "help": "atmospheric cloud file - column order set by Cl",
             "default": {
-                "Jupiter": "jupiter.paulclSolar",
-                "Saturn": "saturn.clSolar",
-                "Uranus": "uranus.cloud10xsolar_wet.dat",
-                "Neptune": "nepcloud_CO.cloud21_fletcher_best_dry"
+                "Jupiter": ["jupiter.paulclSolar"],
+                "Saturn": ["saturn.clSolar"],
+                "Uranus": ["uranus.cloud10xsolar_wet.dat"],
+                "Neptune": ["nepcloud_CO.cloud21_fletcher_best_dry"]
             }
         },
         "cloudtype": {
@@ -343,7 +343,7 @@
             "unit": null,
             "help": "module that converts b-pair to alpha index",
             "default": {
-                "Jupiter": null,
+                "Jupiter": "bmap",
                 "Saturn": null,
                 "Uranus": null,
                 "Neptune": null

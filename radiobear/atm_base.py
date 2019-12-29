@@ -33,7 +33,8 @@ class AtmosphereBase:
         self.cloud = []
         self.nCloud = 0
         self.property = []
-        sys.path.append(config.path)
+        if config.path not in sys.path:
+            sys.path.insert(0, config.path)
 
     def readGas(self):
         """Reads gas profile file as self.gas"""

@@ -5,7 +5,7 @@ def modify(gas, cloud, C, Cl):
     nAtm = len(gas[C['P']])
     for i in range(nAtm):
         Plyr = gas[C['P']][i]
-        Tlyr = gas[C['T']][i]
+        # Tlyr = gas[C['T']][i]
 
         if Plyr < 1e-3:
             gas[C['NH3']][i] = 1e-12
