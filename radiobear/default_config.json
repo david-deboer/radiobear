@@ -343,7 +343,7 @@
             "unit": null,
             "help": "module that converts b-pair to alpha index",
             "default": {
-                "Jupiter": "bmap",
+                "Jupiter": null,
                 "Saturn": null,
                 "Uranus": null,
                 "Neptune": null

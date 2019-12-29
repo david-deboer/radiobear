@@ -15,8 +15,6 @@ def tweakAtm(self):
     # Import tweakmodule
     __import__(self.config.tweakmodule)
     tweakModule = sys.modules[self.config.tweakmodule]
-    print("ATMMOD18:  ",self.config.tweakmodule)
-    print(sys.path)
 
     # Run module then log
     self.tweakComment, self.gas, self.cloud = tweakModule.modify(self.gas, self.cloud,
