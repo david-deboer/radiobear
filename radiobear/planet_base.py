@@ -144,7 +144,7 @@ class PlanetBase:
             from radiobear.plotting import bright, data
             return bright.plots(self.bright), data.plots(self.data_return)
         else:
-            return None
+            return None, None
 
     def set_atm_plots(self, atmos):
         """

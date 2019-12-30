@@ -4,7 +4,7 @@ RadioBEAR
 Radio BErkeley Atmospheric Radiative-transfer (RadioBEAR)
 
 planetary atmosphere code to calculate the brightness temperature of planetary
-atmospheres in the meter-millimeter-wave regions.
+atmospheres in the meter-to-millimeter wavelength range.
 
 If used, please reference
 1. de Pater et al 2019:   de Pater, I., R. J. Sault, M. H. Wong, L. N. Fletcher, D. DeBoer,
@@ -37,9 +37,9 @@ Before you start:
 
 Here is an example, from working area:
 ```
-> import radiobear as rb
-> j = rb.planet.Planet('jupiter', plot=False)
-> catch_data = j.run(freqs='1:100:5', b='disc')
+~/rbwork> from radiobear import planet
+~/rbwork> j = planet.Planet('jupiter', plot=False)
+~/rbwork> catch_data = j.run(freqs='1:100:5', b='disc')
 ```
 
 time-stamped data file is written to Output
@@ -98,13 +98,12 @@ radiobear.planet.Planet state variables and defaults
  - output_directory:  Output.   # sub-directory for output
  - scratch_directory:  Scratch. # sub-directory for eg. Absorption etc.
 
- Routines for viewing the data are in the 'plotting.plt' module.  
+========
+ Routines for viewing the data files in the Output directory are in the 'plotting.plt' module.  
 
  To view spectra try:
 ```
   > from radiobear.plotting import plt
-  > d=plt.TB()
-  > d.show_header()
-  > d.show_log()
+  > d=plt.Tb(legend=True)
 ```
-See options under plt.TB()
+See options under plt.Tb()

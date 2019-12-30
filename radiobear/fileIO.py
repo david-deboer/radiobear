@@ -4,7 +4,6 @@
 
 from __future__ import print_function, absolute_import, division
 import numpy as np
-import copy
 from . import utils
 from . import data_handling
 import six
@@ -205,54 +204,50 @@ class FileIO(object):
             self.data[filename].f = []  # frequencies
             self.data[filename].Tb = []  # data
             self.data[filename].b = []  # b-vectors (resolution for images)
-            with open(filename, 'r') as fp:
-                # Get past header and get label_line
-                for line in fp:
-                    if line[0] == '#':
-                        if 'K@' in line:
-                            label_line = copy.copy(line)
-                        continue
-                    else:
-                        break
-                type_in_file = self.data[filename].header['type'].lower()
-                is_type = {'spectrum': 'spectrum' in type_in_file,
-                           'profile': 'profile' in type_in_file,
-                           'image': 'image' in type_in_file}
-                if is_type['image']:
-                    valid_data = self._process_image(fp, filename)
-                else:
-                    valid_data = self._process_other(fp, filename, is_type, label_line)
-                if valid_data:
-                    self.data[filename].Tb = np.array(self.data[filename].Tb).transpose()
-                    self.data[filename].f = np.array(self.data[filename].f)
-                    self.data[filename].b = np.array(self.data[filename].b)
+            type_in_file = self.data[filename].header['type'].lower()
+            is_type = {'spectrum': 'spectrum' in type_in_file,
+                       'profile': 'profile' in type_in_file,
+                       'image': 'image' in type_in_file}
+            if is_type['image']:
+                valid_data = self._process_image(filename)
+            else:
+                valid_data = self._process_other(filename, is_type)
+            if valid_data:
+                self.data[filename].Tb = np.array(self.data[filename].Tb).transpose()
+                self.data[filename].f = np.array(self.data[filename].f)
+                self.data[filename].b = np.array(self.data[filename].b)
 
-    def _process_other(self, fp, filename, is_type, label_line):
-        labels = label_line.split()
-        del(labels[0:3])
-        # Process label_line
-        if is_type['spectrum']:
-            self.data[filename].b = labels
-            print('b = ', self.data[filename].b)
-            if not isinstance(self.data[filename].b[0], six.string_types):
-                self.data[filename].b = [float(x) for x in self.data[filename].b]
-        elif is_type['profile']:
-            self.data[filename].f = labels.split()
-            print('Freq = ', self.data[filename].f)
-            if not isinstance(self.data[filename].f[0], six.string_types):
-                self.data[filename].f = [float(x) for x in self.data[filename].f]
-        # Process data
-        xxx = []
-        for line in fp:
-            if line[0] == '#' or len(line) < 2:
-                continue
-            try:
-                dat = [float(x) for x in line.split()]
-            except ValueError:
-                return False
-            xxx.append(dat[0])
-            del(dat[0])
-            self.data[filename].Tb.append(dat)
+    def _process_other(self, filename, is_type):
+        label_line_processed = False
+        with open(filename, 'r') as fp:
+            xxx = []
+            for line in fp:
+                if line[0] == '#':
+                    if 'K@' in line:
+                        label_line = line[1:].split()
+                    continue
+                if not label_line_processed:
+                    label_line_processed = True
+                    labels = label_line[2:]
+                    # Process label_line
+                    if is_type['spectrum']:
+                        nl = []
+                        for plbl in labels:
+                            ltmp = plbl.replace(')', ' ').replace('(', '').strip()
+                            nl.append([float(x) for x in ltmp.split(',')])
+                        self.data[filename].b = nl
+                        print('b = ', self.data[filename].b)
+                    elif is_type['profile']:
+                        self.data[filename].f = [float(x) for x in labels]
+                        print('Freq = ', self.data[filename].f)
+
+                try:
+                    dat = [float(x) for x in line.split()]
+                except ValueError:
+                    return False
+                xxx.append(dat[0])
+                del(dat[0])
+                self.data[filename].Tb.append(dat)
         if is_type['spectrum']:
             self.data[filename].f = xxx
         else:

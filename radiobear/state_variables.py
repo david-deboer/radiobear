@@ -10,7 +10,7 @@ def init_state_variables(state_class, mode, **kwargs):
     state_dict = {'batch_mode': False,
                   'write_output_files': True,
                   'write_log_file': True,
-                  'plot': None,  # Provided as a courtesy and for backward compatibility
+                  'plot': False,  # Provided as a courtesy and for backward compatibility
                   'plot_atm': True,
                   'plot_bright': True,
                   'verbose': True,  # 0/None/False, 'normal'/True, 'loud'

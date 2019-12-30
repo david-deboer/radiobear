@@ -57,7 +57,6 @@ class Data:
                 print("{}<<<freq>>> {} {}".format(tab, self.f, self.freqUnit))
             else:
                 print("{}<<<{}>>>  {}".format(tab, v, getattr(self, v)))
-            print('\n')
 
     def show_header(self, indent=1):
         tab = indent * '\t'
@@ -65,6 +64,7 @@ class Data:
         tab1 = (indent + 1) * '\t'
         for k, v in six.iteritems(self.header):
             print("{}{:20s}     {}".format(tab1, k, v))
+        print()
 
     def show_log(self, indent=1):
         tab = indent * '\t'
@@ -74,4 +74,4 @@ class Data:
         with open(self.logfile) as fp:
             for line in fp:
                 print(line.strip())
-        print("-----------------------------------")
+        print("-----------------------------------\n")
