@@ -54,13 +54,14 @@ class Data:
             if v == 'header':
                 self.show_header(indent=indent)
             elif v == 'f':
-                print("{}freq: {} {}".format(tab, self.f, self.freqUnit))
+                print("{}<<<freq>>> {} {}".format(tab, self.f, self.freqUnit))
             else:
-                print("{}{}:  {}".format(tab, v, getattr(self, v)))
+                print("{}<<<{}>>>  {}".format(tab, v, getattr(self, v)))
+            print('\n')
 
     def show_header(self, indent=1):
         tab = indent * '\t'
-        print('{}Header'.format(tab))
+        print('{}<<<Header>>>'.format(tab))
         tab1 = (indent + 1) * '\t'
         for k, v in six.iteritems(self.header):
             print("{}{:20s}     {}".format(tab1, k, v))
@@ -69,7 +70,7 @@ class Data:
         tab = indent * '\t'
         if self.log is not None:
             self.log.close()
-        print('{}Log:  {}'.format(tab, self.logfile))
+        print('{}<<<Log>>>  {}'.format(tab, self.logfile))
         with open(self.logfile) as fp:
             for line in fp:
                 print(line.strip())

@@ -40,8 +40,23 @@ def read_scalefile(fn):
 
 class Alpha:
     def __init__(self, idnum=0, mode='normal', config=None, log=None, **kwargs):
-        """Reads in absorption formalisms
-           Note that they are all in GHz"""
+        """
+        Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
+
+        Parameters
+        ----------
+        planet : str
+            Planet name
+        idnum : int
+            For read, index number of the gasFile/cloudFile to be used.
+        mode : str
+            Mode of atmosphere use.  Look under "state_variables."
+        config : str or class
+            Configuration to use
+        log : None or str
+            Log setup
+        **kwargs
+        """
 
         state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
@@ -79,6 +94,7 @@ class Alpha:
 
     def reset_layers(self):
         self.layers = None
+        self.alpha_data = None
         self.absorb_layer_save_data = []
 
     def get_layers(self, freqs, atm):

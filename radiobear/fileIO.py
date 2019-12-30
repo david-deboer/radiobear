@@ -146,27 +146,22 @@ class FileIO(object):
             ret_files.append(file_list[i])
         return ret_files
 
-    def show(self, prop='all', fkey=None):
-        keys = []
-        if not isinstance(prop, six.string_types):
-            fkey = prop
-            prop = 'header'
-        if fkey is None:
-            keys = list(self.data.keys())
-        elif isinstance(fkey, int):
-            keys = [self.files[fkey]]
-        elif isinstance(fkey, six.string_types):
-            keys = [fkey]
-        logs = []
+    def show(self, property='all'):
+        data_dict = vars(self.data)
+        if isinstance(property, six.string_types):
+            if property == 'all':
+                keys = list(data_dict.keys())
+            else:
+                keys = [property]
+        else:
+            keys = property
         for k in keys:
-            if prop == 'all' or prop == 'header':
-                self.data[k].show_header()
-            if prop == 'all' or prop == 'log':
-                if self.data[k].logfile not in logs:
-                    self.data[k].show_log()
-                    logs.append(self.data[k].logfile)
-                else:
-                    print("{} already shown.".format(self.data[k].logfile))
+            if k == 'header':
+                self.data.show_header()
+            elif k == 'log':
+                self.data.show_log()
+            else:
+                print("<<<{}>>>:  {}".format(k, data_dict[k]))
 
     def read(self, fn=None, tag='dat', file_type='spectrum'):
         """
@@ -329,7 +324,4 @@ class FileIO(object):
         # ## set any header-derived values
         if 'res' in _header.keys():
             self.resolution = _header['res'][0]   # keep this for backward compatibility
-        if 'freqs' in _header.keys():
-            self.freq = _header['freqs'][0]
-            _header['band'] = utils.getRFband(self.freq, 'GHz')
         return _header
