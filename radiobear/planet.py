@@ -81,8 +81,8 @@ class Planet(planet_base.PlanetBase):
 
         if not reuse:
             self.alpha_layers(freqs=self.freqs, atmos=self.atmos)
-        D_timer = datetime.datetime.now()
-        print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
+            D_timer = datetime.datetime.now()
+            print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
 
         #  Loop over b values
         self.init_run()

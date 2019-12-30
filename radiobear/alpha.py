@@ -12,13 +12,6 @@ from . import logging
 import six
 
 
-def initialize_scalefile(fn, atm_pressure, constituents, values):
-    with open(fn, 'w') as fp:
-        fp.write("#p {}\n".format(' '.join(constituents)))
-        for p in atm_pressure:
-            fp.write("{} {}\n".format(p, ' '.join([str(x) for x in values])))
-
-
 def write_scalefile(fn, columns, values):
     with open(fn, 'w') as fp:
         fp.write("#{}\n".format(' '.join(columns)))
@@ -60,13 +53,19 @@ class Alpha:
         if config is None or isinstance(config, six.string_types):
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
-        self.idnum = idnum  # This is strictly needed, but prudent
+        self.idnum = idnum
 
         self.alpha_data = None
         if self.use_existing_alpha or self.scale_existing_alpha:
             self.existing_alpha_setup()
         else:
             self.formalisms()
+        self.constfile = os.path.join(self.scratch_directory,
+                                      'constituents{:04d}'.format(self.idnum))
+        self.absorbfile = os.path.join(self.scratch_directory,
+                                       'absorb{:04d}'.format(self.idnum))
+        self.freqfile = os.path.join(self.scratch_directory,
+                                     'freqs{:04d}'.format(self.idnum))
         # copy config back into other_dict as needed
         other_to_copy = {}
         other_to_copy['h2'] = ['h2state', 'h2newset']
@@ -94,19 +93,16 @@ class Alpha:
         self.layers = np.array(layerAlp).transpose()
 
     def write_alpha(self):
-        constfile = os.path.join(self.scratch_directory, 'constituents')
-        absorbfile = os.path.join(self.scratch_directory, 'absorb')
-        freqfile = os.path.join(self.scratch_directory, 'freqs')
-        np.savez(constfile, alpha_dict=self.config.constituent_alpha,
+        np.savez(self.constfile, alpha_dict=self.config.constituent_alpha,
                  alpha_sort=self.ordered_constituents)
         self.absorb_layer_save_data = np.array(self.absorb_layer_save_data)
-        np.save(absorbfile, self.absorb_layer_save_data)
-        np.save(freqfile, self.freqs)
+        np.save(self.absorbfile, self.absorb_layer_save_data)
+        np.save(self.freqfile, self.freqs)
 
     def existing_alpha_setup(self):
         if self.alpha_data is None:
-            self.alpha_data = np.load('{}/absorb.npy'.format(self.scratch_directory))
-            condata = np.load('{}/constituents.npz'.format(self.scratch_directory))
+            self.alpha_data = np.load(self.absorbfile)
+            condata = np.load(self.constfile)
             self.ordered_constituents = condata['alpha_sort']
         if self.scale_existing_alpha:
             self.scale_constituent_columns, self.scale_constituent_values =\
