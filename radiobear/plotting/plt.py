@@ -8,7 +8,7 @@ from radiobear import utils
 # ##############################################################################################################
 #                                          GENERAL FILE PLOTTING
 # ##############################################################################################################
-def Tb(fn=None, xaxis='Frequency', directory='Output', **kwargs):
+def Tb(fn=None, xaxis='Frequency', directory='Output', file_type='spectrum', **kwargs):
     """plots brightness temperature against frequency and disc location:
            fn = filename to read (None will search...)
            xaxis = 'f[requency]' | 'w[avelength' ['freq']
@@ -20,7 +20,7 @@ def Tb(fn=None, xaxis='Frequency', directory='Output', **kwargs):
            """
 
     fio = fileIO.FileIO(directory=directory)
-    fio.read(fn=fn, file_type='spectrum')
+    fio.read(fn=fn, file_type=file_type)
 
     # Frequency plot
     plt.figure('TB')

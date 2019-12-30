@@ -222,6 +222,7 @@ class FileIO(object):
         with open(filename, 'r') as fp:
             xxx = []
             for line in fp:
+                print(line)
                 if line[0] == '#':
                     if 'K@' in line:
                         label_line = line[1:].split()

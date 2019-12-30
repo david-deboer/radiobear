@@ -85,8 +85,8 @@ radiobear.planet.Planet state variables and defaults
  - initialize:  True            # initialize run when class instantiated
  - write_output_files:  True    #
  - write_log_file:  True.       #
- - plot:  None                  # will set both plot_atm and plot_bright, only used when class set up
- - plot_atm:  False             # plot the atmosphere data
+ - plot:  -----                 # will set both plot_atm and plot_bright, only used when class set up
+ - plot_atm:  True              # plot the atmosphere data
  - plot_bright:  True           # plot the radiative transfer data
  - verbose:  True               #
  - generate_alpha:  False       # generate an absorption profile file
