@@ -12,6 +12,13 @@ from . import logging
 import six
 
 
+def initialize_scalefile(fn, alpha):  #atm_pressure, constituents, values):
+    with open(fn, 'w') as fp:
+        fp.write("#p {}\n".format(' '.join(constituents)))
+        for p in atm_pressure:
+            fp.write("{} {}\n".format(p, ' '.join([str(x) for x in values])))
+
+
 def write_scalefile(fn, columns, values):
     with open(fn, 'w') as fp:
         fp.write("#{}\n".format(' '.join(columns)))
@@ -121,11 +128,22 @@ class Alpha:
             condata = np.load(self.constfile)
             self.ordered_constituents = condata['alpha_sort']
         if self.scale_existing_alpha:
-            self.scale_constituent_columns, self.scale_constituent_values =\
-                                            read_scalefile(self.config.scale_file_name)
+            self.read_scale(self.config.scale_file_name)
 
-    def write_scale(self, fn):
+    def init_scale(self, fn=None):
+        if fn is None:
+            fn = self.config.scale_file_name
+        initialize_scalefile(fn, self)
+
+    def write_scale(self, fn=None):
+        if fn is None:
+            fn = self.config.scale_file_name
         write_scalefile(fn, self.scale_constituent_columns, self.scale_constituent_values)
+
+    def read_scale(self, fn=None):
+        if fn is None:
+            fn = self.config.scale_file_name
+        self.scale_constituent_columns, self.scale_constituent_values = read_scalefile(fn)
 
     def formalisms(self):
         # Get possible constituents
@@ -175,6 +193,7 @@ class Alpha:
         if self.use_existing_alpha or self.scale_existing_alpha:
             if len(self.alpha_data) != len(atm.gas[0]):
                 raise ValueError("Absorption and atmosphere don't agree")
+        self.atm = atm
         if self.use_existing_alpha:
             return self.get_alpha_from_file(freqs, layer, units)
         elif self.scale_existing_alpha:
