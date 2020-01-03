@@ -77,15 +77,15 @@ class Brightness():
                     a1 = self.alpha.layers[j][ii1]
                     a0 = self.alpha.layers[j][ii]
                 else:
-                    print("\n\nDoppler currently broken since the getAlpha call is different.")
+                    print("\n\nDoppler currently broken since the get_alpha call is different.")
                     fshifted = [[f / travel.doppler[i]], [f / travel.doppler[i + 1]]]
                     print('\rdoppler corrected frequency at layer', i, end='')
-                    a1 = alpha.getAlpha(fshifted[0], T_layers[ii1], P_layers[ii1], atm.gas[:, ii1],
-                                        atm.config.C, atm.cloud[:, ii1],
-                                        atm.config.Cl, units=utils.alphaUnit)
-                    a0 = alpha.getAlpha(fshifted[1], T_layers[ii], P_layers[ii], atm.gas[:, ii],
-                                        atm.config.C, atm.cloud[:, ii],
-                                        atm.config.Cl, units=utils.alphaUnit)
+                    a1 = alpha.get_alpha(fshifted[0], T_layers[ii1], P_layers[ii1], atm.gas[:, ii1],
+                                         atm.config.C, atm.cloud[:, ii1],
+                                         atm.config.Cl, units=utils.alphaUnit)
+                    a0 = alpha.get_alpha(fshifted[1], T_layers[ii], P_layers[ii], atm.gas[:, ii],
+                                         atm.config.C, atm.cloud[:, ii],
+                                         atm.config.Cl, units=utils.alphaUnit)
                 dtau = (a0 + a1) * ds / 2.0
                 taus.append(self.tau[i][j] + dtau)         # this is tau_(i+1)
                 if disc_average:

@@ -44,6 +44,7 @@ class planetConfig:
         self.filename = configFile
         self.path = planet
         self.log = logging.setup(log)
+        self.verbose = False
 
         with open(default_config_file, 'r') as f:
             config_data = json.load(f)
@@ -131,7 +132,15 @@ class planetConfig:
             self.vwlat = [0.0, 90.0]
             self.vwdat = [0.0, 0.0]
 
-    def update_config(self, key, value, override=False):
+    def update_config(self, key, value=None, override=False):
+        if isinstance(key, dict):
+            import copy
+            tmpkey = copy.copy(key)
+            key = []
+            value = []
+            for k, v in six.iteritems(tmpkey):
+                key.append(k)
+                value.append(v)
         if not isinstance(key, list):
             key = [key]
         if not isinstance(value, list):
@@ -140,16 +149,20 @@ class planetConfig:
             print("key/value pairs not matched.")
             return None
         for i, k in enumerate(key):
-            if not override and k not in self.toks.keys():
-                print("{} not in config keys and override is False")
-                continue
-            setattr(self, k, value[i])
-            self.toks[k] = {}
-            self.toks[k]['name'] = k
-            self.toks[k]['unit'] = None
-            self.toks[k]['help'] = None
-            self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
-                                       'Uranus': None, 'Neptune': None}
+            if k not in self.toks.keys():
+                if override:
+                    self.toks[k] = {}
+                    self.toks[k]['name'] = k
+                    self.toks[k]['unit'] = None
+                    self.toks[k]['help'] = None
+                    self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
+                                               'Uranus': None, 'Neptune': None}
+                else:
+                    if self.verbose:
+                        print("{} not in config keys and override is False")
+                    continue
+            setattr(self, k, set_single_val(value[i]))
+
         return (key, value)
 
     def show(self):

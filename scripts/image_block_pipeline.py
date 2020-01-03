@@ -1,11 +1,8 @@
 #! /usr/bin/env python
-
-from __future__ import print_function
+import planet
 
 print("This has not been integrated into radiobear")
 
-
-import planet
 j = planet.Planet('Jupiter')
 frq = 43.34
 bstep = 0.01

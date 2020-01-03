@@ -33,24 +33,25 @@ class PlanetBase:
 
     def __init__(self, name, mode='normal', config_file='config.par', **kwargs):
         self.planet = name.capitalize()
+        self.mode = mode.lower()
+        self.config_file = config_file
+
         self.header = {}
         self.freqs = []
         self.freqUnit = None
         self.b = None
         self.data_type = None
         self.imSize = None
-        self.config_file = config_file
         self.bmap_loaded = False
 
-        print('Planetary modeling  (ver {})'.format(version.VERSION))
         self.version = version.VERSION
         self.version_notes = version.version_notes[version.VERSION]
+        print('Planetary modeling  (ver {})'.format(self.version))
         if self.planet not in self.planet_list:
             print("{} not found.".format(self.planet))
             return
 
         # Set up state_variables
-        self.mode = mode.lower()
         state_variables.init_state_variables(self, self.mode, **kwargs)
         print("\t'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
 
@@ -76,7 +77,7 @@ class PlanetBase:
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
-    def setup_config(self):
+    def setup_config(self, **kwargs):
         """
         Instantiates and reads the config file
         """
@@ -87,6 +88,7 @@ class PlanetBase:
             print("\t'print({}.config.show())' to see config parameters."
                   .format(self.planet[0].lower()))
         self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
+        self.config.update_config(kwargs)
         self.config.show()
         sys.path.insert(0, self.config.path)
 
@@ -104,6 +106,10 @@ class PlanetBase:
             self.atmos[].gas, self.atmos[].cloud and self.atmos[].property
         """
         from . import atmosphere
+        if not isinstance(self.config.gasFile, list):
+            self.config.gasFile = [self.config.gasFile]
+        if not isinstance(self.config.cloudFile, list):
+            self.config.cloudFile = [self.config.cloudFile]
         N = len(self.config.gasFile)
         self.atmos = []
         for i in range(N):
@@ -117,14 +123,16 @@ class PlanetBase:
         from . import alpha
         N = len(self.atmos)
         self.alpha = []
+        mem_alpha = 'memory' in [self.read_alpha.lower(), self.save_alpha.lower()]
         for i in range(N):
-            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode, config=self.config, log=self.log,
-                              **kwargs))
-            self.alpha[i].reset_layers()
+            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode,
+                                          config=self.config, log=self.log, **kwargs))
+            if mem_alpha:
+                self.alpha[i].memory = Namespace()
 
     def setup_bright(self, **kwargs):
         """
-        Instatiates brightness module.
+        Instantiates brightness module.
         """
         from . import brightness
         self.bright = brightness.Brightness(mode=self.mode, log=self.log, **kwargs)
@@ -167,7 +175,7 @@ class PlanetBase:
                 unit for freqs
         """
         self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
-        if self.use_existing_alpha or self.scale_existing_alpha:
+        if self.existing_alpha:
             freqs_read = np.load('{}/freqs.npy'.format(self.scratch_directory))
             freqs = [f for f in freqs_read]
             if self.verbose == 'loud':
@@ -202,17 +210,6 @@ class PlanetBase:
         self.data_return.set('freqUnit', self.freqUnit)
         return reuse
 
-    def map_b_to_atm(self, b=None):
-        """
-        Given the b index and value, returns the appropriate atmosphere index
-        """
-        if self.config.bmapmodule is None or b is None:
-            return 0
-        if not self.bmap_loaded:
-            __import__(self.config.bmapmodule)
-            bmapModule = sys.modules[self.config.bmapmodule]
-        return bmapModule.bmap(b=b)
-
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):
         """
         Sets the "impact parameter".  Sets self.b, self.block, self.data_type, self.imSize
@@ -232,6 +229,18 @@ class PlanetBase:
         self.imSize = rv.imSize
         self.data_return.set('b', self.b)
 
+    def map_b_to_atm(self, b=None):
+        """
+        Given the b index and value, returns the appropriate atmosphere index
+        """
+        if self.config.bmapmodule is None or b is None:
+            return 0
+        if not self.bmap_loaded:
+            __import__(self.config.bmapmodule)
+            bmapModule = sys.modules[self.config.bmapmodule]
+            self.bmap_loaded = True
+        return bmapModule.bmap(b=b)
+
     def set_image(self):
         """
         Returns the Namespace pertaining to data_type == image
@@ -250,10 +259,11 @@ class PlanetBase:
 
     def alpha_layers(self, freqs, atmos):
         """
-        Computes the layer absorption.  If save_alpha is set, it will write the profiles.
+        Computes the layer absorption for all atmospheres.  If save_alpha is set,
+        it will write the profiles to file or memory.
         """
         for i, atm in enumerate(atmos):
-            self.alpha[i].get_layers(freqs, atm)
+            self.alpha[i].get_layers(freqs, atm, self.read_alpha, self.save_alpha)
             if self.save_alpha:
                 self.alpha[i].write_alpha()
 

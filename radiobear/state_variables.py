@@ -14,9 +14,8 @@ def init_state_variables(state_class, mode, **kwargs):
                   'plot_atm': True,
                   'plot_bright': True,
                   'verbose': True,  # 0/None/False, 'normal'/True, 'loud'
-                  'save_alpha': False,
-                  'use_existing_alpha': False,
-                  'scale_existing_alpha': False,
+                  'save_alpha': False,  # False/True/'file'/'memory'
+                  'read_alpha': False,  # False/True/'file'/'memory'
                   'normalize_weighting': True,
                   'output_type': 'frequency',  # or 'wavelength'
                   'log_directory': 'Logs',
@@ -36,17 +35,17 @@ def init_state_variables(state_class, mode, **kwargs):
         state_dict['verbose'] = False
         state_dict['write_log_file'] = False
         state_dict['write_output_files'] = False
-        state_dict['scale_existing_alpha'] = True
+        state_dict['read_alpha'] = True
     elif mode == 'use_alpha':
         state_dict['plot_atm'] = False
         state_dict['plot_bright'] = False
         state_dict['verbose'] = True
-        state_dict['use_existing_alpha'] = True
+        state_dict['read_alpha'] = True
     elif mode == 'scale_alpha':
         state_dict['plot_atm'] = False
         state_dict['plot_bright'] = False
         state_dict['verbose'] = True
-        state_dict['scale_existing_alpha'] = True
+        state_dict['read_alpha'] = True
 
     if 'plot' in kwargs.keys():
         state_dict['plot_atm'] = kwargs['plot']
@@ -56,15 +55,6 @@ def init_state_variables(state_class, mode, **kwargs):
     for k, v in six.iteritems(kwargs):
         if k in state_dict.keys():
             state_dict[k] = v
-        else:
-            raise ValueError("Aborting since you probably wanted keyword {}".format(k))
-
-    # check various constraints
-    only_one_allowed = ['batch_mode', 'save_alpha', 'use_existing_alpha', 'scale_existing_alpha']
-    xxx = [state_dict[x] for x in only_one_allowed]
-    if xxx.count(True) > 1:
-        print(only_one_allowed)
-        raise ValueError("Only one is allowed to be True:  {}".format(','.join(only_one_allowed)))
 
     state_class.state_vars__status__ = 'init'
     state_class.state_vars = list(state_dict.keys())

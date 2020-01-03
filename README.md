@@ -29,7 +29,7 @@ Before you start:
     3. You may use different files, just call planet with `config='filename'`, which must reside within <planet_name>
     4. The defaults are set in `default_config.json`, which also sets up which parameters are contained within the config
     5. The tweakmodule filename gets set within the config, which adjusts the read in atmosphere - make sure it is what you want or make it so.
-    6. For mcmc, the scalemodule also gets set here (and the scalefilename)
+    6. For mcmc, the scaleby method gets set
 2. When you make a planet instance you may also set state_variables, they are initialized in state_variables.py
 3. When you make a planet instance you may specify a mode, which sets the state_variables to various configurations (see state_variables.py)
 4. The planet-call variables and defaults are shown below.  kwargs may be one of the state_variables

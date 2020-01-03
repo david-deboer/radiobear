@@ -4,45 +4,12 @@
 from __future__ import absolute_import, division, print_function
 import os
 import sys
+import six
 import numpy as np
 from . import utils
 from . import config as pcfg
 from . import state_variables
 from . import logging
-import six
-
-
-def initialize_scalefile(fn, alpha):  #atm_pressure, constituents, values):
-    with open(fn, 'w') as fp:
-        fp.write("#p {}\n".format(' '.join(constituents)))
-        for p in atm_pressure:
-            fp.write("{} {}\n".format(p, ' '.join([str(x) for x in values])))
-
-
-def write_scalefile(fn, columns, values):
-    with open(fn, 'w') as fp:
-        fp.write("#{}\n".format(' '.join(columns)))
-        for i in range(len(values[columns[0]])):
-            s = ''
-            for col in columns:
-                s += '{} '.format(values[col][i])
-            fp.write(s.strip() + '\n')
-
-
-def read_scalefile(fn):
-    with open(fn, 'r') as fp:
-        for line in fp:
-            if line[0] == '#':  # Must the first line and be there!
-                col = line.strip('#').strip().split()
-                columns = [x.lower() for x in col]
-                values = {}
-                for col in columns:
-                    values[col] = []
-            else:
-                data = [float(x) for x in line.split()]
-                for col, d in zip(columns, data):
-                    values[col].append(d)
-    return columns, values
 
 
 class Alpha:
@@ -67,27 +34,22 @@ class Alpha:
 
         state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
-        self.freqs = None
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
-        self.absorb_layer_save_data = []
+        self.idnum = idnum
+        self.reset_layers()
 
         # get config
-        if config is None or isinstance(config, six.string_types):
+        if config is None or isinstance(config, str):
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config
-        self.idnum = idnum
 
-        self.alpha_data = None
-        if self.use_existing_alpha or self.scale_existing_alpha:
+        self.alphafile = os.path.join(self.scratch_directory, 'alpha{:04d}.npz'.format(self.idnum))
+        if self.read_alpha:
             self.existing_alpha_setup()
         else:
             self.formalisms()
-        self.constfile = os.path.join(self.scratch_directory,
-                                      'constituents{:04d}'.format(self.idnum))
-        self.absorbfile = os.path.join(self.scratch_directory,
-                                       'absorb{:04d}'.format(self.idnum))
-        self.freqfile = os.path.join(self.scratch_directory,
-                                     'freqs{:04d}'.format(self.idnum))
+        self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
+
         # copy config back into other_dict as needed
         other_to_copy = {}
         other_to_copy['h2'] = ['h2state', 'h2newset']
@@ -100,50 +62,78 @@ class Alpha:
                     self.other_dict[absorber][oc] = getattr(self.config, oc)
 
     def reset_layers(self):
+        self.P = None
+        self.freqs = None
         self.layers = None
-        self.alpha_data = None
-        self.absorb_layer_save_data = []
+        self.alpha_data = []
 
-    def get_layers(self, freqs, atm):
+    def get_layers(self, freqs, atm, read_alpha=False, save_alpha=False):
         self.freqs = freqs
+        self.atm = atm
+        self.P = atm.gas[atm.config.C['P']]
         numLayers = len(atm.gas[0])
         layerAlp = []
         self.log.add('{} layers'.format(numLayers), self.verbose)
         for layer in range(numLayers):
-            layerAlp.append(self.getAlpha(freqs, layer, atm, units=utils.alphaUnit))
+            layerAlp.append(self.get_alpha(freqs, layer, atm, units=utils.alphaUnit))
             if self.verbose == 'loud':
                 print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
         self.layers = np.array(layerAlp).transpose()
+        self.write_alpha(save_alpha)
 
-    def write_alpha(self):
-        np.savez(self.constfile, alpha_dict=self.config.constituent_alpha,
-                 alpha_sort=self.ordered_constituents)
-        self.absorb_layer_save_data = np.array(self.absorb_layer_save_data)
-        np.save(self.absorbfile, self.absorb_layer_save_data)
-        np.save(self.freqfile, self.freqs)
+    def read_scale(self, scale_type):
+        """
+        """
+        if isinstance(scale_type, six.string_types):
+            try:
+                self.scale = float(scale_type)
+            except ValueError:
+                self.scale = np.loadtxt(scale_type)
+        elif scale_type:
+            self.scale = getattr(scale_type, 'scale')
 
-    def existing_alpha_setup(self):
-        if self.alpha_data is None:
-            self.alpha_data = np.load(self.absorbfile)
-            condata = np.load(self.constfile)
-            self.ordered_constituents = condata['alpha_sort']
-        if self.scale_existing_alpha:
-            self.read_scale(self.config.scale_file_name)
+    def write_alpha(self, save_type='file'):
+        """
+        Write out the saved_fields.
 
-    def init_scale(self, fn=None):
-        if fn is None:
-            fn = self.config.scale_file_name
-        initialize_scalefile(fn, self)
+        Parameters
+        ----------
+        save_type : str (other are ignored but don't error)
+            'file' writes to self.alphafile
+            'memory' writes to memory Namespace
+        """
+        if isinstance(save_type, six.string_types):
+            self.alpha_data = np.array(self.alpha_data)
+            if save_type.lower() == 'file':
+                np.savez(self.alphafile,
+                         ordered_constituents=self.ordered_constituents,
+                         alpha_data=self.alpha_data,
+                         freqs=self.freqs, P=self.P)
+            elif save_type.lower() == 'memory':
+                for sf in self.saved_fields:
+                    setattr(self.memory, sf, getattr(self, sf))
 
-    def write_scale(self, fn=None):
-        if fn is None:
-            fn = self.config.scale_file_name
-        write_scalefile(fn, self.scale_constituent_columns, self.scale_constituent_values)
+    def read_alpha(self, save_type='file'):
+        """
+        Reads the saved_fields into self.
 
-    def read_scale(self, fn=None):
-        if fn is None:
-            fn = self.config.scale_file_name
-        self.scale_constituent_columns, self.scale_constituent_values = read_scalefile(fn)
+        Parameters
+        ----------
+        save_type : str, bool, None, Namespace, Class
+                    if str or True, assumes read from file self.alphafile
+                    if Namespace or Class, reads from that
+                    if not bool(save_type), does nothing
+                    otherwise, raises error
+        """
+        if isinstance(save_type, bool) and save_type:
+            save_type = 'file'
+        if isinstance(save_type, str):
+            alphain = np.load(self.alphafile)
+            for sf in self.saved_fields:
+                setattr(self, sf, alphain[sf])
+        elif save_type:
+            for sf in self.saved_fields:
+                setattr(self, sf, getattr(save_type, sf))
 
     def formalisms(self):
         # Get possible constituents
@@ -185,22 +175,16 @@ class Alpha:
                 s += "(truncate_freq {})".format(self.truncate_freq[c])
             self.log.add(s, self.verbose)
 
-    def getAlpha(self, freqs, layer, atm, units='invcm'):
+    def get_alpha(self, freqs, layer, atm, units='invcm'):
         """This is a wrapper to get the absorption coefficient, either from
            calculating from formalisms or reading from file"""
         if self.freqs is None and self.save_alpha:
             self.freqs = freqs
-        if self.use_existing_alpha or self.scale_existing_alpha:
+        if self.read_alpha:
             if len(self.alpha_data) != len(atm.gas[0]):
                 raise ValueError("Absorption and atmosphere don't agree")
-        self.atm = atm
-        if self.use_existing_alpha:
+        if self.read_alpha:
             return self.get_alpha_from_file(freqs, layer, units)
-        elif self.scale_existing_alpha:
-            for c in self.scale_constituent_values:
-                if len(self.scale_constituent_values[c]) != len(atm.gas[0]):
-                    raise ValueError("Scaling and atmosphere don't agree")
-            return self.scale_alpha_from_file(freqs, layer, units)
         else:
             P = atm.gas[atm.config.C['P']][layer]
             T = atm.gas[atm.config.C['T']][layer]
@@ -211,12 +195,11 @@ class Alpha:
 
     def get_alpha_from_file(self, freqs, layer, units='invcm'):
         totalAbsorption = np.zeros_like(freqs)
-        for i in range(len(freqs)):
-            totalAbsorption[i] = self.alpha_data[layer, i, -1]
-        return totalAbsorption
+        if isinstance(self.scale_by, float):
+            for i in range(len(freqs)):
+                totalAbsorption[i] = self.alpha_data[layer, i].sum() * self.scale_by
+            return totalAbsorption
 
-    def scale_alpha_from_file(self, freqs, layer, units='invcm'):
-        totalAbsorption = np.zeros_like(freqs)
         for i in range(len(freqs)):
             for j in range(self.alpha_data.shape[2] - 1):
                 constituent = self.ordered_constituents[j]
@@ -250,17 +233,12 @@ class Alpha:
         for i in range(len(freqs)):
             totalAbsorption[i] = absorb[i].sum()
         if self.save_alpha:
-            self.data_layer(absorb, totalAbsorption)
+            this_layer = []
+            for this_freq in absorb:
+                this_layer.append(this_freq)
+            self.alpha_data.append(this_layer)
         del absorb
         return totalAbsorption
-
-    def data_layer(self, absorb, totalAbsorption):
-        this_layer = []
-        for i in range(len(absorb)):
-            for a2 in absorb[i]:
-                this_layer.append(a2)
-            this_layer.append(totalAbsorption[i])
-        self.absorb_layer_save_data.append(this_layer)
 
     def state(self):
         state_variables.show_state(self)

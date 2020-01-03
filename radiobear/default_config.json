@@ -349,26 +349,15 @@
                 "Neptune": null
             }
         },
-        "scalemodule": {
-            "name": "scalemodule",
+        "scaleby": {
+            "name": "scale_by",
             "unit": null,
-            "help": "module used to linearly scale absorption profiles",
+            "help": "name of scale file/value to use for existing_data",
             "default": {
-                "Jupiter": "calc_scale",
-                "Saturn": "calc_scale",
-                "Uranus": "calc_scale",
-                "Neptune": "calc_scale"
-            }
-        },
-        "scalefilename": {
-            "name": "scale_file_name",
-            "unit": null,
-            "help": "name of scale data file to use for scale_existing_data",
-            "default": {
-                "Jupiter": "Scratch/scale.dat",
-                "Saturn": "Scratch/scale.dat",
-                "Uranus": "Scratch/scale.dat",
-                "Neptune": "Scratch/scale.dat"
+                "Jupiter": "Scratch/scale.dat|1.0|memory",
+                "Saturn": "Scratch/scale.dat|1.0|memory",
+                "Uranus": "Scratch/scale.dat|1.0|memory",
+                "Neptune": "Scratch/scale.dat|1.0|memory"
             }
         },
         "water": {

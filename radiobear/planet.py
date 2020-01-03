@@ -33,14 +33,14 @@ class Planet(planet_base.PlanetBase):
                  atm='atm', alpha='alpha', bright='bright', io='fIO',
                  atm_type='std', **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
-        # set
+
+        # initialize and setup up modules/etc
         if isinstance(log, six.string_types) and log not in utils.negative:
             getattr(self, 'setup_{}'.format(log))()
         if isinstance(config, six.string_types) and config not in utils.negative:
-            getattr(self, 'setup_{}'.format(config))()
+            getattr(self, 'setup_{}'.format(config))(**kwargs)
         if isinstance(data, six.string_types) and data not in utils.negative:
             getattr(self, 'setup_{}'.format(data))()
-        # initialize
         if isinstance(atm, six.string_types) and atm not in utils.negative:
             getattr(self, 'setup_{}'.format(atm))(**kwargs)
         if isinstance(alpha, six.string_types) and alpha not in utils.negative:
@@ -49,6 +49,7 @@ class Planet(planet_base.PlanetBase):
             getattr(self, 'setup_{}'.format(bright))(**kwargs)
         if isinstance(io, six.string_types) and io not in utils.negative:
             getattr(self, 'setup_{}'.format(io))(**kwargs)
+
         # run atmosphere
         if isinstance(atm_type, six.string_types) and atm_type not in utils.negative:
             self.atm_run(atm_type=atm_type)
@@ -111,6 +112,7 @@ class Planet(planet_base.PlanetBase):
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.data_type, output_file))
             self.fIO.write(output_file, self.data_return)
+
         if brtplt is not None:
             brtplt.alpha()
             if self.data_type == 'spectrum' or self.data_type == 'profile' and len(freqs) > 1:
