@@ -29,26 +29,13 @@ class Planet(planet_base.PlanetBase):
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
     def __init__(self, name, mode='normal', config_file='config.par',
-                 log='log', config='config', data='data_return',
-                 atm='atm', alpha='alpha', bright='bright', io='fIO',
-                 atm_type='std', **kwargs):
+                 setup=['log', 'config', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
+                 atm_type='std', alpha_calc=True, **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
 
         # initialize and setup up modules/etc
-        if isinstance(log, six.string_types) and log not in utils.negative:
-            getattr(self, 'setup_{}'.format(log))()
-        if isinstance(config, six.string_types) and config not in utils.negative:
-            getattr(self, 'setup_{}'.format(config))(**kwargs)
-        if isinstance(data, six.string_types) and data not in utils.negative:
-            getattr(self, 'setup_{}'.format(data))()
-        if isinstance(atm, six.string_types) and atm not in utils.negative:
-            getattr(self, 'setup_{}'.format(atm))(**kwargs)
-        if isinstance(alpha, six.string_types) and alpha not in utils.negative:
-            getattr(self, 'setup_{}'.format(alpha))(**kwargs)
-        if isinstance(bright, six.string_types) and bright not in utils.negative:
-            getattr(self, 'setup_{}'.format(bright))(**kwargs)
-        if isinstance(io, six.string_types) and io not in utils.negative:
-            getattr(self, 'setup_{}'.format(io))(**kwargs)
+        for par in setup:
+            getattr(self, 'setup_{}'.format(par))(**kwargs)
 
         # run atmosphere
         if isinstance(atm_type, six.string_types) and atm_type not in utils.negative:

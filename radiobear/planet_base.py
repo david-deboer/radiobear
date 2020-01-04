@@ -178,6 +178,7 @@ class PlanetBase:
         self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
         freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
         for this_alpha in self.alpha:
+            print("WHY IS THIS HERE P_B181?")
             this_alpha.reset_layers()
 
         reuse = False

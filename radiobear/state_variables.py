@@ -14,8 +14,6 @@ def init_state_variables(state_class, mode, **kwargs):
                   'plot_atm': True,
                   'plot_bright': True,
                   'verbose': True,  # 0/None/False, 'normal'/True, 'loud'
-                  'save_alpha': False,  # False/True/'file'/'memory'
-                  'read_alpha': False,  # False/True/'file'/'memory'
                   'normalize_weighting': True,
                   'output_type': 'frequency',  # or 'wavelength'
                   'log_directory': 'Logs',
