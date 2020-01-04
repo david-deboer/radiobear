@@ -8,7 +8,7 @@ from . import atm_base
 
 
 class Atmosphere(atm_base.AtmosphereBase):
-    def __init__(self, planet, idnum=0, mode='normal', config='config.par', log=None):
+    def __init__(self, planet, idnum=0, config='config.par', log=None, **kwargs):
         """
         Reads/computes the atmosphere to be used.
 
@@ -24,14 +24,12 @@ class Atmosphere(atm_base.AtmosphereBase):
             Planet name
         idnum : int
             For read, index number of the gasFile/cloudFile to be used.
-        mode : str
-            Mode of atmosphere use.  Look under "state_variables."
         config : str or class
             Configuration to use
         log : None or str
             Log setup
         """
-        super(Atmosphere, self).__init__(planet=planet, config=config, log=log)
+        super(Atmosphere, self).__init__(planet=planet, config=config, log=log, **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
 
@@ -46,7 +44,7 @@ class Atmosphere(atm_base.AtmosphereBase):
         self.idnum = idnum
         if self.verbose == 'loud':
             print('Planet ' + self.planet)
-            self.config.display()
+            print(self.config)
         if self.config.gasType == 'read':  # this assumes that cloudType is then also 'read'
             self.log.add('\tReading from: ' + self.config.filename, self.verbose)
             self.log.add('\tAtmosphere file:  ' + str(self.config.gasFile), self.verbose)

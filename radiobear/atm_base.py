@@ -14,7 +14,7 @@ from . import logging
 
 
 class AtmosphereBase:
-    def __init__(self, planet, config='config.par', log=None):
+    def __init__(self, planet, config='config.par', log=None, **kwargs):
         """
         Atmosphere base class
         """
@@ -24,6 +24,7 @@ class AtmosphereBase:
         if isinstance(config, str):
             config = os.path.join(self.planet, config)
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
+            self.config.update_config(**kwargs)
         self.config = config
         self.chem = None
         self.gas = []

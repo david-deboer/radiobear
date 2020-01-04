@@ -11,33 +11,27 @@ from . import utils
 class Planet(planet_base.PlanetBase):
     """
     This is the 'executive' function class to compute overall planetary emission.
-    For both mode and kwargs look at state_variables.py
 
     Parameters
     ----------
         name : str
             Planet name.  One of [Jupiter, Saturn, Uranus, Neptune]
-        mode : str
-            Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
-
         run_atmos : bool
             Flag to generate the atmosphere on setup
         kwargs
             E.g. 'plot_atm', etc (and other config parameters)
     """
-    def __init__(self, name, mode='normal', config_file='config.par', verbose=True,
+    def __init__(self, name, config_file='config.par', verbose=True,
                  read_alpha='none', save_alpha='none', load_formal=True, atm_type='std',
-                 setup=['log', 'config', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
+                 setup=['log', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
                  **kwargs):
-        super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
+        super(Planet, self).__init__(name=name, config_file=config_file, **kwargs)
 
         # initialize and setup up modules/etc
         self.setup_config(**kwargs)
         for par in setup:
-            if par == 'config':
-                continue
             getattr(self, 'setup_{}'.format(par))()
 
         self.read_alpha = read_alpha

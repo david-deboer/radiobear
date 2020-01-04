@@ -11,7 +11,7 @@ from . import logging
 
 
 class Alpha:
-    def __init__(self, idnum=0, config=None, log=None, load_formal=True):
+    def __init__(self, idnum=0, config=None, log=None, load_formal=True, **kwargs):
         """
         Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
 
@@ -26,17 +26,14 @@ class Alpha:
         load_formal : bool
             Flag to load in the absorption modules
         """
-
         self.log = logging.setup(log)
+        if config is None or isinstance(config, str):
+            config = pcfg.planetConfig('x', configFile=config, log=self.log)
+            self.config.update_config(**kwargs)
+        self.config = config
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
         self.idnum = idnum
         self.reset_layers()
-
-        # get config
-        if config is None or isinstance(config, str):
-            config = pcfg.planetConfig('x', configFile=config, log=self.log)
-        self.config = config
-
         self.alphafile = os.path.join(self.config.scratch_directory,
                                       'alpha{:04d}.npz'.format(self.idnum))
         if load_formal:
@@ -204,9 +201,6 @@ class Alpha:
     def get_layers(self, freqs, atm, scale=False, read_alpha=False, save_alpha=False):
         """
         Compute or read absorption for all layers in atm.
-
-        Note that read_alpha and save_alpha are passed here and overwrite the
-        read_alpha/save_alpha state_variables.
 
         Parameters
         ----------

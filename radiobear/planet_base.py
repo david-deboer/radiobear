@@ -28,9 +28,8 @@ class PlanetBase:
     """
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
-    def __init__(self, name, mode='normal', config_file='config.par'):
+    def __init__(self, name, config_file='config.par'):
         self.planet = name.capitalize()
-        self.mode = mode.lower()
         self.config_file = config_file
 
         self.header = {}
@@ -47,6 +46,21 @@ class PlanetBase:
         if self.planet not in self.planet_list:
             print("{} not found.".format(self.planet))
             return
+
+    def setup_config(self, **kwargs):
+        """
+        Instantiates and reads the config file
+        """
+        from . import config
+        self.config_file = os.path.join(self.planet, self.config_file)
+        if self.verbose:
+            print('Reading config file:  ', self.config_file)
+            print("\t'print({}.config.show())' to see config parameters."
+                  .format(self.planet[0].lower()))
+        self.config = config.planetConfig(self.planet, configFile=self.config_file)
+        self.config.update_config(**kwargs)
+        self.config.show()
+        sys.path.insert(0, self.config.path)
 
     def setup_log(self):
         """
@@ -69,21 +83,6 @@ class PlanetBase:
         from . import data_handling
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
-
-    def setup_config(self, **kwargs):
-        """
-        Instantiates and reads the config file
-        """
-        from . import config
-        self.config_file = os.path.join(self.planet, self.config_file)
-        if self.verbose:
-            print('Reading config file:  ', self.config_file)
-            print("\t'print({}.config.show())' to see config parameters."
-                  .format(self.planet[0].lower()))
-        self.config = config.planetConfig(self.planet, configFile=self.config_file)
-        self.config.update_config(**kwargs)
-        self.config.show()
-        sys.path.insert(0, self.config.path)
 
     def setup_atm(self):
         """
