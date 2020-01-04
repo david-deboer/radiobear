@@ -1,16 +1,5 @@
 {
     "toks": {
-        "batch_mode": {
-            "name": "batch_mode",
-            "unit": null,
-            "help": "",
-            "default": {
-                "Jupiter": false,
-                "Saturn": false,
-                "Uranus": false,
-                "Neptune": false
-            }
-        },
         "write_output_files": {
             "name": "write_output_files",
             "unit": null,
@@ -19,7 +8,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         },
         "write_log_file": {
@@ -30,7 +20,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         },
         "plot_atm": {
@@ -41,7 +32,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         },
         "plot_bright": {
@@ -52,7 +44,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         },
         "output_type": {
@@ -63,7 +56,8 @@
                 "Jupiter": "frequency",
                 "Saturn": "frequency",
                 "Uranus": "frequency",
-                "Neptune": "frequency"
+                "Neptune": "frequency",
+                "X": "frequency"
             }
         },
         "log_directory": {
@@ -74,7 +68,8 @@
                 "Jupiter": "Logs",
                 "Saturn": "Logs",
                 "Uranus": "Logs",
-                "Neptune": "Logs"
+                "Neptune": "Logs",
+                "X": "Logs"
             }
         },
         "output_directory": {
@@ -85,7 +80,8 @@
                 "Jupiter": "Output",
                 "Saturn": "Output",
                 "Uranus": "Output",
-                "Neptune": "Output"
+                "Neptune": "Output",
+                "X": "Output"
             }
         },
         "scratch_directory": {
@@ -96,7 +92,8 @@
                 "Jupiter": "Scratch",
                 "Saturn": "Scratch",
                 "Uranus": "Scratch",
-                "Neptune": "Scratch"
+                "Neptune": "Scratch",
+                "X": "Scratch"
             }
         },
         "tweakmodule": {
@@ -107,7 +104,8 @@
                 "Jupiter": "JupiterTweak",
                 "Saturn": "SaturnNoTweak",
                 "Uranus": "UranusNoTweak",
-                "Neptune": "NeptuneTweak"
+                "Neptune": "NeptuneTweak",
+                "X": "None"
             }
         },
         "bmapmodule": {
@@ -118,7 +116,8 @@
                 "Jupiter": null,
                 "Saturn": null,
                 "Uranus": null,
-                "Neptune": null
+                "Neptune": null,
+                "X": null
             }
         },
         "regridtype": {
@@ -129,7 +128,8 @@
                 "Jupiter": "grid.dat",
                 "Saturn": "grid.dat",
                 "Uranus": "grid.dat",
-                "Neptune": "grid.dat"
+                "Neptune": "grid.dat",
+                "X": "none"
             }
         }
     }

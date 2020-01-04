@@ -81,7 +81,6 @@ examples for b:
 output of <>.state() (kwargs)
 
 radiobear.planet.Planet state variables and defaults
- - batch_mode:  False           # run in batch_mode
  - initialize:  True            # initialize run when class instantiated
  - write_output_files:  True    #
  - write_log_file:  True.       #

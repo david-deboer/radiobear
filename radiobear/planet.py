@@ -4,7 +4,6 @@
 from __future__ import absolute_import, division, print_function
 import datetime
 import os.path
-import six
 from . import planet_base
 from . import utils
 
@@ -26,7 +25,7 @@ class Planet(planet_base.PlanetBase):
         run_atmos : bool
             Flag to generate the atmosphere on setup
         kwargs
-            'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
+            E.g. 'plot_atm', etc (and other config parameters)
     """
     def __init__(self, name, mode='normal', config_file='config.par', verbose=True,
                  read_alpha='none', save_alpha='none', load_formal=True, atm_type='std',
@@ -34,21 +33,24 @@ class Planet(planet_base.PlanetBase):
                  **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
 
+        # initialize and setup up modules/etc
+        self.setup_config(**kwargs)
+        for par in setup:
+            if par == 'config':
+                continue
+            getattr(self, 'setup_{}'.format(par))()
+
         self.read_alpha = read_alpha
         self.save_alpha = save_alpha
         self.load_formal = load_formal
         self.verbose = verbose
-        self.log.add(planet, False)
-        self.log.add(configFile, False)
+        self.log.add(self.planet, False)
+        self.log.add(config_file, False)
         pars = self.config.show()
         self.log.add(pars, False)
 
-        # initialize and setup up modules/etc
-        for par in setup:
-            getattr(self, 'setup_{}'.format(par))(**kwargs)
-
         # run atmosphere
-        if isinstance(atm_type, six.string_types) and atm_type not in utils.negative:
+        if isinstance(atm_type, str) and atm_type not in utils.negative:
             self.atm_run(atm_type=atm_type)
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
@@ -102,10 +104,10 @@ class Planet(planet_base.PlanetBase):
         print("RT calc took {:.1f} s".format(utils.timer(runStop - runStart)))
 
         #  ##Write output files
-        if self.write_output_files:
+        if self.config.write_output_files:
             output_file = '{}_{}{}{}.dat'.format(self.planet, self.data_type, is_img.block,
                                                  runStart.strftime("%Y%m%d_%H%M%S"))
-            output_file = os.path.join(self.output_directory, output_file)
+            output_file = os.path.join(self.config.output_directory, output_file)
             if self.verbose == 'loud':
                 print('\nWriting {} data to {}'.format(self.data_type, output_file))
             self.fIO.write(output_file, self.data_return)

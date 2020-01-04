@@ -4,35 +4,29 @@
 from __future__ import absolute_import, division, print_function
 import os
 import sys
-import six
 import numpy as np
 from . import utils
 from . import config as pcfg
-from . import state_variables
 from . import logging
 
 
 class Alpha:
-    def __init__(self, idnum=0, mode='normal', config=None, log=None, load_formal=True, **kwargs):
+    def __init__(self, idnum=0, config=None, log=None, load_formal=True):
         """
         Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
 
         Parameters
         ----------
-        planet : str
-            Planet name
         idnum : int
             For read, index number of the gasFile/cloudFile to be used.
-        mode : str
-            Mode of atmosphere use.  Look under "state_variables."
         config : str or class
             Configuration to use
         log : None or str
             Log setup
-        **kwargs
+        load_formal : bool
+            Flag to load in the absorption modules
         """
 
-        state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
         self.idnum = idnum
@@ -40,10 +34,11 @@ class Alpha:
 
         # get config
         if config is None or isinstance(config, str):
-            config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
+            config = pcfg.planetConfig('x', configFile=config, log=self.log)
         self.config = config
 
-        self.alphafile = os.path.join(self.scratch_directory, 'alpha{:04d}.npz'.format(self.idnum))
+        self.alphafile = os.path.join(self.config.scratch_directory,
+                                      'alpha{:04d}.npz'.format(self.idnum))
         if load_formal:
             self.setup_formalisms()
         self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
@@ -53,9 +48,6 @@ class Alpha:
         self.freqs = None
         self.layers = None
         self.alpha_data = []
-
-    def state(self):
-        state_variables.show_state(self)
 
     def read_scale_file(self, scale_filename):
         return np.load(scale_filename)
@@ -73,7 +65,7 @@ class Alpha:
             'file' writes to self.alphafile
             'memory' writes to memory Namespace
         """
-        if isinstance(save_type, six.string_types):
+        if isinstance(save_type, str):
             self.alpha_data = np.array(self.alpha_data)
             if save_type.lower() == 'file':
                 np.savez(self.alphafile,
@@ -94,7 +86,7 @@ class Alpha:
             'file' writes to self.alphafile
             'memory' writes to memory Namespace
         """
-        if isinstance(save_type, six.string_types):
+        if isinstance(save_type, str):
             if save_type.lower() == 'file':
                 alphain = np.load(self.alphafile)
                 for sf in self.saved_fields:

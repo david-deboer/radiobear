@@ -4,7 +4,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
 import os
-import six
 import sys
 
 # ##local imports
@@ -22,7 +21,7 @@ class AtmosphereBase:
         self.planet = planet.capitalize()
         self.log = logging.setup(log)
 
-        if isinstance(config, six.string_types):
+        if isinstance(config, str):
             config = os.path.join(self.planet, config)
             config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
         self.config = config

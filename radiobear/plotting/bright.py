@@ -17,7 +17,7 @@ class plots:
         # ####-----Alpha
         plt.figure('alpha')
         for i, f in enumerate(self.bright.freqs):
-            if self.bright.output_type == 'frequency':
+            if self.bright.config.output_type == 'frequency':
                 label = ('a: {:.1f} GHz').format(f)
             else:
                 label = ('{:.1f} cm').format(30.0 / f)
@@ -41,7 +41,7 @@ class plots:
             if normW4plot:
                 norm = np.max(self.bright.W[i])
             wplot = self.bright.W[i] / norm
-            if self.bright.output_type == 'frequency':
+            if self.bright.config.output_type == 'frequency':
                 label = ('{:.1f} GHz').format(f)
             else:
                 label = ('{:.1f} cm').format(30.0 / f)

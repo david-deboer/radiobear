@@ -12,7 +12,8 @@
                 "Uranus": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
                             "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15},
                 "Neptune": {"Z": 0, "T": 1, "P": 2, "H2": 3, "HE": 4, "CH4": 5, "NH3": 6, "H2O": 7, "H2S": 8, "SOLN": 9, "OTHER": 10,
-                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15}
+                            "PH3": 11, "CO": 12, "CO13": 13, "HCN": 14, "DZ": 15},
+                "X": {}
             }
         },
         "alpha": {
@@ -27,7 +28,9 @@
                 "Uranus": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
                             "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
                 "Neptune": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
-                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"}
+                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
+                "X":  {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                       "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"}
             }
         },
         "truncate_freq": {
@@ -38,7 +41,8 @@
                 "Jupiter": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
                 "Saturn": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
                 "Uranus": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
-                "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null}
+                "Neptune": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null},
+                "X": {"co": null, "h2o": null, "h2s": null, "hcn": null, "nh3": null, "ph3": null}
             }
         },
         "truncate_strength": {
@@ -49,7 +53,8 @@
                 "Jupiter": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
                 "Saturn": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
                 "Uranus": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
-                "Neptune": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22}
+                "Neptune": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22},
+                "X": {"co": null, "h2o": null, "h2s": 1E-22, "hcn": null, "nh3": null, "ph3": 1E-22}
             }
         },
         "truncate_method": {
@@ -60,7 +65,8 @@
               "Jupiter": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
               "Saturn": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
               "Uranus": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
-              "Neptune": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"}
+              "Neptune": {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"},
+              "X":  {"co": null, "h2o": null, "h2s": "truncate_strength", "hcn": null, "nh3": null, "ph3": "truncate_strength"}
             }
         },
         "gasfile": {
@@ -71,7 +77,8 @@
                 "Jupiter": ["jupiter.paulSolar"],
                 "Saturn": ["saturn.Solar"],
                 "Uranus": ["uranus.paul10xsolar_wet.dat"],
-                "Neptune": ["neptune.paulCO_cloud21_fletcher_best_dry"]
+                "Neptune": ["neptune.paulCO_cloud21_fletcher_best_dry"],
+                "X": []
             }
         },
         "gastype": {
@@ -82,7 +89,8 @@
                 "Jupiter": "read",
                 "Saturn": "read",
                 "Uranus": "read",
-                "Neptune": "read"
+                "Neptune": "read",
+                "X": "none"
             }
         },
         "clouds": {
@@ -93,7 +101,8 @@
                 "Jupiter": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
                 "Saturn": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
                 "Uranus": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
-                "Neptune": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11}
+                "Neptune": {"Z": 0, "T": 1, "P": 2, "SOLN": 3, "H2O": 4, "NH4SH": 5, "NH3": 6, "H2S": 7, "CH4": 8, "AR": 9, "PH3": 10, "DZ": 11},
+                "X": {}
             }
         },
         "cloudfile": {
@@ -104,7 +113,8 @@
                 "Jupiter": ["jupiter.paulclSolar"],
                 "Saturn": ["saturn.clSolar"],
                 "Uranus": ["uranus.cloud10xsolar_wet.dat"],
-                "Neptune": ["nepcloud_CO.cloud21_fletcher_best_dry"]
+                "Neptune": ["nepcloud_CO.cloud21_fletcher_best_dry"],
+                "X": []
             }
         },
         "cloudtype": {
@@ -115,7 +125,8 @@
                 "Jupiter": "read",
                 "Saturn": "read",
                 "Uranus": "read",
-                "Neptune": "read"
+                "Neptune": "read",
+                "X": "none"
             }
         },
         "other": {
@@ -126,7 +137,8 @@
                 "Jupiter": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
                 "Saturn": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
                 "Uranus": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
-                "Neptune": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10}
+                "Neptune": {"Z": 0, "R": 1, "P": 2, "GM": 3, "AMU": 4, "REFR": 5, "N": 6, "H": 7, "LAPSE": 8, "LAPSEP": 9, "g": 10},
+                "X": {}
             }
         },
         "othertype": {
@@ -137,7 +149,8 @@
                 "Jupiter": "compute",
                 "Saturn": "compute",
                 "Uranus": "compute",
-                "Neptune": "compute"
+                "Neptune": "compute",
+                "X": 'none'
             }
         },
         "normalize_weighting": {
@@ -148,7 +161,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         },
         "req": {
@@ -159,7 +173,8 @@
                 "Jupiter": 71492.0,
                 "Saturn": 60268.0,
                 "Uranus": 25559.0,
-                "Neptune": 24766.0
+                "Neptune": 24766.0,
+                "X": 0.0
             }
         },
         "rpol": {
@@ -170,7 +185,8 @@
                 "Jupiter": 66854.0,
                 "Saturn": 54364.0,
                 "Uranus": 25559.0,
-                "Neptune": 24342.0
+                "Neptune": 24342.0,
+                "X": 0.0
             }
         },
         "p_ref": {
@@ -181,7 +197,8 @@
                 "Jupiter": 1.0,
                 "Saturn": 1.0,
                 "Uranus": 1.0,
-                "Neptune": 1.0
+                "Neptune": 1.0,
+                "X": 0.0
             }
         },
         "pmin": {
@@ -192,7 +209,8 @@
                 "Jupiter": 0,
                 "Saturn": 0,
                 "Uranus": 0,
-                "Neptune": 0
+                "Neptune": 0,
+                "X": 0
             }
         },
         "pmax": {
@@ -203,7 +221,8 @@
                 "Jupiter": -1,
                 "Saturn": -1,
                 "Uranus": -1,
-                "Neptune": -1
+                "Neptune": -1,
+                "X": -1
             }
         },
         "distance": {
@@ -214,7 +233,8 @@
                 "Jupiter": 5.2,
                 "Saturn": 9.6,
                 "Uranus": 19.2,
-                "Neptune": 29.7
+                "Neptune": 29.7,
+                "X": 0.0
             }
         },
         "orientation": {
@@ -225,7 +245,8 @@
                 "Jupiter": [3.12, 0.0],
                 "Saturn": [0.0, 0.0],
                 "Uranus": [0.0, 0.0],
-                "Neptune": [348.8274, -28.97]
+                "Neptune": [348.8274, -28.97],
+                "X": []
             }
         },
         "gm": {
@@ -236,7 +257,8 @@
                 "Jupiter": 12.6686538e7,
                 "Saturn": 3.7931272e7,
                 "Uranus": 5.794e6,
-                "Neptune": 0.6835096e7
+                "Neptune": 0.6835096e7,
+                "X": 0.0
             }
         },
         "omega": {
@@ -247,7 +269,8 @@
                 "Jupiter": 1.7585e-4,
                 "Saturn": 1.6378499e-4,
                 "Uranus": 1.0124e4,
-                "Neptune": 1.01237195e-4
+                "Neptune": 1.01237195e-4,
+                "X": 0.0
             }
         },
         "jn": {
@@ -258,7 +281,8 @@
                 "Jupiter": [0.0, 0.0, 1.4697e-2, 0.0, -5.84e-4, 0.0, 0.31e-4],
                 "Saturn": [0.0, 0.0, 1.6332e-2, 0.0, -9.19e-4, 0.0, 1.04e-4],
                 "Uranus": [0.0, 0.0, 3343.43e-6, 0.0, 0.0, 0.0, 0.0],
-                "Neptune": [0.0, 0.0, 0.3539e-2, 0.0, -0.28e-4, 0.0, 0.0]
+                "Neptune": [0.0, 0.0, 0.3539e-2, 0.0, -0.28e-4, 0.0, 0.0],
+                "X": []
             }
         },
         "rj": {
@@ -269,7 +293,8 @@
                 "Jupiter": 71492.0,
                 "Saturn": 60268.0,
                 "Uranus": 25559.0,
-                "Neptune": 24766.0
+                "Neptune": 24766.0,
+                "X": 0.0
             }
         },
         "gtype": {
@@ -280,7 +305,8 @@
                 "Jupiter": "ellipse",
                 "Saturn": "ellipse",
                 "Uranus": "ellipse",
-                "Neptune": "ellipse"
+                "Neptune": "ellipse",
+                "X": "none"
             }
         },
         "zonal": {
@@ -291,7 +317,8 @@
                 "Jupiter": "Jupiter/zonalJupiter.dat",
                 "Saturn": "Saturn/zonalSaturn.dat",
                 "Uranus": "Uranus/zonalUranus.dat",
-                "Neptune": "Neptune/zonalNeptune.dat"
+                "Neptune": "Neptune/zonalNeptune.dat",
+                "X": "none"
             }
         },
         "limb": {
@@ -302,7 +329,8 @@
                 "Jupiter": "shape",
                 "Saturn": "shape",
                 "Uranus": "shape",
-                "Neptune": "shape"
+                "Neptune": "shape",
+                "X": "none"
             }
         },
         "h2state": {
@@ -313,7 +341,8 @@
                 "Jupiter": "e",
                 "Saturn": "e",
                 "Uranus": "e",
-                "Neptune": "e"
+                "Neptune": "e",
+                "X": " "
             }
         },
         "doppler": {
@@ -324,7 +353,8 @@
                 "Jupiter": false,
                 "Saturn": false,
                 "Uranus": false,
-                "Neptune": false
+                "Neptune": false,
+                "X": false
             }
         },
         "water": {
@@ -335,7 +365,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "ice": {
@@ -346,7 +377,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "h2sice": {
@@ -357,7 +389,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "nh3ice": {
@@ -368,7 +401,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "nh4sh": {
@@ -379,7 +413,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "ch4": {
@@ -390,7 +425,8 @@
                 "Jupiter": 1.0E-4,
                 "Saturn": 1.0E-4,
                 "Uranus": 1.0E-4,
-                "Neptune": 1.0E-4
+                "Neptune": 1.0E-4,
+                "X": 0.0
             }
         },
         "h2newset": {
@@ -401,7 +437,8 @@
                 "Jupiter": true,
                 "Saturn": true,
                 "Uranus": true,
-                "Neptune": true
+                "Neptune": true,
+                "X": true
             }
         }
     }

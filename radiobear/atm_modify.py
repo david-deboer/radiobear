@@ -4,14 +4,10 @@
 from __future__ import absolute_import, division, print_function
 import sys
 import os
-import six
 
 
 def tweakAtm(self):
     """Tweaks the atmosphere data..."""
-    if self.batch_mode:
-        return 0
-
     # Import tweakmodule
     __import__(self.config.tweakmodule)
     tweakModule = sys.modules[self.config.tweakmodule]
@@ -37,7 +33,7 @@ def scaleAtm(self, scale_info='Scratch/scale.dat'):
     """
     This is a built-in tweak module.
     """
-    if isinstance(scale_info, six.string_types):
+    if isinstance(scale_info, str):
         import alpha
         col, scale_info = alpha.read_scalefile(scale_info)
     else:

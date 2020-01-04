@@ -4,12 +4,11 @@
 from __future__ import absolute_import, division, print_function
 
 # ##local imports
-from . import state_variables
 from . import atm_base
 
 
 class Atmosphere(atm_base.AtmosphereBase):
-    def __init__(self, planet, idnum=0, mode='normal', config='config.par', log=None, **kwargs):
+    def __init__(self, planet, idnum=0, mode='normal', config='config.par', log=None):
         """
         Reads/computes the atmosphere to be used.
 
@@ -31,10 +30,8 @@ class Atmosphere(atm_base.AtmosphereBase):
             Configuration to use
         log : None or str
             Log setup
-        **kwargs
         """
         super(Atmosphere, self).__init__(planet=planet, config=config, log=log)
-        state_variables.init_state_variables(self, mode, **kwargs)
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
 
@@ -54,9 +51,6 @@ class Atmosphere(atm_base.AtmosphereBase):
             self.log.add('\tReading from: ' + self.config.filename, self.verbose)
             self.log.add('\tAtmosphere file:  ' + str(self.config.gasFile), self.verbose)
             self.log.add('\tCloud file:  ' + str(self.config.cloudFile), self.verbose)
-
-    def state(self):
-        state_variables.show_state(self)
 
     def simple(self):
         """
@@ -93,9 +87,6 @@ class Atmosphere(atm_base.AtmosphereBase):
         else:
             self.gasGen[gasType]()
         self.nAtm = len(self.gas[0])
-
-        if self.batch_mode:
-            return self.nAtm
 
         # ## Generate cloud profile
         if cloudType not in self.cloudGen.keys():

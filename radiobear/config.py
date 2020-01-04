@@ -47,19 +47,19 @@ class planetConfig:
         self.path = planet
 
         # Set defaults
+        self.toks = {}
         for json_file in default_config_files:
             with open(json_file, 'r') as f:
                 config_data = json.load(f)
-            self.toks = config_data['toks']
-
-            for tok in self.toks:
-                val = self.toks[tok]['default'][self.planet]
-                if isinstance(val, (str, float)):
-                    val = set_single_val(val, self.toks[tok]['unit'])
-                setattr(self, self.toks[tok]['name'], val)
+            for tok, fval in config_data['toks'].items():
+                self.toks[tok] = fval['name']
+                pval = fval['default'][self.planet]
+                if isinstance(pval, (str, float)):
+                    pval = set_single_val(pval, fval['unit'])
+                setattr(self, fval['name'], pval)
         self.setConfig(configFile)
 
-    def __repr__(self):
+    def __str__(self):
         print(self.show())
 
     def setConfig(self, configFile):
@@ -82,10 +82,12 @@ class planetConfig:
             data = line.split()
             tok = data[0].lower()
             del(data[0])
-            if tok not in self.toks.keys():
-                print('token {} not found'.format(tok))
+            try:
+                preval = getattr(self, self.toks[tok])
+            except ValueError:
+                print('token {} ({}) not found'.format(tok, self.toks[tok]))
                 continue
-            if isinstance(self.toks[tok]['default'][self.planet], (str, float, int)):
+            if isinstance(preval, (str, float, int)):
                 unit = 'none'
                 if len(data) == 2:
                     unit = data[1]
@@ -93,13 +95,13 @@ class planetConfig:
                     val = set_single_val(data[0], unit)
                 else:
                     print("{} didn't have an associated argument in config file.".format(tok))
-                    print("Using default:  {}".format(self.toks[tok]['default'][self.planet]))
+                    print("Retaining  {}".format(preval))
                     continue
-            elif isinstance(self.toks[tok]['default'][self.planet], list):
+            elif isinstance(preval, list):
                 if len(data) == 1 and ',' in data[0]:
                     data = data[0].split(',')
                 val = [set_single_val(x) for x in data]
-            elif isinstance(self.toks[tok]['default'][self.planet], dict):
+            elif isinstance(preval, dict):
                 val = {}
                 for i, v in enumerate(data):
                     if ':' in v:
@@ -109,9 +111,9 @@ class planetConfig:
                         val[v.strip()] = i
             else:
                 print("Incorrect type:  {} <{}>".
-                      format(tok, type(self.toks[tok]['default'][self.planet])))
+                      format(tok, type(preval)))
                 continue
-            setattr(self, self.toks[tok]['name'], val)
+            setattr(self, self.toks[tok], val)
         fp.close()
 
         if 'DZ' not in self.C.keys():
@@ -132,7 +134,7 @@ class planetConfig:
             self.vwlat = [0.0, 90.0]
             self.vwdat = [0.0, 0.0]
 
-    def update_config(self, key=None, value=None, override=False, **kwargs):
+    def update_config(self, key=None, value=None, **kwargs):
         """
         Update the config file in a variety of ways.
 
@@ -168,19 +170,17 @@ class planetConfig:
             proc_key.append(k)
             proc_val.append(v)
 
-        for i, k in enumerate(key):
-            if k not in self.toks.keys():
-                if override:
-                    self.toks[k] = {}
-                    self.toks[k]['name'] = k
-                    self.toks[k]['unit'] = None
-                    self.toks[k]['help'] = None
-                    self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
-                                               'Uranus': None, 'Neptune': None}
-                else:
-                    print("{} not in config keys and override is False")
-                    continue
-            setattr(self, k, set_single_val(value[i]))
+        for k, v in zip(proc_key, proc_val):
+            if k in self.toks.keys():
+                tok = self.toks[k]
+            else:
+                tok = k
+            try:
+                preval = getattr(self, tok)  # noqa
+            except ValueError:
+                print("{} not in config keys and override is False".format(tok))
+                continue
+            setattr(self, tok, set_single_val(v))
 
     def show(self):
         """Returns string containing configuration"""
@@ -188,5 +188,5 @@ class planetConfig:
         keys = list(self.toks.keys())
         keys.sort()
         for key in keys:
-            s += '\t{:20s}:  {}\n'.format(key, str(getattr(self, self.toks[key]['name'])))
+            s += '\t{:20s}:  {}\n'.format(key, str(getattr(self, self.toks[key])))
         return s

@@ -1,4 +1,4 @@
-include radiobear/default_config.json
+include radiobear/default_*.json
 include radiobear/Jupiter/*.*
 include radiobear/Saturn/*.*
 include radiobear/Uranus/*.*

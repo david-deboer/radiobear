@@ -7,20 +7,16 @@ import scipy.special as ss
 import os.path
 from . import utils
 from . import raypath as ray
-from . import state_variables
 from . import logging
 
 
 class Brightness():
 
-    def __init__(self, mode='normal', log=None, **kwargs):
+    def __init__(self, log=None, output_directory='Output'):
         """This calculates the brightness temperature of the planets.
            It must be used with atmosphere and alpha"""
-        state_variables.init_state_variables(self, mode, **kwargs)
         self.log = logging.setup(log)
-
-    def state(self):
-        state_variables.show_state(self)
+        self.output_directory = output_directory
 
     def single(self, b, freqs, atm, alpha, orientation=None, taulimit=20.0):
         """This computes the brightness temperature along one ray path"""

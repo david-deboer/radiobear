@@ -10,14 +10,12 @@ import six
 from argparse import Namespace
 from . import utils
 from . import set_utils
-from . import state_variables
 from . import version
 
 
 class PlanetBase:
     """
     This is the base planet class to compute overall planetary emission.
-    For both mode and kwargs look at state_variables.py
 
     Parameters
     ----------
@@ -27,12 +25,10 @@ class PlanetBase:
             Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
-        kwargs
-            'verbose' and 'plot_atm', etc (and other state_vars - see self.state())
     """
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
-    def __init__(self, name, mode='normal', config_file='config.par', **kwargs):
+    def __init__(self, name, mode='normal', config_file='config.par'):
         self.planet = name.capitalize()
         self.mode = mode.lower()
         self.config_file = config_file
@@ -52,25 +48,21 @@ class PlanetBase:
             print("{} not found.".format(self.planet))
             return
 
-        # Set up state_variables
-        state_variables.init_state_variables(self, self.mode, **kwargs)
-        print("\t'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
-
-    def setup_log(self, **kwargs):
+    def setup_log(self):
         """
         Sets up self.log if self.write_log_file is True
         """
         from . import logging
         if self.write_log_file:
             runStart = datetime.datetime.now()
-            logFile = '{}/{}_{}.log'.format(self.log_directory, self.planet,
+            logFile = '{}/{}_{}.log'.format(self.config.log_directory, self.planet,
                                             runStart.strftime("%Y%m%d_%H%M%S"))
             self.log = logging.LogIt(logFile)
             self.log.add(self.planet + ' start ' + str(runStart), self.verbose)
         else:
             self.log = None
 
-    def setup_data_return(self, **kwargs):
+    def setup_data_return(self):
         """
         Instantiates and logs the data_return class
         """
@@ -88,20 +80,12 @@ class PlanetBase:
             print('Reading config file:  ', self.config_file)
             print("\t'print({}.config.show())' to see config parameters."
                   .format(self.planet[0].lower()))
-        self.config = config.planetConfig(self.planet, configFile=self.config_file, log=self.log)
-        self.config.update_config(kwargs)
+        self.config = config.planetConfig(self.planet, configFile=self.config_file)
+        self.config.update_config(**kwargs)
         self.config.show()
         sys.path.insert(0, self.config.path)
 
-    def state(self, **kwargs):
-        """
-        Shortcut method to show/edit the state_variables
-        """
-        if len(kwargs.keys()):
-            state_variables.set_state(self, 'set', **kwargs)
-        state_variables.show_state(self)
-
-    def setup_atm(self, **kwargs):
+    def setup_atm(self):
         """
         Instantiates atmosphere.  Attributes are:
             self.atmos[].gas, self.atmos[].cloud and self.atmos[].property
@@ -115,9 +99,9 @@ class PlanetBase:
         self.atmos = []
         for i in range(N):
             self.atmos.append(atmosphere.Atmosphere(self.planet, idnum=i, mode=self.mode,
-                              config=self.config, log=self.log, **kwargs))
+                              config=self.config, log=self.log))
 
-    def setup_alpha(self, **kwargs):
+    def setup_alpha(self):
         """
         Instantiates absorption modules.  To change absorption, edit files under /constituents'
         """
@@ -127,39 +111,40 @@ class PlanetBase:
         mem_alpha = 'memory' in [str(self.read_alpha).lower(), str(self.save_alpha).lower()]
         for i in range(N):
             self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode, config=self.config, log=self.log,
-                                          load_formal=self.load_formal, **kwargs))
+                                          load_formal=self.load_formal))
             if mem_alpha:
                 self.alpha[i].memory = Namespace()
 
-    def setup_bright(self, **kwargs):
+    def setup_bright(self):
         """
         Instantiates brightness module.
         """
         from . import brightness
-        self.bright = brightness.Brightness(mode=self.mode, log=self.log, **kwargs)
+        self.bright = brightness.Brightness(log=self.log,
+                                            output_directory=self.config.output_directory)
 
-    def setup_fIO(self, **kwargs):
+    def setup_fIO(self):
         """
         Instantiates fileIO class
         """
         from . import fileIO
-        self.fIO = fileIO.FileIO(directory=self.output_directory)
+        self.fIO = fileIO.FileIO(directory=self.config.output_directory)
 
-    def set_bright_plots(self, **kwargs):
+    def set_bright_plots(self):
         """
-        If plot_bright is True, reads in brightness plotting modules.
+        If config.plot_bright is True, reads in brightness plotting modules.
         """
-        if self.plot_bright:
+        if self.config.plot_bright:
             from radiobear.plotting import bright, data
             return bright.plots(self.bright), data.plots(self.data_return)
         else:
             return None, None
 
-    def set_atm_plots(self, atmos, **kwargs):
+    def set_atm_plots(self, atmos):
         """
-        If plot_atm is True, reads in atmosphere plotting modules.
+        If config.plot_atm is True, reads in atmosphere plotting modules.
         """
-        if self.plot_atm:
+        if self.config.plot_atm:
             from radiobear.plotting import atm
             return atm.plots(atmos)
         else:
@@ -341,7 +326,7 @@ class PlanetBase:
             brtplt.raypath()
             brtplt.observer(b=b, req=self.config.Req, rpol=self.config.Rpol)
             brtplt.intW()
-            brtplt.W(self.normalize_weighting)
+            brtplt.W(self.config.normalize_weighting)
 
         return Tb
 
