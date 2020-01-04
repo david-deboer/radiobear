@@ -56,7 +56,7 @@ class PlanetBase:
         state_variables.init_state_variables(self, self.mode, **kwargs)
         print("\t'{}.state()' to see/modify state variables.\n".format(name[0].lower()))
 
-    def setup_log(self):
+    def setup_log(self, **kwargs):
         """
         Sets up self.log if self.write_log_file is True
         """
@@ -70,7 +70,7 @@ class PlanetBase:
         else:
             self.log = None
 
-    def setup_data_return(self):
+    def setup_data_return(self, **kwargs):
         """
         Instantiates and logs the data_return class
         """
@@ -126,8 +126,8 @@ class PlanetBase:
         self.alpha = []
         mem_alpha = 'memory' in [str(self.read_alpha).lower(), str(self.save_alpha).lower()]
         for i in range(N):
-            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode,
-                                          config=self.config, log=self.log, **kwargs))
+            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode, config=self.config, log=self.log,
+                                          load_formal=self.load_formal, **kwargs))
             if mem_alpha:
                 self.alpha[i].memory = Namespace()
 
@@ -145,7 +145,7 @@ class PlanetBase:
         from . import fileIO
         self.fIO = fileIO.FileIO(directory=self.output_directory)
 
-    def set_bright_plots(self):
+    def set_bright_plots(self, **kwargs):
         """
         If plot_bright is True, reads in brightness plotting modules.
         """
@@ -155,7 +155,7 @@ class PlanetBase:
         else:
             return None, None
 
-    def set_atm_plots(self, atmos):
+    def set_atm_plots(self, atmos, **kwargs):
         """
         If plot_atm is True, reads in atmosphere plotting modules.
         """

@@ -13,7 +13,7 @@ from . import logging
 
 
 class Alpha:
-    def __init__(self, idnum=0, mode='normal', config=None, log=None, **kwargs):
+    def __init__(self, idnum=0, mode='normal', config=None, log=None, load_formal=True, **kwargs):
         """
         Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
 
@@ -44,7 +44,7 @@ class Alpha:
         self.config = config
 
         self.alphafile = os.path.join(self.scratch_directory, 'alpha{:04d}.npz'.format(self.idnum))
-        if not self.read_alpha:
+        if load_formal:
             self.setup_formalisms()
         self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
 
@@ -198,7 +198,7 @@ class Alpha:
         """This is a wrapper to get the absorption coefficient, either from
            calculating from formalisms or reading from saved data"""
 
-        if self.read_alpha:
+        if self.read_alpha == 'memory':
             absorb = self.alpha_data[layer]
         else:
             P = atm.gas[atm.config.C['P']][layer]
@@ -235,7 +235,7 @@ class Alpha:
         if self.freqs is None and self.save_alpha:
             self.freqs = freqs
 
-        if self.read_alpha:
+        if self.read_alpha == 'memory':
             self.read_alpha_data(self.read_alpha)
         numLayers = len(atm.gas[0])
         au = utils.alphaUnit
