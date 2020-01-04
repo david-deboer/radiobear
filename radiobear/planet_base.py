@@ -124,7 +124,7 @@ class PlanetBase:
         from . import alpha
         N = len(self.atmos)
         self.alpha = []
-        mem_alpha = 'memory' in [self.read_alpha.lower(), self.save_alpha.lower()]
+        mem_alpha = 'memory' in [str(self.read_alpha).lower(), str(self.save_alpha).lower()]
         for i in range(N):
             self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode,
                                           config=self.config, log=self.log, **kwargs))
@@ -176,15 +176,9 @@ class PlanetBase:
                 unit for freqs
         """
         self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
-        if self.existing_alpha:
-            freqs_read = np.load('{}/freqs.npy'.format(self.scratch_directory))
-            freqs = [f for f in freqs_read]
-            if self.verbose == 'loud':
-                print("Setting frequencies to ", freqs)
-        else:
-            freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
-            for this_alpha in self.alpha:
-                this_alpha.reset_layers()
+        freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
+        for this_alpha in self.alpha:
+            this_alpha.reset_layers()
 
         reuse = False
         if len(self.freqs) == len(freqs):

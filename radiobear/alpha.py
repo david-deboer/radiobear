@@ -63,7 +63,7 @@ class Alpha:
     def write_scale_file(self, scale_filename, scale):
         np.save(scale_filename, scale)
 
-    def write_alpha(self, save_type='file'):
+    def write_alpha_data(self, save_type='file'):
         """
         Write out the saved_fields.
 
@@ -84,7 +84,7 @@ class Alpha:
                 for sf in self.saved_fields:
                     setattr(self.memory, sf, getattr(self, sf))
 
-    def read_alpha(self, save_type='file'):
+    def read_alpha_data(self, save_type='file'):
         """
         Reads the saved_fields into self.
 
@@ -235,6 +235,8 @@ class Alpha:
         if self.freqs is None and self.save_alpha:
             self.freqs = freqs
 
+        if self.read_alpha:
+            self.read_alpha_data(self.read_alpha)
         numLayers = len(atm.gas[0])
         au = utils.alphaUnit
         self.log.add('{} layers'.format(numLayers), self.verbose)
@@ -259,4 +261,4 @@ class Alpha:
                     layer_scale[k] = v[layer]
             layer_alpha.append(self.get_alpha(freqs, layer, atm, layer_scale, units=au))
         self.layers = np.array(layer_alpha).transpose()
-        self.write_alpha(save_alpha)
+        self.write_alpha_data(save_alpha)
