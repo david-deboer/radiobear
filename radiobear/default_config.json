@@ -140,6 +140,17 @@
                 "Neptune": "compute"
             }
         },
+        "normalize_weighting": {
+            "name": "normalize_weighting",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
+            }
+        },
         "req": {
             "name": "Req",
             "unit": "km",
@@ -283,17 +294,6 @@
                 "Neptune": "Neptune/zonalNeptune.dat"
             }
         },
-        "regridtype": {
-            "name": "regridType",
-            "unit": null,
-            "help": "instructions or file to regrid data (see regrid.py) (string/int)",
-            "default": {
-                "Jupiter": "grid.dat",
-                "Saturn": "grid.dat",
-                "Uranus": "grid.dat",
-                "Neptune": "grid.dat"
-            }
-        },
         "limb": {
             "name": "limb",
             "unit": null,
@@ -325,39 +325,6 @@
                 "Saturn": false,
                 "Uranus": false,
                 "Neptune": false
-            }
-        },
-        "tweakmodule": {
-            "name": "tweakmodule",
-            "unit": null,
-            "help": "module that tweaks the read atmosphere",
-            "default": {
-                "Jupiter": "JupiterTweak",
-                "Saturn": "SaturnNoTweak",
-                "Uranus": "UranusNoTweak",
-                "Neptune": "NeptuneTweak"
-            }
-        },
-        "bmapmodule": {
-            "name": "bmapmodule",
-            "unit": null,
-            "help": "module that converts b-pair to alpha index",
-            "default": {
-                "Jupiter": null,
-                "Saturn": null,
-                "Uranus": null,
-                "Neptune": null
-            }
-        },
-        "scaleby": {
-            "name": "scale_by",
-            "unit": null,
-            "help": "name of scale file/value to use",
-            "default": {
-                "Jupiter": "Scratch/scale.dat|1.0",
-                "Saturn": "Scratch/scale.dat|1.0",
-                "Uranus": "Scratch/scale.dat|1.0",
-                "Neptune": "Scratch/scale.dat|1.0"
             }
         },
         "water": {

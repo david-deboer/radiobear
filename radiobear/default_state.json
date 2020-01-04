@@ -1,0 +1,136 @@
+{
+    "toks": {
+        "batch_mode": {
+            "name": "batch_mode",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": false,
+                "Saturn": false,
+                "Uranus": false,
+                "Neptune": false
+            }
+        },
+        "write_output_files": {
+            "name": "write_output_files",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
+            }
+        },
+        "write_log_file": {
+            "name": "write_log_file",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
+            }
+        },
+        "plot_atm": {
+            "name": "plot_atm",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
+            }
+        },
+        "plot_bright": {
+            "name": "plot_bright",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": true,
+                "Saturn": true,
+                "Uranus": true,
+                "Neptune": true
+            }
+        },
+        "output_type": {
+            "name": "output_type",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": "frequency",
+                "Saturn": "frequency",
+                "Uranus": "frequency",
+                "Neptune": "frequency"
+            }
+        },
+        "log_directory": {
+            "name": "log_directory",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": "Logs",
+                "Saturn": "Logs",
+                "Uranus": "Logs",
+                "Neptune": "Logs"
+            }
+        },
+        "output_directory": {
+            "name": "output_directory",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": "Output",
+                "Saturn": "Output",
+                "Uranus": "Output",
+                "Neptune": "Output"
+            }
+        },
+        "scratch_directory": {
+            "name": "scratch_directory",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": "Scratch",
+                "Saturn": "Scratch",
+                "Uranus": "Scratch",
+                "Neptune": "Scratch"
+            }
+        },
+        "tweakmodule": {
+            "name": "tweakmodule",
+            "unit": null,
+            "help": "module that tweaks the read atmosphere",
+            "default": {
+                "Jupiter": "JupiterTweak",
+                "Saturn": "SaturnNoTweak",
+                "Uranus": "UranusNoTweak",
+                "Neptune": "NeptuneTweak"
+            }
+        },
+        "bmapmodule": {
+            "name": "bmapmodule",
+            "unit": null,
+            "help": "module that converts b-pair to alpha index",
+            "default": {
+                "Jupiter": null,
+                "Saturn": null,
+                "Uranus": null,
+                "Neptune": null
+            }
+        },
+        "regridtype": {
+            "name": "regridType",
+            "unit": null,
+            "help": "instructions or file to regrid data (see regrid.py) (string/int)",
+            "default": {
+                "Jupiter": "grid.dat",
+                "Saturn": "grid.dat",
+                "Uranus": "grid.dat",
+                "Neptune": "grid.dat"
+            }
+        }
+    }
+}

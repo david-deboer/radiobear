@@ -28,14 +28,20 @@ class Planet(planet_base.PlanetBase):
         kwargs
             'verbose' and 'plot_atm', etc (and other state_vars - see show_state())
     """
-    def __init__(self, name, mode='normal', config_file='config.par',
+    def __init__(self, name, mode='normal', config_file='config.par', verbose=True,
                  read_alpha='none', save_alpha='none', load_formal=True, atm_type='std',
                  setup=['log', 'config', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
                  **kwargs):
         super(Planet, self).__init__(name=name, mode=mode, config_file=config_file, **kwargs)
+
         self.read_alpha = read_alpha
         self.save_alpha = save_alpha
         self.load_formal = load_formal
+        self.verbose = verbose
+        self.log.add(planet, False)
+        self.log.add(configFile, False)
+        pars = self.config.show()
+        self.log.add(pars, False)
 
         # initialize and setup up modules/etc
         for par in setup:

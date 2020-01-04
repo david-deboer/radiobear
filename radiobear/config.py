@@ -4,15 +4,13 @@
 
 from __future__ import absolute_import, division, print_function
 from . import utils
-from . import logging
 import json
-import six
 import os.path
 
 
 def set_single_val(val, unit=None,
                    special={'true': True, 'false': False, 'none': None, 'null': None}):
-    if isinstance(val, six.string_types):
+    if isinstance(val, str):
         if val.lower() in special.keys():
             val = special[str(val).lower()]
         elif ',' in val:
@@ -33,38 +31,40 @@ def set_single_val(val, unit=None,
     return val
 
 
-default_config_file = os.path.join(os.path.dirname(__file__), 'default_config.json')
+default_config_files = [os.path.join(os.path.dirname(__file__), 'default_config.json'),
+                        os.path.join(os.path.dirname(__file__), 'default_state.json')]
 
 
 class planetConfig:
-    def __init__(self, planet, configFile, log=None, printHelp=False):
+    """
+    Initializes, reads in, updates and displays the configuration.
+    """
+    def __init__(self, planet, configFile):
         """reads in config file"""
         planet = planet.capitalize()
         self.planet = planet
         self.filename = configFile
         self.path = planet
-        self.log = logging.setup(log)
-        self.verbose = False
-
-        with open(default_config_file, 'r') as f:
-            config_data = json.load(f)
-        self.toks = config_data['toks']
 
         # Set defaults
-        for tok in self.toks:
-            val = self.toks[tok]['default'][self.planet]
-            if isinstance(val, (six.string_types, float)):
-                val = set_single_val(val, self.toks[tok]['unit'])
-            setattr(self, self.toks[tok]['name'], val)
+        for json_file in default_config_files:
+            with open(json_file, 'r') as f:
+                config_data = json.load(f)
+            self.toks = config_data['toks']
+
+            for tok in self.toks:
+                val = self.toks[tok]['default'][self.planet]
+                if isinstance(val, (str, float)):
+                    val = set_single_val(val, self.toks[tok]['unit'])
+                setattr(self, self.toks[tok]['name'], val)
         self.setConfig(configFile)
-        pars = self.show()
-        self.log.add(planet, False)
-        self.log.add(configFile, False)
-        self.log.add(pars, False)
+
+    def __repr__(self):
+        print(self.show())
 
     def setConfig(self, configFile):
-        """Reads in config files and updates after default set in __init__.
-        These are all shown in display()"""
+        """Reads in config files and updates after defaults set in __init__.
+        These are all shown in print(<instance>)"""
         if configFile is None:
             print('Config file not provided.  Using defaults.')
             return 0
@@ -85,7 +85,7 @@ class planetConfig:
             if tok not in self.toks.keys():
                 print('token {} not found'.format(tok))
                 continue
-            if isinstance(self.toks[tok]['default'][self.planet], (six.string_types, float, int)):
+            if isinstance(self.toks[tok]['default'][self.planet], (str, float, int)):
                 unit = 'none'
                 if len(data) == 2:
                     unit = data[1]
@@ -132,22 +132,42 @@ class planetConfig:
             self.vwlat = [0.0, 90.0]
             self.vwdat = [0.0, 0.0]
 
-    def update_config(self, key, value=None, override=False):
+    def update_config(self, key=None, value=None, override=False, **kwargs):
+        """
+        Update the config file in a variety of ways.
+
+        Parameters
+        ----------
+        key : any
+            If dict: updates based on key/value
+            If list: updates assuming value is same length list
+            If str: updates based on key, value
+        value : any
+            See above for key
+        override : bool
+            Allow for new config entry to be made.
+        kwargs : key = val
+        """
+        proc_key = []
+        proc_val = []
         if isinstance(key, dict):
-            import copy
-            tmpkey = copy.copy(key)
-            key = []
-            value = []
-            for k, v in six.iteritems(tmpkey):
-                key.append(k)
-                value.append(v)
-        if not isinstance(key, list):
-            key = [key]
-        if not isinstance(value, list):
-            value = [value]
-        if len(key) != len(value):
-            print("key/value pairs not matched.")
-            return None
+            for k, v in key.items():
+                proc_key.append(k)
+                proc_val.append(v)
+        elif not isinstance(key, list):
+            proc_key.append(key)
+            proc_val.append(value)
+        else:
+            if len(key) != len(value):
+                print("key/value pairs not matched.")
+            else:
+                for k, v in zip(key, value):
+                    proc_key.append(k)
+                    proc_val.append(v)
+        for k, v in kwargs.items():
+            proc_key.append(k)
+            proc_val.append(v)
+
         for i, k in enumerate(key):
             if k not in self.toks.keys():
                 if override:
@@ -158,12 +178,9 @@ class planetConfig:
                     self.toks[k]['default'] = {'Jupiter': None, 'Saturn': None,
                                                'Uranus': None, 'Neptune': None}
                 else:
-                    if self.verbose:
-                        print("{} not in config keys and override is False")
+                    print("{} not in config keys and override is False")
                     continue
             setattr(self, k, set_single_val(value[i]))
-
-        return (key, value)
 
     def show(self):
         """Returns string containing configuration"""
