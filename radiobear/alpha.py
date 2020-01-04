@@ -44,22 +44,9 @@ class Alpha:
         self.config = config
 
         self.alphafile = os.path.join(self.scratch_directory, 'alpha{:04d}.npz'.format(self.idnum))
-        if self.read_alpha:
-            self.existing_alpha_setup()
-        else:
-            self.formalisms()
+        if not self.read_alpha:
+            self.setup_formalisms()
         self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
-
-        # copy config back into other_dict as needed
-        other_to_copy = {}
-        other_to_copy['h2'] = ['h2state', 'h2newset']
-        other_to_copy['clouds'] = ['water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
-        self.other_dict = {}
-        for absorber in self.ordered_constituents:
-            self.other_dict[absorber] = {}
-            if absorber in other_to_copy.keys():
-                for oc in other_to_copy[absorber]:
-                    self.other_dict[absorber][oc] = getattr(self.config, oc)
 
     def reset_layers(self):
         self.P = None
@@ -67,30 +54,14 @@ class Alpha:
         self.layers = None
         self.alpha_data = []
 
-    def get_layers(self, freqs, atm, read_alpha=False, save_alpha=False):
-        self.freqs = freqs
-        self.atm = atm
-        self.P = atm.gas[atm.config.C['P']]
-        numLayers = len(atm.gas[0])
-        layerAlp = []
-        self.log.add('{} layers'.format(numLayers), self.verbose)
-        for layer in range(numLayers):
-            layerAlp.append(self.get_alpha(freqs, layer, atm, units=utils.alphaUnit))
-            if self.verbose == 'loud':
-                print('\r\tAbsorption in layer {}   '.format(layer + 1), end='')
-        self.layers = np.array(layerAlp).transpose()
-        self.write_alpha(save_alpha)
+    def state(self):
+        state_variables.show_state(self)
 
-    def read_scale(self, scale_type):
-        """
-        """
-        if isinstance(scale_type, six.string_types):
-            try:
-                self.scale = float(scale_type)
-            except ValueError:
-                self.scale = np.loadtxt(scale_type)
-        elif scale_type:
-            self.scale = getattr(scale_type, 'scale')
+    def read_scale_file(self, scale_filename):
+        return np.load(scale_filename)
+
+    def write_scale_file(self, scale_filename, scale):
+        np.save(scale_filename, scale)
 
     def write_alpha(self, save_type='file'):
         """
@@ -119,23 +90,20 @@ class Alpha:
 
         Parameters
         ----------
-        save_type : str, bool, None, Namespace, Class
-                    if str or True, assumes read from file self.alphafile
-                    if Namespace or Class, reads from that
-                    if not bool(save_type), does nothing
-                    otherwise, raises error
+        save_type : str (other are ignored but don't error)
+            'file' writes to self.alphafile
+            'memory' writes to memory Namespace
         """
-        if isinstance(save_type, bool) and save_type:
-            save_type = 'file'
-        if isinstance(save_type, str):
-            alphain = np.load(self.alphafile)
-            for sf in self.saved_fields:
-                setattr(self, sf, alphain[sf])
-        elif save_type:
-            for sf in self.saved_fields:
-                setattr(self, sf, getattr(save_type, sf))
+        if isinstance(save_type, six.string_types):
+            if save_type.lower() == 'file':
+                alphain = np.load(self.alphafile)
+                for sf in self.saved_fields:
+                    setattr(self, sf, alphain[sf])
+            elif save_type.lower() == 'memory':
+                for sf in self.saved_fields:
+                    setattr(self, sf, getattr(self.memory, sf))
 
-    def formalisms(self):
+    def setup_formalisms(self):
         # Get possible constituents
         s = 'Reading in absorption modules from ' + self.constituentsAreAt + '\n'
         self.log.add(s, self.verbose)
@@ -174,45 +142,38 @@ class Alpha:
             if self.truncate_freq[c] is not None:
                 s += "(truncate_freq {})".format(self.truncate_freq[c])
             self.log.add(s, self.verbose)
+        # copy config back into other_dict as needed
+        other_to_copy = {}
+        other_to_copy['h2'] = ['h2state', 'h2newset']
+        other_to_copy['clouds'] = ['water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
+        self.other_dict = {}
+        for absorber in self.ordered_constituents:
+            self.other_dict[absorber] = {}
+            if absorber in other_to_copy.keys():
+                for oc in other_to_copy[absorber]:
+                    self.other_dict[absorber][oc] = getattr(self.config, oc)
 
-    def get_alpha(self, freqs, layer, atm, units='invcm'):
-        """This is a wrapper to get the absorption coefficient, either from
-           calculating from formalisms or reading from file"""
-        if self.freqs is None and self.save_alpha:
-            self.freqs = freqs
-        if self.read_alpha:
-            if len(self.alpha_data) != len(atm.gas[0]):
-                raise ValueError("Absorption and atmosphere don't agree")
-        if self.read_alpha:
-            return self.get_alpha_from_file(freqs, layer, units)
-        else:
-            P = atm.gas[atm.config.C['P']][layer]
-            T = atm.gas[atm.config.C['T']][layer]
-            gas = atm.gas[:, layer]
-            cloud = atm.cloud[:, layer]
-            return self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C,
-                                            cloud, atm.config.Cl, units)
-
-    def get_alpha_from_file(self, freqs, layer, units='invcm'):
+    def total_layer_alpha(self, freqs, absorb, scale):
         totalAbsorption = np.zeros_like(freqs)
-        if isinstance(self.scale_by, float):
+        if isinstance(scale, float):
             for i in range(len(freqs)):
-                totalAbsorption[i] = self.alpha_data[layer, i].sum() * self.scale_by
+                totalAbsorption[i] = absorb[i].sum() * scale
             return totalAbsorption
 
         for i in range(len(freqs)):
-            for j in range(self.alpha_data.shape[2] - 1):
+            for j in range(absorb.shape[1]):
                 constituent = self.ordered_constituents[j]
-                new_value = self.alpha_data[layer, i, j]
-                if constituent in self.scale_constituent_columns:
-                    new_value *= self.scale_constituent_values[constituent][layer]
+                new_value = absorb[i, j]
+                if constituent in scale.keys():
+                    new_value *= scale[constituent]
                 totalAbsorption[i] += new_value
+            if 'TOTAL' in scale.keys():
+                totalAbsorption[i] *= scale['TOTAL']
         return totalAbsorption
 
     def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
         """This gets the total absoprtion coefficient from gas.  It assumes the correct
-           frequency units, but maybe should correct that.
-           Returns total absorption at that layer."""
+           frequency units, but maybe should correct that."""
         absorb = []
         print_meta = self.verbose == 'loud'
         for c in self.ordered_constituents:
@@ -229,16 +190,73 @@ class Alpha:
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()
-        totalAbsorption = np.zeros_like(freqs)
-        for i in range(len(freqs)):
-            totalAbsorption[i] = absorb[i].sum()
         if self.save_alpha:
-            this_layer = []
-            for this_freq in absorb:
-                this_layer.append(this_freq)
-            self.alpha_data.append(this_layer)
-        del absorb
-        return totalAbsorption
+            self.alpha_data.append(absorb)
+        return absorb
 
-    def state(self):
-        state_variables.show_state(self)
+    def get_alpha(self, freqs, layer, atm, scale, units='invcm'):
+        """This is a wrapper to get the absorption coefficient, either from
+           calculating from formalisms or reading from saved data"""
+
+        if self.read_alpha:
+            absorb = self.alpha_data[layer]
+        else:
+            P = atm.gas[atm.config.C['P']][layer]
+            T = atm.gas[atm.config.C['T']][layer]
+            gas = atm.gas[:, layer]
+            cloud = atm.cloud[:, layer]
+            absorb = self.get_alpha_from_calc(freqs, T, P, gas, atm.config.C,
+                                              cloud, atm.config.Cl, units)
+        return self.total_layer_alpha(freqs, absorb, scale)
+
+    def get_layers(self, freqs, atm, scale=False, read_alpha=False, save_alpha=False):
+        """
+        Compute or read absorption for all layers in atm.
+
+        Note that read_alpha and save_alpha are passed here and overwrite the
+        read_alpha/save_alpha state_variables.
+
+        Parameters
+        ----------
+        freqs : list
+            Frequencies to use (in GHz)
+        atm : Class Atmosphere
+            Atmosphere to use
+        scale : dict or float (everything scales to 1.0)
+            If dict, needs to be keyed on constituent (or total), if float scales all.
+        read_alpha
+        save_alpha
+        """
+        self.freqs = freqs
+        self.atm = atm
+        self.P = atm.gas[atm.config.C['P']]
+        self.read_alpha = read_alpha
+        self.save_alpha = save_alpha
+        if self.freqs is None and self.save_alpha:
+            self.freqs = freqs
+
+        numLayers = len(atm.gas[0])
+        au = utils.alphaUnit
+        self.log.add('{} layers'.format(numLayers), self.verbose)
+        if isinstance(scale, dict):
+            use_varying_scale = True
+            for k, v in scale.items():
+                if len(v) != numLayers:
+                    raise ValueError("Incorrect scale:  N {} vs {}".format(len(v), numLayers))
+                if k.lower().startswith('tot'):
+                    scale['TOTAL'] = v
+        elif isinstance(scale, float):
+            use_varying_scale = False
+            layer_scale = scale
+        else:
+            use_varying_scale = False
+            layer_scale = 1.0
+        layer_alpha = []
+        for layer in range(numLayers):
+            if use_varying_scale:
+                layer_scale = {}
+                for k, v in scale.items():
+                    layer_scale[k] = v[layer]
+            layer_alpha.append(self.get_alpha(freqs, layer, atm, layer_scale, units=au))
+        self.layers = np.array(layer_alpha).transpose()
+        self.write_alpha(save_alpha)

@@ -352,12 +352,12 @@
         "scaleby": {
             "name": "scale_by",
             "unit": null,
-            "help": "name of scale file/value to use for existing_data",
+            "help": "name of scale file/value to use",
             "default": {
-                "Jupiter": "Scratch/scale.dat|1.0|memory",
-                "Saturn": "Scratch/scale.dat|1.0|memory",
-                "Uranus": "Scratch/scale.dat|1.0|memory",
-                "Neptune": "Scratch/scale.dat|1.0|memory"
+                "Jupiter": "Scratch/scale.dat|1.0",
+                "Saturn": "Scratch/scale.dat|1.0",
+                "Uranus": "Scratch/scale.dat|1.0",
+                "Neptune": "Scratch/scale.dat|1.0"
             }
         },
         "water": {

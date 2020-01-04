@@ -6,6 +6,7 @@ import numpy as np
 import datetime
 import os
 import sys
+import six
 from argparse import Namespace
 from . import utils
 from . import set_utils
@@ -257,15 +258,28 @@ class PlanetBase:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
         return Namespace(true=True, i=None, block=block_postfix, imrow=[])
 
-    def alpha_layers(self, freqs, atmos):
+    def alpha_layers(self, freqs, atmos, scale=False):
         """
         Computes the layer absorption for all atmospheres.  If save_alpha is set,
         it will write the profiles to file or memory.
         """
         for i, atm in enumerate(atmos):
-            self.alpha[i].get_layers(freqs, atm, self.read_alpha, self.save_alpha)
-            if self.save_alpha:
-                self.alpha[i].write_alpha()
+            if scale:
+                if isinstance(scale, bool) and scale:
+                    print("read self.scale_by and act")
+                elif isinstance(scale, six.string_types):
+                    print("read in file for scale")
+                elif isinstance(scale, dict) or isinstance(scale, float):
+                    pass
+                else:
+                    scale = False
+            else:
+                scale = False
+            self.alpha[i].get_layers(freqs=freqs,
+                                     atm=atm,
+                                     scale=scale,
+                                     read_alpha=self.read_alpha,
+                                     save_alpha=self.save_alpha)
 
     def init_run(self):
         """
