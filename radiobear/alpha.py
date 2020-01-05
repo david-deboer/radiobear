@@ -264,6 +264,9 @@ class Alpha:
         self._get_alpha_memfil = get_alpha in ['memory', 'file']
         self.save_alpha = save_alpha
         self._save_alpha_memfil = save_alpha in ['memory', 'file']
+        if save_alpha == 'memory':
+            for soc in self.ordered_constituents:
+                setattr(self.memory, getattr(self, soc))
 
         self.read_alpha_data(self.get_alpha)
         numLayers = len(atm.gas[0])
