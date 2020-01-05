@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 import os
 import argparse
-import six
 
 ap = argparse.ArgumentParser()
 
@@ -16,7 +15,7 @@ if args.directory is None:
         args.directory = 'Logs'
 
 print("This will delete all {} files in {}".format(args.tag, args.directory))
-are_you_sure = six.moves.input("Are you sure (y/n)?")
+are_you_sure = input("Are you sure (y/n)?")
 if are_you_sure == 'y':
     files_list = os.listdir(args.directory)
     number_deleted = 0
