@@ -142,16 +142,6 @@ class PlanetBase:
         else:
             return None
 
-    def check_reuse(self, freqs):
-        reuse = False
-        if len(self.freqs) == len(freqs):
-            reuse = True
-            for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
-                if (fslf - flcl) / fslf > 0.01:
-                    reuse = False
-                    break
-        return reuse
-
     def set_freqs(self, freqs, freqUnit='GHz'):
         """
         Sets the frequencies to use.  Sets self.freqs and self.freqUnit.
@@ -337,6 +327,48 @@ class PlanetBase:
         self.data_return.set('type', self.data_type)
         self.data_return.set('header', self.header)
         self.data_return.set('logfile', self.log.logfile)
+
+    def check_reuse(self, freqs, scale, get_alpha, reuse_override='check'):
+        if reuse_override == 'true':
+            return True
+        if reuse_override == 'false':
+            return False
+        # Check get_alpha
+        if get_alpha != self.get_alpha:
+            return False
+        # Check freqs
+        if len(freqs) != len(self.freqs):
+            return False
+        for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
+            if (fslf - flcl) / fslf > 0.01:
+                return False
+        # Check scale
+        if not isinstance(scale, type(self.scale)):
+            return False
+        if isinstance(scale, (float, int)):
+            if scale != self.scale:
+                return False
+        if isinstance(scale, (list, np.array)):
+            if len(scale) != len(self.scale):
+                return False
+            for a, b in zip(scale, self.scale):
+                if (a - b) / a > 0.001:
+                    return False
+        if isinstance(scale, dict):
+            alist = sorted(list(scale.keys()))
+            blist = sorted(list(self.scale.keys()))
+            if len(alist) != len(blist):
+                return False
+            for a, b in zip(alist, blist):
+                if a != b:
+                    return False
+            for k in alist:
+                if len(scale[k]) != len(self.scale[k]):
+                    return False
+                for a, b in zip(scale[k], self.scale[k]):
+                    if (a - b) / a > 0.001:
+                        return False
+        return True
 
     def set_header(self, missed_planet, run_start, run_stop):
         """

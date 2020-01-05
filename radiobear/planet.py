@@ -52,8 +52,8 @@ class Planet(planet_base.PlanetBase):
             self.atm_run(atm_run_type=self.config.atm_run_type)
         self.alpha_options = {'f': 'file', 'm': 'memory', 'n': 'none', 'c': 'none'}
 
-    def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1],
-            scale=None, get_alpha='calc', save_alpha='none'):
+    def run(self, freqs, b='disc', scale=False, get_alpha='calc',
+            save_alpha='none', freqUnit='GHz', block=[1, 1], reuse_override='check'):
         """
         Runs the model to produce the brightness temperature, weighting functions etc etc
 
@@ -79,9 +79,11 @@ class Planet(planet_base.PlanetBase):
         """
         get_alpha = self.alpha_options[get_alpha[0].lower()]
         save_alpha = self.alpha_options[save_alpha[0].lower()]
-        reuse = self.check_reuse(freqs)
+        reuse = self.check_reuse(freqs, scale, get_alpha, reuse_override=reuse_override.lower())
         if not reuse:
             self.set_freqs(freqs=freqs, freqUnit=freqUnit)
+            self.get_alpha = get_alpha
+            self.scale = scale
         self.set_b(b=b, block=block)
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
