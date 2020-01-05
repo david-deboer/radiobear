@@ -319,13 +319,15 @@ class PlanetBase:
         self.data_return.set('header', self.header)
         self.data_return.set('logfile', self.log.logfile)
 
-    def check_reuse(self, freqs, scale, get_alpha, reuse_override='check'):
+    def check_reuse(self, freqs, scale, get_alpha, save_alpha, reuse_override='check'):
         if reuse_override == 'true':
             return True
         if reuse_override == 'false':
             return False
         # Check get_alpha
         if get_alpha != self.get_alpha:
+            return False
+        if save_alpha != self.save_alpha:
             return False
         # Check freqs
         if len(freqs) != len(self.freqs):

@@ -55,10 +55,12 @@ class Planet(planet_base.PlanetBase):
             self.atm_run(atm_run_type=self.config.atm_run_type)
         self.alpha_options = {'f': 'file', 'm': 'memory', 'n': 'none', 'c': 'none'}
 
-    def run(self, freqs, b='disc', scale=False, get_alpha='calc',
-            save_alpha='none', freqUnit='GHz', block=[1, 1], reuse_override='check'):
+    def run(self, freqs, b='disc', scale=False, get_alpha='calc', save_alpha='none',
+            freqUnit='GHz', block=[1, 1], reuse_override='check'):
         """
-        Runs the model to produce the brightness temperature, weighting functions etc etc
+        Runs the model to produce the brightness temperature, weighting functions.
+
+        Changes in the top line (excluding b) with re-run alpha_layers.
 
         Parameters
         ----------
@@ -89,12 +91,15 @@ class Planet(planet_base.PlanetBase):
         get_alpha = self.alpha_options[get_alpha[0].lower()]
         save_alpha = self.alpha_options[save_alpha[0].lower()]
         freqs, freqUnit = self.set_freqs(freqs=freqs, freqUnit=freqUnit)
-        reuse = self.check_reuse(freqs, scale, get_alpha, reuse_override=reuse_override.lower())
+        reuse = self.check_reuse(freqs, scale, get_alpha, save_alpha,
+                                 reuse_override=reuse_override.lower())
+        C_timer = datetime.datetime.now()
         if not reuse:
             self.freqs = freqs
             self.freqUnit = utils.proc_unit(freqUnit)
-            self.get_alpha = get_alpha
             self.scale = scale
+            self.get_alpha = get_alpha
+            self.save_alpha = save_alpha
             if len(freqs) > 1:
                 s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
                                                                freqs[0], freqs[-1],
@@ -102,16 +107,13 @@ class Planet(planet_base.PlanetBase):
             else:
                 s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
             self.log.add(s, self.verbose)
-        self.set_b(b=b, block=block)
-        brtplt, datplt = self.set_bright_plots()
-        is_img = self.set_image()
-        C_timer = datetime.datetime.now()
-
-        if not reuse:
             self.alpha_layers(freqs=self.freqs, atmos=self.atmos,
                               scale=scale, get_alpha=get_alpha, save_alpha=save_alpha)
             D_timer = datetime.datetime.now()
             print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
+        self.set_b(b=b, block=block)
+        brtplt, datplt = self.set_bright_plots()
+        is_img = self.set_image()
 
         #  Loop over b values
         self.init_run()
