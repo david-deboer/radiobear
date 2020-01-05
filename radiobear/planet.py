@@ -59,19 +59,25 @@ class Planet(planet_base.PlanetBase):
 
         Parameters
         ----------
-        get_alpha : str
-            String for what to do for alpha:  'file', 'memory', 'calc'
-            If 'none', it calculates absorption
-        save_alpha : str
-            String for how to save alpha:  'file', 'memory', 'none'
         freqs : *
             frequency request as set in set_freq.
         b : *
             "impact parameter" request as set in set_b
+        scale : dict, list or float/int.
+            If dict, needs to be keyed on constituent.
+            If list, scales total at each layer.
+            If float/int, scales total for all layers.
+            Other, scales at 1.0
+        get_alpha : str
+            String for what to do for alpha:  'file', 'memory', 'calc'
+        save_alpha : str
+            String for how to save alpha:  'file', 'memory', 'none'
         freqUnit : str
             unit of freqs
         block :  list
             blocks to produce image (related to memory error...)
+        reuse_override : str
+            Can override the reuse check with 'true' or 'false'
 
         Returns
         -------
