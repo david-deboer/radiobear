@@ -150,8 +150,8 @@ class Alpha:
             for i in range(Nfreq):
                 totalAbsorption[i] = absorb[i].sum() * lscale
                 if self._save_alpha_memfil:
-                    for j in absorb[i]:
-                        save_absorb[i, j] = absorb[i, j] * lscale
+                    for j in range(len(absorb[i])):
+                        save_absorb[i, j] = absorb[i][j] * lscale
             if self._save_alpha_memfil:
                 self.alpha_data.append(save_absorb)
             return totalAbsorption
@@ -163,7 +163,7 @@ class Alpha:
                 if constituent in lscale.keys():
                     new_value *= lscale[constituent]
                 if self._save_alpha_memfil:
-                    save_absorb[i, j] = new_value
+                    save_absorb[i][j] = new_value
                 totalAbsorption[i] += new_value
         if self._save_alpha_memfil:
             self.alpha_data.append(save_absorb)

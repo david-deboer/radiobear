@@ -88,11 +88,20 @@ class Planet(planet_base.PlanetBase):
         """
         get_alpha = self.alpha_options[get_alpha[0].lower()]
         save_alpha = self.alpha_options[save_alpha[0].lower()]
+        freqs, freqUnit = self.set_freqs(freqs=freqs, freqUnit=freqUnit)
         reuse = self.check_reuse(freqs, scale, get_alpha, reuse_override=reuse_override.lower())
         if not reuse:
-            self.set_freqs(freqs=freqs, freqUnit=freqUnit)
+            self.freqs = freqs
+            self.freqUnit = utils.proc_unit(freqUnit)
             self.get_alpha = get_alpha
             self.scale = scale
+            if len(freqs) > 1:
+                s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
+                                                               freqs[0], freqs[-1],
+                                                               utils.proc_unit(freqUnit))
+            else:
+                s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
+            self.log.add(s, self.verbose)
         self.set_b(b=b, block=block)
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()

@@ -154,18 +154,9 @@ class PlanetBase:
         """
         self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
         freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
-
-        if len(freqs) > 1:
-            s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
-                                                           freqs[0], freqs[-1],
-                                                           utils.proc_unit(freqUnit))
-        else:
-            s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
-        self.log.add(s, self.verbose)
-        self.freqs = freqs
-        self.freqUnit = utils.proc_unit(freqUnit)
-        self.data_return.set('f', self.freqs)
-        self.data_return.set('freqUnit', self.freqUnit)
+        self.data_return.set('f', freqs)
+        self.data_return.set('freqUnit', freqUnit)
+        return freqs, freqUnit
 
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):
         """
