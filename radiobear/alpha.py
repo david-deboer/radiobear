@@ -162,7 +162,10 @@ class Alpha:
                 if constituent in scale.keys():
                     new_value *= scale[constituent]
                 if self._save_alpha_memfil:
-                    save_absorb[i, j] = new_value
+                    addl = 1.0
+                    if 'TOTAL' in scale.keys():
+                        addl = scale['TOTAL']
+                    save_absorb[i, j] = new_value * addl
                 totalAbsorption[i] += new_value
             if 'TOTAL' in scale.keys():
                 totalAbsorption[i] *= scale['TOTAL']
