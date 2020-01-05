@@ -53,7 +53,7 @@ class Alpha:
     def write_scale_file(self, scale_filename, scale):
         np.save(scale_filename, scale)
 
-    def write_alpha_data(self, save_type='file'):
+    def save_alpha_data(self, save_type='file'):
         """
         Write out the saved_fields.
 
@@ -63,16 +63,15 @@ class Alpha:
             'file' writes to self.alphafile
             'memory' writes to memory Namespace
         """
-        if isinstance(save_type, str):
-            self.alpha_data = np.array(self.alpha_data)
-            if save_type.lower() == 'file':
-                np.savez(self.alphafile,
-                         ordered_constituents=self.ordered_constituents,
-                         alpha_data=self.alpha_data,
-                         freqs=self.freqs, P=self.P)
-            elif save_type.lower() == 'memory':
-                for sf in self.saved_fields:
-                    setattr(self.memory, sf, getattr(self, sf))
+        self.alpha_data = np.array(self.alpha_data)
+        if save_type == 'file':
+            np.savez(self.alphafile,
+                     ordered_constituents=self.ordered_constituents,
+                     alpha_data=self.alpha_data,
+                     freqs=self.freqs, P=self.P)
+        elif save_type == 'memory':
+            for sf in self.saved_fields:
+                setattr(self.memory, sf, getattr(self, sf))
 
     def read_alpha_data(self, save_type):
         """
@@ -144,9 +143,16 @@ class Alpha:
 
     def total_layer_alpha(self, freqs, absorb, scale):
         totalAbsorption = np.zeros_like(freqs)
+        if self._save_alpha_memfil:
+            save_absorb = np.zeros_like(absorb)
         if isinstance(scale, float):
             for i in range(len(freqs)):
                 totalAbsorption[i] = absorb[i].sum() * scale
+                if self._save_alpha_memfil:
+                    for j in absorb[i]:
+                        save_absorb[i, j] = absorb[i, j] * scale
+            if self._save_alpha_memfil:
+                self.alpha_data.append(save_absorb)
             return totalAbsorption
 
         for i in range(len(freqs)):
@@ -155,9 +161,13 @@ class Alpha:
                 new_value = absorb[i, j]
                 if constituent in scale.keys():
                     new_value *= scale[constituent]
+                if self._save_alpha_memfil:
+                    save_absorb[i, j] = new_value
                 totalAbsorption[i] += new_value
             if 'TOTAL' in scale.keys():
                 totalAbsorption[i] *= scale['TOTAL']
+        if self._save_alpha_memfil:
+            self.alpha_data.append(save_absorb)
         return totalAbsorption
 
     def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
@@ -179,15 +189,13 @@ class Alpha:
                           units=units, path=path, verbose=print_meta))
         absorb = np.array(absorb)
         absorb = absorb.transpose()
-        if self.save_alpha:
-            self.alpha_data.append(absorb)
         return absorb
 
-    def get_alpha(self, freqs, layer, atm, scale, units='invcm'):
+    def get_single_layer(self, freqs, layer, atm, scale, units='invcm'):
         """This is a wrapper to get the absorption coefficient, either from
            calculating from formalisms or reading from saved data"""
 
-        if self.get_alpha == 'memory':
+        if self._get_alpha_memfil:
             absorb = self.alpha_data[layer]
         else:
             P = atm.gas[atm.config.C['P']][layer]
@@ -217,7 +225,9 @@ class Alpha:
         self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
         self.get_alpha = get_alpha
+        self._get_alpha_memfil = get_alpha in ['memory', 'file']
         self.save_alpha = save_alpha
+        self._save_alpha_memfil = save_alpha in ['memory', 'file']
 
         self.read_alpha_data(self.get_alpha)
         numLayers = len(atm.gas[0])
@@ -225,6 +235,7 @@ class Alpha:
         self.log.add('{} layers'.format(numLayers), self.verbose)
         if isinstance(scale, dict):
             use_varying_scale = True
+            layer_scale = {}
             for k, v in scale.items():
                 if len(v) != numLayers:
                     raise ValueError("Incorrect scale:  N {} vs {}".format(len(v), numLayers))
@@ -239,9 +250,8 @@ class Alpha:
         layer_alpha = []
         for layer in range(numLayers):
             if use_varying_scale:
-                layer_scale = {}
                 for k, v in scale.items():
                     layer_scale[k] = v[layer]
-            layer_alpha.append(self.get_alpha(freqs, layer, atm, layer_scale, units=au))
+            layer_alpha.append(self.get_single_layer(freqs, layer, atm, layer_scale, units=au))
         self.layers = np.array(layer_alpha).transpose()
-        self.write_alpha_data(save_alpha)
+        self.save_alpha_data(self.save_alpha)
