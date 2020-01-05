@@ -41,6 +41,9 @@ class Planet(planet_base.PlanetBase):
         self.setup_config(**kwargs)
         for par in setup:
             getattr(self, 'setup_{}'.format(par))()
+        self.scale = None
+        self.get_alpha = None
+        self.freqs = None
 
         self.log.add(self.planet, False)
         self.log.add(config_file, False)

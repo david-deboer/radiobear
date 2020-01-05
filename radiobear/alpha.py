@@ -223,12 +223,12 @@ class Alpha:
                 layer_scale.append({})
                 for k, v in scale.items():
                     layer_scale[lyr][k] = v[lyr]
-        elif isinstance(scale, (list, np.array)):
+        elif isinstance(scale, (list, np.ndarray)):
             if len(scale) != N:
                 raise ValueError("Incorrect number of scale layers.")
             layer_scale = scale
         else:
-            if isinstance(scale, (float, int)):
+            if type(scale) in (float, int):
                 scale_val = float(scale)
             else:
                 scale_val = 1.0

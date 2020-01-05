@@ -345,10 +345,10 @@ class PlanetBase:
         # Check scale
         if not isinstance(scale, type(self.scale)):
             return False
-        if isinstance(scale, (float, int)):
+        if type(scale) in (float, int):
             if scale != self.scale:
                 return False
-        if isinstance(scale, (list, np.array)):
+        if isinstance(scale, (list, np.ndarray)):
             if len(scale) != len(self.scale):
                 return False
             for a, b in zip(scale, self.scale):
