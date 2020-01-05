@@ -74,7 +74,7 @@ class Alpha:
                 for sf in self.saved_fields:
                     setattr(self.memory, sf, getattr(self, sf))
 
-    def read_alpha_data(self, save_type='file'):
+    def read_alpha_data(self, save_type):
         """
         Reads the saved_fields into self.
 
@@ -84,14 +84,13 @@ class Alpha:
             'file' writes to self.alphafile
             'memory' writes to memory Namespace
         """
-        if isinstance(save_type, str):
-            if save_type.lower() == 'file':
-                alphain = np.load(self.alphafile)
-                for sf in self.saved_fields:
-                    setattr(self, sf, alphain[sf])
-            elif save_type.lower() == 'memory':
-                for sf in self.saved_fields:
-                    setattr(self, sf, getattr(self.memory, sf))
+        if save_type == 'file':
+            alphain = np.load(self.alphafile)
+            for sf in self.saved_fields:
+                setattr(self, sf, alphain[sf])
+        elif save_type == 'memory':
+            for sf in self.saved_fields:
+                setattr(self, sf, getattr(self.memory, sf))
 
     def setup_formalisms(self):
         # Get possible constituents
@@ -188,7 +187,7 @@ class Alpha:
         """This is a wrapper to get the absorption coefficient, either from
            calculating from formalisms or reading from saved data"""
 
-        if self.read_alpha == 'memory':
+        if self.get_alpha == 'memory':
             absorb = self.alpha_data[layer]
         else:
             P = atm.gas[atm.config.C['P']][layer]
@@ -199,7 +198,7 @@ class Alpha:
                                               cloud, atm.config.Cl, units)
         return self.total_layer_alpha(freqs, absorb, scale)
 
-    def get_layers(self, freqs, atm, scale=False, read_alpha=False, save_alpha=False):
+    def get_layers(self, freqs, atm, scale=False, get_alpha='calc', save_alpha='none'):
         """
         Compute or read absorption for all layers in atm.
 
@@ -211,19 +210,16 @@ class Alpha:
             Atmosphere to use
         scale : dict or float (everything scales to 1.0)
             If dict, needs to be keyed on constituent (or total), if float scales all.
-        read_alpha
+        get_alpha
         save_alpha
         """
         self.freqs = freqs
         self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
-        self.read_alpha = read_alpha
+        self.get_alpha = get_alpha
         self.save_alpha = save_alpha
-        if self.freqs is None and self.save_alpha:
-            self.freqs = freqs
 
-        if self.read_alpha == 'memory':
-            self.read_alpha_data(self.read_alpha)
+        self.read_alpha_data(self.get_alpha)
         numLayers = len(atm.gas[0])
         au = utils.alphaUnit
         self.log.add('{} layers'.format(numLayers), self.verbose)

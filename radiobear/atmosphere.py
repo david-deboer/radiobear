@@ -51,9 +51,10 @@ class Atmosphere(atm_base.AtmosphereBase):
             self.log.add('\tAtmosphere file:  ' + str(self.config.gasFile), self.verbose)
             self.log.add('\tCloud file:  ' + str(self.config.cloudFile), self.verbose)
 
-    def simple(self):
+    def simple(self, **kwwargs):
         """
-        This is the simple pipeline, that uses the files as-is
+        This is the simple pipeline, that uses the files as-is.
+        kwargs just catches any values that may needed for std below.
         """
         self.readGas()
         self.readCloud()

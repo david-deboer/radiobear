@@ -21,7 +21,7 @@ class PlanetBase:
         name : str
             One of [Jupiter, Saturn, Uranus, Neptune]
         config_file : str
-            Config file name.  If 'planet' sets to <name>/config.par
+            Config file name.  Uses <planet>/<config_file>
     """
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
@@ -104,12 +104,9 @@ class PlanetBase:
         from . import alpha
         N = len(self.atmos)
         self.alpha = []
-        mem_alpha = 'memory' in [str(self.read_alpha).lower(), str(self.save_alpha).lower()]
         for i in range(N):
             self.alpha.append(alpha.Alpha(idnum=i, config=self.config, log=self.log,
                                           load_formal=self.load_formal, verbose=self.verbose))
-            if mem_alpha:
-                self.alpha[i].memory = Namespace()
 
     def setup_bright(self):
         """
@@ -145,6 +142,16 @@ class PlanetBase:
         else:
             return None
 
+    def check_reuse(self, freqs):
+        reuse = False
+        if len(self.freqs) == len(freqs):
+            reuse = True
+            for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
+                if (fslf - flcl) / fslf > 0.01:
+                    reuse = False
+                    break
+        return reuse
+
     def set_freqs(self, freqs, freqUnit='GHz'):
         """
         Sets the frequencies to use.  Sets self.freqs and self.freqUnit.
@@ -157,34 +164,18 @@ class PlanetBase:
         """
         self.header['freqs'] = '# freqs request: {} {}'.format(str(freqs), freqUnit)
         freqs, freqUnit = set_utils.set_freq(freqs, freqUnit)
-        for this_alpha in self.alpha:
-            print("WHY IS THIS HERE P_B181?")
-            this_alpha.reset_layers()
 
-        reuse = False
-        if len(self.freqs) == len(freqs):
-            reuse = True
-            for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
-                if (fslf - flcl) / fslf > 0.01:
-                    reuse = False
-                    break
-        if reuse:
-            freqs = self.freqs
-            freqUnit = self.freqUnit
-            s = 'Reuse'
+        if len(freqs) > 1:
+            s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
+                                                           freqs[0], freqs[-1],
+                                                           utils.proc_unit(freqUnit))
         else:
-            if len(freqs) > 1:
-                s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
-                                                               freqs[0], freqs[-1],
-                                                               utils.proc_unit(freqUnit))
-            else:
-                s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
+            s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
         self.log.add(s, self.verbose)
         self.freqs = freqs
         self.freqUnit = utils.proc_unit(freqUnit)
         self.data_return.set('f', self.freqs)
         self.data_return.set('freqUnit', self.freqUnit)
-        return reuse
 
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):
         """
@@ -233,11 +224,12 @@ class PlanetBase:
             block_postfix = '_{:02d}of{:02d}_'.format(self.block[0], abs(self.block[1]))
         return Namespace(true=True, i=None, block=block_postfix, imrow=[])
 
-    def alpha_layers(self, freqs, atmos, scale=False):
+    def alpha_layers(self, freqs, atmos, scale=False, get_alpha='calc', save_alpha='none'):
         """
         Computes the layer absorption for all atmospheres.  If save_alpha is set,
         it will write the profiles to file or memory.
         """
+        mem_alpha = 'memory' in [get_alpha, save_alpha]
         for i, atm in enumerate(atmos):
             if scale:
                 if isinstance(scale, bool) and scale:
@@ -250,11 +242,14 @@ class PlanetBase:
                     scale = False
             else:
                 scale = False
+            self.alpha[i].reset_layers()
+            if mem_alpha:
+                self.alpha[i].memory = Namespace()
             self.alpha[i].get_layers(freqs=freqs,
                                      atm=atm,
                                      scale=scale,
-                                     read_alpha=self.read_alpha,
-                                     save_alpha=self.save_alpha)
+                                     get_alpha=get_alpha,
+                                     save_alpha=save_alpha)
 
     def init_run(self):
         """
