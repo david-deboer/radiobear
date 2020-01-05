@@ -6,7 +6,6 @@ import numpy as np
 import datetime
 import os
 import sys
-import six
 from argparse import Namespace
 from . import utils
 from . import set_utils
@@ -243,7 +242,7 @@ class PlanetBase:
             if scale:
                 if isinstance(scale, bool) and scale:
                     print("read self.scale_by and act")
-                elif isinstance(scale, six.string_types):
+                elif isinstance(scale, str):
                     print("read in file for scale")
                 elif isinstance(scale, dict) or isinstance(scale, float):
                     pass

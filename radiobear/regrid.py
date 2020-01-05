@@ -6,7 +6,6 @@ from __future__ import absolute_import, division, print_function
 from scipy.interpolate import interp1d
 import numpy as np
 from . import chemistry
-import six
 import os.path
 
 
@@ -30,7 +29,7 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
     # set regridType/regrid
     if regridType is None:
         regridType = atm.config.regridType
-    if (isinstance(regridType, six.string_types) and regridType.lower() == 'none') or\
+    if (isinstance(regridType, str) and regridType.lower() == 'none') or\
        regridType is None:
         print('Warning:  No regridding.  Note that there is a risk that not everything '
               'is on the same grid...\n')
@@ -43,7 +42,7 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
         Pmax = max(atm.gas[atm.config.C['P']])
 
     # set Pgrid
-    if isinstance(regridType, six.string_types):
+    if isinstance(regridType, str):
         try:
             regridType = int(regridType)
         except ValueError:

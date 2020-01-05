@@ -6,7 +6,6 @@ from __future__ import print_function, absolute_import, division
 
 from argparse import Namespace
 import numpy as np
-import six
 
 from . import utils
 
@@ -34,7 +33,7 @@ def set_b(b, block=[1, 1], **kwargs):
        """
     # Deal with strings
     return_value = Namespace(b=None, data_type=None, block=block, imSize=None)
-    if isinstance(b, six.string_types):
+    if isinstance(b, str):
         b = b.lower()
         if b.startswith('dis'):
             return_value.b = [b]
@@ -119,17 +118,17 @@ def set_freq(freqs, freqUnit='GHz'):
         pass
     elif isinstance(freqs, np.ndarray):
         freqs = list(freqs)
-    elif isinstance(freqs, six.string_types) and ',' in freqs:
+    elif isinstance(freqs, str) and ',' in freqs:
         freqs = [float(x) for x in freqs.split(',')]
     elif isinstance(freqs, (float, int)):
         freqs = [float(freqs)]
-    elif isinstance(freqs, six.string_types) and ':' in freqs:
+    elif isinstance(freqs, str) and ':' in freqs:
         fstart, fstop, fstep = [float(x) for x in freqs.split(':')]
         freqs = list(np.arange(fstart, fstop + fstep / 2.0, fstep))
-    elif isinstance(freqs, six.string_types) and ';' in freqs:
+    elif isinstance(freqs, str) and ';' in freqs:
         fstart, fstop, nstep = [float(x) for x in freqs.split(';')]
         freqs = list(np.logspace(np.log10(fstart), np.log10(fstop), nstep))
-    elif isinstance(freqs, six.string_types):
+    elif isinstance(freqs, str):
         freqs = list(np.loadtxt(freqs))
     else:
         raise ValueError('Invalid format for frequency request')

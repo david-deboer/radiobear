@@ -5,7 +5,6 @@
 from __future__ import print_function, absolute_import, division
 import os
 import numpy as np
-import six
 
 commentChars = ['!', '#', '$', '%', '&', '*']
 affirmative = [1, '1', 'yes', 'true', 'y', 't']
@@ -29,7 +28,7 @@ def get_location_for_radiobear_setup():
 
 def proc_unit(supplied_unit):
     proc_unit = None
-    for proc, units in six.iteritems(processingUnits):
+    for proc, units in processingUnits.items():
         if supplied_unit in units:
             proc_unit = proc
             break
@@ -40,7 +39,7 @@ def convert_unit(v, supplied_unit):
     if supplied_unit is None:
         return v
     converted = v
-    for proc, units in six.iteritems(processingUnits):
+    for proc, units in processingUnits.items():
         if supplied_unit in units:
             converted = v * Units[supplied_unit] / Units[proc]
             break
@@ -100,7 +99,7 @@ def ls(directory='Output', tag='dat', show=True, returnList=False):
     files = []
     i = 0
     for fff in filelist:
-        show_tag = tag is None or (isinstance(tag, six.string_types) and tag in fff)
+        show_tag = tag is None or (isinstance(tag, str) and tag in fff)
         if fff[0] != '.' and show_tag:
             files.append(os.path.join(directory, fff))
             if show:
@@ -111,9 +110,9 @@ def ls(directory='Output', tag='dat', show=True, returnList=False):
 
 
 def b_type(b):
-    if isinstance(b, six.string_types):
+    if isinstance(b, str):
         return b.lower()
-    if isinstance(b[0], six.string_types):
+    if isinstance(b[0], str):
         return b[0].lower()
     if len(b) > 20:
         return 'image'
@@ -143,7 +142,7 @@ def get_expected_number_of_entries(fp):
             enoe[len(cval)] = enoe.setdefault(len(cval), 0) + 1
     fp.seek(0)
     vm = [-1, 0]
-    for v in six.iteritems(enoe):
+    for v in enoe.items():
         if v[1] > vm[1]:
             vm = v
     return v[0]

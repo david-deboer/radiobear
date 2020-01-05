@@ -6,7 +6,6 @@ from __future__ import print_function, absolute_import, division
 import numpy as np
 from . import utils
 from . import data_handling
-import six
 
 
 class FileIO(object):
@@ -117,21 +116,21 @@ class FileIO(object):
         file_list = sorted(file_list)
 
         ifile = []  # list of integers of files to use within file_list
-        if isinstance(files, six.integer_types):
+        if isinstance(files, int):
             ifile = [files]
-        elif isinstance(files, six.string_types):
+        elif isinstance(files, str):
             file_list = files.split(',')
             ifile = range(len(file_list))
         elif isinstance(files, list):
-            if isinstance(files[0], six.integer_types):
+            if isinstance(files[0], int):
                 ifile = files[:]
-            elif isinstance(files[0], six.string_types):
+            elif isinstance(files[0], str):
                 file_list = files[:]
                 ifile = range(len(files))
         elif files is None:
             for i, fn in enumerate(file_list):
                 print('{}  -  {}'.format(i, fn))
-            sfile = six.moves.input('File numbers (n; n1-n2; n1,n2,...; all): ')
+            sfile = input('File numbers (n; n1-n2; n1,n2,...; all): ')
             if sfile.lower() == 'all':
                 ifile = range(len(file_list))
             elif '-' in sfile:
@@ -147,7 +146,7 @@ class FileIO(object):
 
     def show(self, property='all'):
         data_dict = vars(self.data)
-        if isinstance(property, six.string_types):
+        if isinstance(property, str):
             if property == 'all':
                 keys = list(data_dict.keys())
             else:

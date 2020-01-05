@@ -4,7 +4,6 @@
 
 from __future__ import absolute_import, division, print_function
 import numpy as np
-import six
 import scipy.special as scisp
 from . import utils as u
 _X = 0
@@ -74,7 +73,7 @@ class Shape:
         if gtype is None:
             gtype = self.gtype
         self.gtype = gtype
-        if isinstance(latstep, six.string_types):
+        if isinstance(latstep, str):
             self.gravcalc_latstep = self.default_gravcalc_latstep
         else:
             self.gravcalc_latstep = float(latstep)

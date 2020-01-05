@@ -3,7 +3,6 @@
 # Licensed under the 2-clause BSD license.
 
 import numpy as np
-import six
 import copy
 from radiobear import utils
 
@@ -62,7 +61,7 @@ class Data:
         tab = indent * '\t'
         print('{}<<<Header>>>'.format(tab))
         tab1 = (indent + 1) * '\t'
-        for k, v in six.iteritems(self.header):
+        for k, v in self.header.items():
             print("{}{:20s}     {}".format(tab1, k, v))
         print()
 

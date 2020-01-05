@@ -1,7 +1,6 @@
 # -*- mode: python; coding: utf-8 -*-
 # Copyright 2019 David DeBoer
 # Licensed under the 2-clause BSD license.
-import six
 import os
 
 
@@ -13,7 +12,7 @@ def setup(log):
 
 class LogIt:
     def __init__(self, log):
-        if isinstance(log, six.string_types):
+        if isinstance(log, str):
             self.logfile = log
             log_directory = os.path.dirname(log)
             self.log_directory = log_directory
