@@ -2,7 +2,6 @@
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
-from argparse import Namespace
 import datetime
 import os.path
 from . import planet_base
