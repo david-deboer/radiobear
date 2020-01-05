@@ -84,6 +84,18 @@
                 "X": "Output"
             }
         },
+        "atm_run_type": {
+            "name": "atm_run_type",
+            "unit": null,
+            "help": "",
+            "default": {
+                "Jupiter": "std",
+                "Saturn": "std",
+                "Uranus": "std",
+                "Neptune": "std",
+                "X": "std"
+            }
+        },
         "scratch_directory": {
             "name": "scratch_directory",
             "unit": null,

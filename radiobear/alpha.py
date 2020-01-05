@@ -6,12 +6,11 @@ import os
 import sys
 import numpy as np
 from . import utils
-from . import config as pcfg
 from . import logging
 
 
 class Alpha:
-    def __init__(self, idnum=0, config=None, log=None, load_formal=True, **kwargs):
+    def __init__(self, idnum=0, config=None, log=None, load_formal=True, verbose=True, **kwargs):
         """
         Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
 
@@ -26,10 +25,12 @@ class Alpha:
         load_formal : bool
             Flag to load in the absorption modules
         """
+        self.verbose = verbose
         self.log = logging.setup(log)
         if config is None or isinstance(config, str):
-            config = pcfg.planetConfig('x', configFile=config, log=self.log)
-            self.config.update_config(**kwargs)
+            from . import config as pcfg
+            config = pcfg.planetConfig('x', configFile=config)
+            config.update_config(**kwargs)
         self.config = config
         self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
         self.idnum = idnum

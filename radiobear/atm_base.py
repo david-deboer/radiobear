@@ -8,23 +8,23 @@ import sys
 
 # ##local imports
 from . import utils
-from . import config as pcfg
 from . import chemistry
 from . import logging
 
 
 class AtmosphereBase:
-    def __init__(self, planet, config='config.par', log=None, **kwargs):
+    def __init__(self, planet, config=None, log=None, **kwargs):
         """
         Atmosphere base class
         """
         self.planet = planet.capitalize()
         self.log = logging.setup(log)
 
-        if isinstance(config, str):
+        if config is None or isinstance(config, str):
+            from . import config as pcfg
             config = os.path.join(self.planet, config)
-            config = pcfg.planetConfig(self.planet, configFile=config, log=self.log)
-            self.config.update_config(**kwargs)
+            config = pcfg.planetConfig(self.planet, configFile=config)
+            config.update_config(**kwargs)
         self.config = config
         self.chem = None
         self.gas = []

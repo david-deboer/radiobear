@@ -150,7 +150,7 @@
                 "Saturn": "compute",
                 "Uranus": "compute",
                 "Neptune": "compute",
-                "X": 'none'
+                "X": "none"
             }
         },
         "normalize_weighting": {

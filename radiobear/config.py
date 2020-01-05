@@ -60,7 +60,7 @@ class planetConfig:
         self.setConfig(configFile)
 
     def __str__(self):
-        print(self.show())
+        return self.show()
 
     def setConfig(self, configFile):
         """Reads in config files and updates after defaults set in __init__.
@@ -152,7 +152,9 @@ class planetConfig:
         """
         proc_key = []
         proc_val = []
-        if isinstance(key, dict):
+        if key is None:
+            pass
+        elif isinstance(key, dict):
             for k, v in key.items():
                 proc_key.append(k)
                 proc_val.append(v)

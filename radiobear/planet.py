@@ -18,34 +18,36 @@ class Planet(planet_base.PlanetBase):
             Planet name.  One of [Jupiter, Saturn, Uranus, Neptune]
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
+        verbose : str/bool
+            Set verbosity
         run_atmos : bool
             Flag to generate the atmosphere on setup
         kwargs
             E.g. 'plot_atm', etc (and other config parameters)
     """
-    def __init__(self, name, config_file='config.par', verbose=True,
-                 read_alpha='none', save_alpha='none', load_formal=True, atm_type='std',
+    def __init__(self, name, config_file='config.par', run_atm=True,
+                 read_alpha='none', save_alpha='none', load_formal=True,
                  setup=['log', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
-                 **kwargs):
-        super(Planet, self).__init__(name=name, config_file=config_file, **kwargs)
+                 verbose=True, **kwargs):
+        self.read_alpha = read_alpha
+        self.save_alpha = save_alpha
+        self.load_formal = load_formal
+        self.verbose = verbose
+        super(Planet, self).__init__(name=name, config_file=config_file)
 
         # initialize and setup up modules/etc
         self.setup_config(**kwargs)
         for par in setup:
             getattr(self, 'setup_{}'.format(par))()
 
-        self.read_alpha = read_alpha
-        self.save_alpha = save_alpha
-        self.load_formal = load_formal
-        self.verbose = verbose
         self.log.add(self.planet, False)
         self.log.add(config_file, False)
         pars = self.config.show()
         self.log.add(pars, False)
 
         # run atmosphere
-        if isinstance(atm_type, str) and atm_type not in utils.negative:
-            self.atm_run(atm_type=atm_type)
+        if run_atm:
+            self.atm_run(atm_run_type=self.config.atm_run_type)
 
     def run(self, freqs, b=[0.0, 0.0], freqUnit='GHz', block=[1, 1]):
         """

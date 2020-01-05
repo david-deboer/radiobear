@@ -12,11 +12,16 @@ from . import logging
 
 class Brightness():
 
-    def __init__(self, log=None, output_directory='Output'):
+    def __init__(self, config=None, log=None, verbose=True, **kwargs):
         """This calculates the brightness temperature of the planets.
            It must be used with atmosphere and alpha"""
+        self.verbose = verbose
         self.log = logging.setup(log)
-        self.output_directory = output_directory
+        if config is None or isinstance(config, str):
+            from . import config as pcfg
+            config = pcfg.planetConfig('x', configFile=config)
+            config.update_config(**kwargs)
+        self.config = config
 
     def single(self, b, freqs, atm, alpha, orientation=None, taulimit=20.0):
         """This computes the brightness temperature along one ray path"""
@@ -122,7 +127,7 @@ class Brightness():
             filename = None
         else:
             filename = 'alpha_' + tag + '.out'
-        self.saveAlpha(filename, self.output_directory)
+        self.saveAlpha(filename, self.config.output_directory)
         if tag is None:
             filename = None
         else:

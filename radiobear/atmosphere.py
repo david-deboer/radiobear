@@ -8,7 +8,7 @@ from . import atm_base
 
 
 class Atmosphere(atm_base.AtmosphereBase):
-    def __init__(self, planet, idnum=0, config='config.par', log=None, **kwargs):
+    def __init__(self, planet, idnum=0, config='config.par', log=None, verbose=False, **kwargs):
         """
         Reads/computes the atmosphere to be used.
 
@@ -30,6 +30,7 @@ class Atmosphere(atm_base.AtmosphereBase):
             Log setup
         """
         super(Atmosphere, self).__init__(planet=planet, config=config, log=log, **kwargs)
+        self.verbose = verbose
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))
 

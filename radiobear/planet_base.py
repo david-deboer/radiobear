@@ -21,8 +21,6 @@ class PlanetBase:
     ----------
         name : str
             One of [Jupiter, Saturn, Uranus, Neptune]
-        mode : str
-            Sets up for various special modes '[normal]/batch/mcmc/scale_alpha/use_alpha'
         config_file : str
             Config file name.  If 'planet' sets to <name>/config.par
     """
@@ -51,13 +49,13 @@ class PlanetBase:
         """
         Instantiates and reads the config file
         """
-        from . import config
+        from . import config as pcfg
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
-            print("\t'print({}.config.show())' to see config parameters."
+            print("\t'print({}.config)' to see config parameters."
                   .format(self.planet[0].lower()))
-        self.config = config.planetConfig(self.planet, configFile=self.config_file)
+        self.config = pcfg.planetConfig(self.planet, configFile=self.config_file)
         self.config.update_config(**kwargs)
         self.config.show()
         sys.path.insert(0, self.config.path)
@@ -67,7 +65,7 @@ class PlanetBase:
         Sets up self.log if self.write_log_file is True
         """
         from . import logging
-        if self.write_log_file:
+        if self.config.write_log_file:
             runStart = datetime.datetime.now()
             logFile = '{}/{}_{}.log'.format(self.config.log_directory, self.planet,
                                             runStart.strftime("%Y%m%d_%H%M%S"))
@@ -97,8 +95,8 @@ class PlanetBase:
         N = len(self.config.gasFile)
         self.atmos = []
         for i in range(N):
-            self.atmos.append(atmosphere.Atmosphere(self.planet, idnum=i, mode=self.mode,
-                              config=self.config, log=self.log))
+            self.atmos.append(atmosphere.Atmosphere(self.planet, idnum=i,
+                              config=self.config, log=self.log, verbose=self.verbose))
 
     def setup_alpha(self):
         """
@@ -109,8 +107,8 @@ class PlanetBase:
         self.alpha = []
         mem_alpha = 'memory' in [str(self.read_alpha).lower(), str(self.save_alpha).lower()]
         for i in range(N):
-            self.alpha.append(alpha.Alpha(idnum=i, mode=self.mode, config=self.config, log=self.log,
-                                          load_formal=self.load_formal))
+            self.alpha.append(alpha.Alpha(idnum=i, config=self.config, log=self.log,
+                                          load_formal=self.load_formal, verbose=self.verbose))
             if mem_alpha:
                 self.alpha[i].memory = Namespace()
 
@@ -119,8 +117,7 @@ class PlanetBase:
         Instantiates brightness module.
         """
         from . import brightness
-        self.bright = brightness.Brightness(log=self.log,
-                                            output_directory=self.config.output_directory)
+        self.bright = brightness.Brightness(config=self.config, log=self.log, verbose=self.verbose)
 
     def setup_fIO(self):
         """
@@ -271,9 +268,9 @@ class PlanetBase:
         if self.verbose == 'loud':
             print('data_type = {}'.format(self.data_type))
 
-    def atm_run(self, atm_type='std'):
+    def atm_run(self, atm_run_type='std'):
         for atm in self.atmos:
-            getattr(atm, atm_type)()
+            getattr(atm, atm_run_type)()
             atmplt = self.set_atm_plots(atmos=atm)
             if atmplt is not None:
                 atmplt.TP()
