@@ -262,6 +262,7 @@ class Alpha:
         save_alpha : str
             If/how to save the absoprtion:  'file', 'memory', 'none'
         """
+        self.reset_layers()
         self.freqs = freqs
         self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
@@ -281,4 +282,3 @@ class Alpha:
         self.layers = np.array(layer_alpha).transpose()
         self.save_alpha_data(self.save_alpha)
         del lscale, layer_alpha
-        self.reset_layers()
