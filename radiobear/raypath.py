@@ -1,7 +1,6 @@
 # -*- mode: python; coding: utf-8 -*-
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
-from __future__ import absolute_import, division, print_function
 import numpy as np
 import sys
 from . import shape

@@ -1,7 +1,6 @@
 # -*- mode: python; coding: utf-8 -*-
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
-from __future__ import absolute_import, division, print_function
 import datetime
 import os.path
 from . import planet_base
@@ -36,7 +35,7 @@ class Planet(planet_base.PlanetBase):
 
         # initialize and setup up modules/etc
         self.setup_config(**kwargs)
-        setup = ['log', 'data_return', 'atm', 'alpha', 'bright']
+        setup = ['log', 'data_return', 'atm', 'alpha', 'bright', 'fIO']
         for par in setup:
             getattr(self, 'setup_{}'.format(par))()
         self.scale = None
@@ -134,7 +133,6 @@ class Planet(planet_base.PlanetBase):
 
         #  ##Write output files
         if self.config.write_output_files:
-            self.setup_fIO()
             output_file = '{}_{}{}{}.dat'.format(self.planet, self.data_type, is_img.block,
                                                  runStart.strftime("%Y%m%d_%H%M%S"))
             output_file = os.path.join(self.config.output_directory, output_file)
