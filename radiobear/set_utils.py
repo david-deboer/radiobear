@@ -35,7 +35,6 @@ def set_b(b, block=[1, 1], **kwargs):
     return_value = Namespace(b=None, data_type=None, block=block, imSize=None)
     if isinstance(b, str):
         b = b.lower()
-        print(b)
         if b.startswith('dis'):
             return_value.b = [b]
             return_value.data_type = 'spectrum'
