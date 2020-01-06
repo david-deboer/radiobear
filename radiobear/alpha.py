@@ -47,7 +47,7 @@ class Alpha:
         self.layers = None
         self.alpha_data = []
 
-    def save_alpha_data(self, save_type='file'):
+    def save_alpha_data(self, save_type):
         """
         Write out the saved_fields.
 
@@ -265,8 +265,8 @@ class Alpha:
         self.save_alpha = save_alpha
         self._save_alpha_memfil = save_alpha in ['memory', 'file']
         if save_alpha == 'memory':
-            for soc in self.ordered_constituents:
-                setattr(self.memory, getattr(self, soc))
+            for soc in self.saved_fields:
+                setattr(self.memory, soc, getattr(self, soc))
 
         self.read_alpha_data(self.get_alpha)
         numLayers = len(atm.gas[0])
