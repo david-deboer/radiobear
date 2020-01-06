@@ -24,14 +24,11 @@ class Planet(planet_base.PlanetBase):
             Flag
         verbose : str/bool
             Set verbosity
-        setup : list
-            List of modules to setup (excludes config, handled separately)
         kwargs
             E.g. 'plot_atm', etc (and other config parameters)
     """
     def __init__(self, name, config_file='config.par', run_atm=True,
                  load_formal=True, verbose=True,
-                 setup=['log', 'data_return', 'atm', 'alpha', 'bright', 'fIO'],
                  **kwargs):
         self.load_formal = load_formal
         self.verbose = verbose
@@ -39,6 +36,7 @@ class Planet(planet_base.PlanetBase):
 
         # initialize and setup up modules/etc
         self.setup_config(**kwargs)
+        setup = ['log', 'data_return', 'atm', 'alpha', 'bright']
         for par in setup:
             getattr(self, 'setup_{}'.format(par))()
         self.scale = None
@@ -136,6 +134,7 @@ class Planet(planet_base.PlanetBase):
 
         #  ##Write output files
         if self.config.write_output_files:
+            self.setup_fIO()
             output_file = '{}_{}{}{}.dat'.format(self.planet, self.data_type, is_img.block,
                                                  runStart.strftime("%Y%m%d_%H%M%S"))
             output_file = os.path.join(self.config.output_directory, output_file)
