@@ -156,6 +156,8 @@ class Alpha:
                         save_absorb[i, j] = absorb[i][j] * lscale
             if self._save_alpha_memfil:
                 self.alpha_data.append(save_absorb)
+                del save_absorb
+            del absorb
             return totalAbsorption
 
         for i in range(Nfreq):
@@ -169,6 +171,8 @@ class Alpha:
                 totalAbsorption[i] += new_value
         if self._save_alpha_memfil:
             self.alpha_data.append(save_absorb)
+            del save_absorb
+        del absorb
         return totalAbsorption
 
     def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
@@ -258,7 +262,6 @@ class Alpha:
         save_alpha : str
             If/how to save the absoprtion:  'file', 'memory', 'none'
         """
-        self.reset_layers()
         self.freqs = freqs
         self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
@@ -277,4 +280,5 @@ class Alpha:
             layer_alpha.append(self.get_single_layer(freqs, layer, atm, lscale[layer], units=au))
         self.layers = np.array(layer_alpha).transpose()
         self.save_alpha_data(self.save_alpha)
-        del(lscale)
+        del lscale, layer_alpha
+        self.reset_layers()
