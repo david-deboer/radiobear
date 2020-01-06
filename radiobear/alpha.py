@@ -4,6 +4,7 @@
 from __future__ import absolute_import, division, print_function
 import os
 import sys
+from argparse import Namespace
 import numpy as np
 from . import utils
 from . import logging
@@ -40,6 +41,7 @@ class Alpha:
         if load_formal:
             self.setup_formalisms()
         self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
+        self.memory = Namespace()
 
     def reset_layers(self):
         self.P = None

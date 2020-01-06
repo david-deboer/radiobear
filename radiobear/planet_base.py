@@ -210,7 +210,6 @@ class PlanetBase:
         Computes the layer absorption for all atmospheres.  If save_alpha is set,
         it will write the profiles to file or memory.
         """
-        mem_alpha = 'memory' in [get_alpha, save_alpha]
         for i, atm in enumerate(atmos):
             if scale:
                 if isinstance(scale, bool) and scale:
@@ -224,8 +223,6 @@ class PlanetBase:
             else:
                 scale = False
             self.alpha[i].reset_layers()
-            if mem_alpha:
-                self.alpha[i].memory = Namespace()
             self.alpha[i].get_layers(freqs=freqs,
                                      atm=atm,
                                      scale=scale,
