@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 import numpy as np
-import scipy.special as scisp
+from scipy.special import legendre
 from . import utils as u
 _X = 0
 _Y = 1
@@ -178,15 +178,15 @@ class Shape:
         sp0 = np.sin(lat - dphi)
         for i in range(len(Jn)):
             # g(r)
-            Sr += (i + 1.0) * Jn[i] * pow(RJ / r, i) * scisp.legendre(i)(sp)
+            Sr += (i + 1.0) * Jn[i] * pow(RJ / r, i) * legendre(i)(sp)
             # g(phi)
-            dP = (scisp.legendre(i)(sp1) - scisp.legendre(i)(sp)) / dphi
-            dP += (scisp.legendre(i)(sp) - scisp.legendre(i)(sp0)) / dphi
+            dP = (legendre(i)(sp1) - legendre(i)(sp)) / dphi
+            dP += (legendre(i)(sp) - legendre(i)(sp0)) / dphi
             dP *= 0.5
             Sp += Jn[i] * pow(RJ / r, i) * dP
         # g(r)
         gr = ((self.g_static * (1.0 - Sr) - (2.0 / 3.0) * (omega**2.0) *
-              r * (1.0 - scisp.legendre(2)(sp))))
+              r * (1.0 - legendre(2)(sp))))
         # g(phi)
         dP = (3.0 * sp * np.sqrt(1.0 - sp**2))
         gp = (1.0 / 3.0) * (omega**2.0) * r * dP + self.g_static * Sp

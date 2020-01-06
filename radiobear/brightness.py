@@ -3,7 +3,7 @@
 # Licensed under the 2-clause BSD license.
 from __future__ import absolute_import, division, print_function
 import numpy as np
-import scipy.special as ss
+from scipy.special import expn
 import os.path
 from . import utils
 from . import raypath as ray
@@ -90,7 +90,7 @@ class Brightness():
                 dtau = (a0 + a1) * ds / 2.0
                 taus.append(self.tau[i][j] + dtau)         # this is tau_(i+1)
                 if disc_average:
-                    Ws.append(2.0 * a1 * ss.expn(2, taus[j]))  # this is W_(i+1) for disc average
+                    Ws.append(2.0 * a1 * expn(2, taus[j]))  # this is W_(i+1) for disc average
                 else:
                     Ws.append(a1 * np.exp(-taus[j]))  # this is W_(i+1) for non disc average
                 integrated_W[j] += (Ws[j] + self.W[i][j]) * ds / 2.0

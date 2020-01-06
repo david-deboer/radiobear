@@ -277,3 +277,4 @@ class Alpha:
             layer_alpha.append(self.get_single_layer(freqs, layer, atm, lscale[layer], units=au))
         self.layers = np.array(layer_alpha).transpose()
         self.save_alpha_data(self.save_alpha)
+        del(lscale)
