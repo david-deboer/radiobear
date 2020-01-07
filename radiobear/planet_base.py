@@ -282,19 +282,12 @@ class PlanetBase:
                 is_img.imrow = []
         else:
             self.Tb.append(Tb)
-        if self.bright.travel is not None:
-            if self.rNorm is None:
-                self.rNorm = self.bright.travel.rNorm
-            if self.tip is None:
-                self.tip = self.bright.travel.tip
-            if self.rotate is None:
-                self.rotate = self.bright.travel.rotate
+
         if brtplt is not None:
             brtplt.raypath()
             brtplt.observer(b=b, req=self.config.Req, rpol=self.config.Rpol)
             brtplt.intW()
             brtplt.W(self.config.normalize_weighting)
-
         return Tb
 
     def populate_data_return(self, run_start, run_stop):
@@ -378,10 +371,10 @@ class PlanetBase:
             self.header['rNorm'] = '# rNorm not set'
         else:
             self.header['orientation'] = '# orientation:   {}'.format(repr(self.config.orientation))
-            self.header['aspect'] = '# aspect tip, rotate:  {:.4f}  {:.4f}'.format(
-                                                                            utils.r2d(self.tip),
-                                                                            utils.r2d(self.rotate))
-            self.header['rNorm'] = '# rNorm: {}'.format(self.rNorm)
+            self.header['aspect'] = ('# aspect tip, rotate:  {:.4f}  {:.4f}'.format(
+                                     utils.r2d(self.bright.travel.tip),
+                                     utils.r2d(self.bright.travel.rotate)))
+            self.header['rNorm'] = '# rNorm: {}'.format(self.bright.travel.rNorm)
             if self.data_type == 'image':
                 self.header['imgSize'] = '# imgSize: {}'.format(self.imSize)
                 resolution = utils.r2asec(np.arctan(abs(self.b[1][0] - self.b[0][0]) *

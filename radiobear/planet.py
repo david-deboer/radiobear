@@ -98,12 +98,11 @@ class Planet(planet_base.PlanetBase):
             self.get_alpha = get_alpha
             self.save_alpha = save_alpha
             if self.verbose:
-                if len(freqs) > 1:
-                    s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
-                                                                   freqs[0], freqs[-1],
-                                                                   utils.proc_unit(freqUnit))
-                else:
-                    s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
+                s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
+                                                               freqs[0], freqs[-1],
+                                                               utils.proc_unit(freqUnit))
+            else:
+                s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
             self.log.add(s, self.verbose)
             self.alpha_layers(freqs=self.freqs, atmos=self.atmos,
                               scale=scale, get_alpha=get_alpha, save_alpha=save_alpha)
