@@ -186,9 +186,9 @@ class PlanetBase:
             return 0
         if not self.bmap_loaded:
             __import__(self.config.bmapmodule)
-            bmapModule = sys.modules[self.config.bmapmodule]
+            self.bmapModule = sys.modules[self.config.bmapmodule]
             self.bmap_loaded = True
-        return bmapModule.bmap(b=b)
+        return self.bmapModule.bmap(b=b)
 
     def set_image(self):
         """
