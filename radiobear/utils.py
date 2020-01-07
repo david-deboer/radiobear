@@ -20,6 +20,16 @@ processingUnits = {'GHz': ['GHz', 'Hz', 'kHz', 'MHz'],
                    'mpersec2': ['mpersec2', 'cmpersec2']}
 
 
+def isanynum(x):
+    if isinstance(x, bool):
+        return False
+    try:
+        y = float(x)  # noqa
+    except ValueError:
+        return False
+    return True
+
+
 def get_location_for_radiobear_setup():
     return os.path.dirname(__file__)
 

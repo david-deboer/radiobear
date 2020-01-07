@@ -215,7 +215,7 @@ class PlanetBase:
                     print("read self.scale_by and act")
                 elif isinstance(scale, str):
                     print("read in file for scale")
-                elif isinstance(scale, dict) or isinstance(scale, float):
+                elif isinstance(scale, (list, dict)) or utils.isanynum(scale):
                     pass
                 else:
                     scale = False
@@ -322,19 +322,19 @@ class PlanetBase:
         if len(freqs) != len(self.freqs):
             return False
         for fslf, flcl in zip(sorted(self.freqs), sorted(freqs)):
-            if (fslf - flcl) / fslf > 0.01:
+            if (fslf - flcl) / fslf > 0.0001:
                 return False
         # Check scale
+        if utils.isanynum(scale) and utils.isanynum(self.scale):
+            if (scale - self.scale) / scale > 0.0001:
+                return False
         if not isinstance(scale, type(self.scale)):
             return False
-        if type(scale) in (float, int):
-            if scale != self.scale:
-                return False
         if isinstance(scale, (list, np.ndarray)):
             if len(scale) != len(self.scale):
                 return False
             for a, b in zip(scale, self.scale):
-                if (a - b) / a > 0.001:
+                if (a - b) / a > 0.0001:
                     return False
         if isinstance(scale, dict):
             alist = sorted(list(scale.keys()))

@@ -118,7 +118,7 @@ def set_freq(freqs, freqUnit='GHz'):
         freqs = list(freqs)
     elif isinstance(freqs, str) and ',' in freqs:
         freqs = [float(x) for x in freqs.split(',')]
-    elif isinstance(freqs, (float, int)):
+    elif utils.isanynum(freqs):
         freqs = [float(freqs)]
     elif isinstance(freqs, str) and ':' in freqs:
         fstart, fstop, fstep = [float(x) for x in freqs.split(':')]

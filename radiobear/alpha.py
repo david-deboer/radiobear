@@ -42,50 +42,6 @@ class Alpha:
         self.saved_fields = ['ordered_constituents', 'alpha_data', 'freqs', 'P']
         self.memory = Namespace()
 
-    def reset_layers(self):
-        self.P = None
-        self.freqs = None
-        self.layers = None
-        self.alpha_data = []
-
-    def save_alpha_data(self, save_type):
-        """
-        Write out the saved_fields.
-
-        Parameters
-        ----------
-        save_type : str (other are ignored but don't error)
-            'file' writes to self.alphafile
-            'memory' writes to memory Namespace
-        """
-        self.alpha_data = np.array(self.alpha_data)
-        if save_type == 'file':
-            np.savez(self.alphafile,
-                     ordered_constituents=self.ordered_constituents,
-                     alpha_data=self.alpha_data,
-                     freqs=self.freqs, P=self.P)
-        elif save_type == 'memory':
-            for sf in self.saved_fields:
-                setattr(self.memory, sf, getattr(self, sf))
-
-    def read_alpha_data(self, save_type):
-        """
-        Reads the saved_fields into self.
-
-        Parameters
-        ----------
-        save_type : str (other are ignored but don't error)
-            'file' writes to self.alphafile
-            'memory' writes to memory Namespace
-        """
-        if save_type == 'file':
-            alphain = np.load(self.alphafile)
-            for sf in self.saved_fields:
-                setattr(self, sf, alphain[sf])
-        elif save_type == 'memory':
-            for sf in self.saved_fields:
-                setattr(self, sf, getattr(self.memory, sf))
-
     def setup_formalisms(self):
         # Get possible constituents
         s = 'Reading in absorption modules from ' + self.constituentsAreAt + '\n'
@@ -136,6 +92,51 @@ class Alpha:
                 for oc in other_to_copy[absorber]:
                     self.other_dict[absorber][oc] = getattr(self.config, oc)
 
+    def reset_layers(self):
+        self.P = None
+        self.freqs = None
+        self.layers = None
+        self.alpha_data = []
+        self.tosave = []
+
+    def save_alpha_data(self, save_type):
+        """
+        Write out the saved_fields.
+
+        Parameters
+        ----------
+        save_type : str (other are ignored but don't error)
+            'file' writes to self.alphafile
+            'memory' writes to memory Namespace
+        """
+        self.alpha_data = np.array(self.alpha_data)
+        if save_type == 'file':
+            np.savez(self.alphafile,
+                     ordered_constituents=self.ordered_constituents,
+                     alpha_data=self.alpha_data,
+                     freqs=self.freqs, P=self.P)
+        elif save_type == 'memory':
+            for sf in self.saved_fields:
+                setattr(self.memory, sf, getattr(self, sf))
+
+    def read_alpha_data(self, save_type):
+        """
+        Reads the saved_fields into self.
+
+        Parameters
+        ----------
+        save_type : str (other are ignored but don't error)
+            'file' writes to self.alphafile
+            'memory' writes to memory Namespace
+        """
+        if save_type == 'file':
+            alphain = np.load(self.alphafile)
+            for sf in self.saved_fields:
+                setattr(self, sf, alphain[sf])
+        elif save_type == 'memory':
+            for sf in self.saved_fields:
+                setattr(self, sf, getattr(self.memory, sf))
+
     def total_layer_alpha(self, absorb, lscale):
         """
         Takes the layer absorption profile and scale-sums it.
@@ -147,7 +148,8 @@ class Alpha:
         Nfreq = len(self.freqs)
         if self._save_alpha_memfil:
             save_absorb = np.zeros_like(absorb)
-        if isinstance(lscale, float):
+        if utils.isanynum(lscale):
+            lscale = float(lscale)
             for i in range(Nfreq):
                 totalAbsorption[i] = absorb[i].sum() * lscale
                 if self._save_alpha_memfil:
@@ -233,7 +235,7 @@ class Alpha:
                 raise ValueError("Incorrect number of scale layers.")
             layer_scale = scale
         else:
-            if type(scale) in (float, int):
+            if utils.isanynum(scale):
                 scale_val = float(scale)
             else:
                 scale_val = 1.0
