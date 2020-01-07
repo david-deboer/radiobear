@@ -96,9 +96,6 @@ class Alpha:
         self.P = None
         self.freqs = None
         self.layers = None
-        # Should eventually get rid of 'tosave' and make it replace in place (?)
-        self.alpha_data = []
-        self.tosave = []
 
     def save_alpha_data(self, save_type):
         """
@@ -268,6 +265,9 @@ class Alpha:
             If/how to save the absoprtion:  'file', 'memory', 'none'
         """
         self.reset_layers()
+        # Set up stuff
+        self.alpha_data = []
+        self.tosave = []
         self.freqs = freqs
         self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
@@ -286,4 +286,4 @@ class Alpha:
             layer_alpha.append(self.get_single_layer(freqs, layer, atm, lscale[layer], units=au))
         self.layers = np.array(layer_alpha).transpose()
         self.save_alpha_data(self.save_alpha)
-        del lscale, layer_alpha
+        del lscale, layer_alpha, self.alpha_data, self.tosave
