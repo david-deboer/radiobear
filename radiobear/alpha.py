@@ -96,6 +96,7 @@ class Alpha:
         self.P = None
         self.freqs = None
         self.layers = None
+        # Should eventually get rid of 'tosave' and make it replace in place (?)
         self.alpha_data = []
         self.tosave = []
 
@@ -109,15 +110,18 @@ class Alpha:
             'file' writes to self.alphafile
             'memory' writes to memory Namespace
         """
-        self.alpha_data = np.array(self.alpha_data)
+        self.tosave = np.array(self.tosave)
         if save_type == 'file':
             np.savez(self.alphafile,
                      ordered_constituents=self.ordered_constituents,
-                     alpha_data=self.alpha_data,
-                     freqs=self.freqs, P=self.P)
+                     alpha_data=self.tosave,
+                     freqs=self.freqs,
+                     P=self.P)
         elif save_type == 'memory':
-            for sf in self.saved_fields:
-                setattr(self.memory, sf, getattr(self, sf))
+            self.memory.ordered_constituents = self.ordered_constituents
+            self.memory.alpha_data = self.tosave
+            self.memory.freqs = self.freqs
+            self.memory.P = self.P
 
     def read_alpha_data(self, save_type):
         """
@@ -156,7 +160,7 @@ class Alpha:
                     for j in range(len(absorb[i])):
                         save_absorb[i, j] = absorb[i][j] * lscale
             if self._save_alpha_memfil:
-                self.alpha_data.append(save_absorb)
+                self.tosave.append(save_absorb)
                 del save_absorb
             del absorb
             return totalAbsorption
@@ -171,7 +175,7 @@ class Alpha:
                     save_absorb[i][j] = new_value
                 totalAbsorption[i] += new_value
         if self._save_alpha_memfil:
-            self.alpha_data.append(save_absorb)
+            self.tosave.append(save_absorb)
             del save_absorb
         del absorb
         return totalAbsorption
