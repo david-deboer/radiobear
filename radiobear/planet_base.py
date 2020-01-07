@@ -176,11 +176,13 @@ class PlanetBase:
         self.imSize = rv.imSize
         self.data_return.set('b', self.b)
 
-    def map_b_to_atm(self, b=None):
+    def map_b_to_atm(self, b):
         """
         Given the b index and value, returns the appropriate atmosphere index
         """
-        if self.config.bmapmodule is None or b is None:
+        if isinstance(b, str):
+            return 0
+        if self.config.bmapmodule is None or self.config.bmapModule == 'nobmap':
             return 0
         if not self.bmap_loaded:
             __import__(self.config.bmapmodule)
