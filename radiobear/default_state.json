@@ -125,11 +125,11 @@
             "unit": null,
             "help": "module that converts b-pair to alpha index",
             "default": {
-                "Jupiter": null,
-                "Saturn": null,
-                "Uranus": null,
-                "Neptune": null,
-                "X": null
+                "Jupiter": "nobmap",
+                "Saturn": "nobmap",
+                "Uranus": "nobmap",
+                "Neptune": "nobmap",
+                "X": "nobmap"
             }
         },
         "regridtype": {

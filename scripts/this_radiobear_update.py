@@ -8,7 +8,7 @@ from radiobear import utils as rbu
 path_to_radiobear_planets = rbu.get_location_for_radiobear_setup()
 
 planets_to_update = ['Jupiter', 'Saturn', 'Uranus', 'Neptune']
-files_to_update = ['bmap.py']
+files_to_update = ['nobmap.py']
 
 for planet in planets_to_update:
     radiobear_path = os.path.join(path_to_radiobear_planets, planet)
