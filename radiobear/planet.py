@@ -97,17 +97,19 @@ class Planet(planet_base.PlanetBase):
             self.scale = scale
             self.get_alpha = get_alpha
             self.save_alpha = save_alpha
-            if len(freqs) > 1:
-                s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
-                                                               freqs[0], freqs[-1],
-                                                               utils.proc_unit(freqUnit))
-            else:
-                s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
+            if self.verbose:
+                if len(freqs) > 1:
+                    s = '{} at {} frequencies ({} - {} {})'.format(self.planet, len(freqs),
+                                                                   freqs[0], freqs[-1],
+                                                                   utils.proc_unit(freqUnit))
+                else:
+                    s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
             self.log.add(s, self.verbose)
             self.alpha_layers(freqs=self.freqs, atmos=self.atmos,
                               scale=scale, get_alpha=get_alpha, save_alpha=save_alpha)
             D_timer = datetime.datetime.now()
-            print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
+            if self.verbose:
+                print("Absoprtion calc took {:.1f} s".format(utils.timer(D_timer - C_timer)))
         self.set_b(b=b, block=block)
         brtplt, datplt = self.set_bright_plots()
         is_img = self.set_image()
@@ -129,7 +131,8 @@ class Planet(planet_base.PlanetBase):
         self.set_header(missed_planet, runStart, runStop)
         self.log.add('Run stop ' + str(runStop), False)
         self.populate_data_return(runStart, runStop)
-        print("RT calc took {:.1f} s".format(utils.timer(runStop - runStart)))
+        if self.verbose:
+            print("RT calc took {:.1f} s".format(utils.timer(runStop - runStart)))
 
         #  ##Write output files
         if self.config.write_output_files:
