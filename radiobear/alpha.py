@@ -264,19 +264,18 @@ class Alpha:
         save_alpha : str
             If/how to save the absoprtion:  'file', 'memory', 'none'
         """
-        self.reset_layers()
         # Set up stuff
+        self.reset_layers()
         self.alpha_data = []
         self.tosave = []
         self.freqs = freqs
-        self.atm = atm
         self.P = atm.gas[atm.config.C['P']]
-        self.get_alpha = get_alpha
         self._get_alpha_memfil = get_alpha in ['memory', 'file']
-        self.save_alpha = save_alpha
         self._save_alpha_memfil = save_alpha in ['memory', 'file']
 
-        self.read_alpha_data(self.get_alpha)
+        # Run stuff
+        if self._get_alpha_memfil:
+            self.read_alpha_data(get_alpha)
         numLayers = len(atm.gas[0])
         au = utils.alphaUnit
         self.log.add('{} layers'.format(numLayers), self.verbose)
@@ -285,5 +284,8 @@ class Alpha:
         for layer in range(numLayers):
             layer_alpha.append(self.get_single_layer(freqs, layer, atm, lscale[layer], units=au))
         self.layers = np.array(layer_alpha).transpose()
-        self.save_alpha_data(self.save_alpha)
+
+        # Save/del stuff
+        if self._save_alpha_memfil:
+            self.save_alpha_data(save_alpha)
         del lscale, layer_alpha, self.alpha_data, self.tosave
