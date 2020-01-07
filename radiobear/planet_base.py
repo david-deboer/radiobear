@@ -182,7 +182,7 @@ class PlanetBase:
         """
         if isinstance(b, str):
             return 0
-        if self.config.bmapmodule is None or self.config.bmapModule == 'nobmap':
+        if self.config.bmapmodule is None or self.config.bmapmodule == 'nobmap':
             return 0
         if not self.bmap_loaded:
             __import__(self.config.bmapmodule)
