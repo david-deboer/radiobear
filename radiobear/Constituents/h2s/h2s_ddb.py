@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
 from radiobear.Constituents import parameters
@@ -58,10 +57,10 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     GH2S = data['GH2S']
     GH2 = 1.960
     GHe = 1.200
-    ZH2 = 0.000
-    ZHe = 0.000
-    ZH2S = 0.000
-    C = 1.0
+    # ZH2 = 0.000
+    # ZHe = 0.000
+    # ZH2S = 0.000
+    # C = 1.0
     D = 1.28
     n_dvl = 0.7
     n_int = 3.0 / 2.0

@@ -1,6 +1,6 @@
 from radiobear.Constituents.nh3 import nh3_sjs
 from radiobear.Constituents.nh3 import nh3_dbs
-from radiobear.Constituents import parameters
+from numpy import exp
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
@@ -19,7 +19,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
         a2 = nh3_sjs.alpha(freq, T, P, X, P_dict, other_dict, **kwargs)
         a1 = nh3_dbs.alpha(freq, T, P, X, P_dict, other_dict, **kwargs)
         if wtype == 'exp':
-            W = np.exp(-(P - PMid)**2 / 1000.0)
+            W = exp(-(P - PMid)**2 / 1000.0)
         else:
             W = (P - PLower) / (PHigher - PLower)
         alpha_nh3 = W * a2 + (1.0 - W) * a1

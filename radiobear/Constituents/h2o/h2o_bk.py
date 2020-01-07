@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import numpy as np
 from radiobear.Constituents import parameters
 
@@ -21,23 +20,33 @@ def readInputFiles(par):
     global data
     data = {}
     # Center Frequencies in GHZ
-    data['f_o'] = np.array([22.2351, 183.3101, 321.2256, 325.1529, 380.1974, 439.1508, 443.0183, 448.0011, 470.8890,
-                            474.6891, 488.4911, 556.9360, 620.7008, 752.0332, 916.1712])
+    data['f_o'] = np.array([22.2351, 183.3101, 321.2256, 325.1529, 380.1974, 439.1508, 443.0183,
+                            448.0011, 470.8890, 474.6891, 488.4911, 556.9360, 620.7008, 752.0332,
+                            916.1712])
     # Line intensities
-    data['I_o'] = np.array([0.1314E-13, 0.2279E-11, 0.8058E-13, 0.2701E-11, 0.2444E-10, 0.2185E-11, 0.4637E-12, 0.2568E-10,
-                            0.8392E-12, 0.3272E-11, 0.6676E-12, 0.1535E-08, 0.1711E-10, 0.1014E-08, 0.4238E-10])
+    data['I_o'] = np.array([0.1314E-13, 0.2279E-11, 0.8058E-13, 0.2701E-11, 0.2444E-10, 0.2185E-11,
+                            0.4637E-12, 0.2568E-10, 0.8392E-12, 0.3272E-11, 0.6676E-12, 0.1535E-08,
+                            0.1711E-10, 0.1014E-08, 0.4238E-10])
     # Temperature coefficients
-    data['E_o'] = np.array([2.144, 0.668, 6.179, 1.541, 1.048, 3.595, 5.048, 1.405, 3.597, 2.379, 2.852, 0.159, 2.391, 0.396, 1.441])
+    data['E_o'] = np.array([2.144, 0.668, 6.179, 1.541, 1.048, 3.595, 5.048, 1.405, 3.597, 2.379,
+                            2.852, 0.159, 2.391, 0.396, 1.441])
     # self broadening parameters converted to bars
-    data['w_s'] = np.array([0.01349, 0.01466, 0.01057, 0.01381, 0.01454, 0.009715, 0.00788, 0.01275, 0.00983,
-                            0.01095, 0.01313, 0.01405, 0.011836, 0.01253, 0.01275]) / mbars_to_bars
-    data['x_s'] = np.array([0.61, 0.85, 0.54, 0.74, 0.89, 0.62, 0.50, 0.67, 0.65, 0.64, 0.72, 1.0, 0.68, 0.84, 0.78])
+    data['w_s'] = (np.array([0.01349, 0.01466, 0.01057, 0.01381, 0.01454, 0.009715, 0.00788,
+                             0.01275, 0.00983, 0.01095, 0.01313, 0.01405, 0.011836, 0.01253,
+                             0.01275]) / mbars_to_bars)
+    data['x_s'] = np.array([0.61, 0.85, 0.54, 0.74, 0.89, 0.62, 0.50, 0.67, 0.65, 0.64, 0.72, 1.0,
+                            0.68, 0.84, 0.78])
     # foreign gas broadening parameters
-    data['w_h2'] = np.array([2.395, 2.4000, 2.395, 2.395, 2.390, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395, 2.395])
-    data['w_he'] = np.array([0.67, 0.71, 0.67, 0.67, 0.63, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67])
-    data['x_h2'] = np.array([0.900, 0.950, 0.900, 0.900, 0.850, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900, 0.900])
-    data['x_he'] = np.array([0.515, 0.490, 0.515, 0.490, 0.540, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515, 0.515])
-    data['SR'] = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    data['w_h2'] = np.array([2.395, 2.4000, 2.395, 2.395, 2.390, 2.395, 2.395, 2.395, 2.395, 2.395,
+                             2.395, 2.395, 2.395, 2.395, 2.395])
+    data['w_he'] = np.array([0.67, 0.71, 0.67, 0.67, 0.63, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67, 0.67,
+                             0.67, 0.67, 0.67])
+    data['x_h2'] = np.array([0.900, 0.950, 0.900, 0.900, 0.850, 0.900, 0.900, 0.900, 0.900, 0.900,
+                             0.900, 0.900, 0.900, 0.900, 0.900])
+    data['x_he'] = np.array([0.515, 0.490, 0.515, 0.490, 0.540, 0.515, 0.515, 0.515, 0.515, 0.515,
+                             0.515, 0.515, 0.515, 0.515, 0.515])
+    data['SR'] = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0])
 
     if par.truncate_strength:
         if par.verbose:
@@ -56,7 +65,8 @@ def readInputFiles(par):
 def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
     """This is Karpowicz's model from:
        http://users.ece.gatech.edu/~psteffes/palpapers/karpowicz_data/water_model/karpowicz_h2o_model.m
-       This function also requires the vvwlineshape function originally written by Jim Hoffman (with removal of df factor).
+       This function also requires the vvwlineshape function originally written by Jim Hoffman (with
+       removal of df factor).
        Also added shift term as is done in Rosenkranz's work.
        Rosenkranz 1998 Radio Science vol 33, pp919-928
        NB (DDB): f may be a list, but T, P, etc should be scalars"""
@@ -73,9 +83,9 @@ def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
     Theta = To / T
 
     density_h2o = (M_amu * P_h2o) / (8.314472e-5 * T)
-    density_he = (M_amu_he * P_he) / (8.314310e-5 * T)
-    density_h2 = (M_amu_h2 * P_h2) / (8.314472e-5 * T)
-    density_h2o = isotope_partition * (density_h2o / M_amu) * NA * (1.0 / 1e6)  # need in molecules/cc
+    # density_he = (M_amu_he * P_he) / (8.314310e-5 * T)
+    # density_h2 = (M_amu_h2 * P_h2) / (8.314472e-5 * T)
+    density_h2o = isotope_partition * (density_h2o / M_amu) * NA * (1.0 / 1e6)  # need in mol/cc
 
     # ###Calculate the line-broadening terms
     expo = data['E_o'] * (1.0 - Theta)
@@ -89,24 +99,24 @@ def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
     line_contribution = inv_km_to_dB * convert_to_km * density_h2o * FSsum
 
     # ###Calculate the continuum terms
-    Cf_he = ((1.0 / mbars_to_bars)**2) * 1.03562010226e-10  # (dB/km)/((GHz x kPa)^2)->db/km((GHz bars)^2)  #eqn 10 Rosenkranz,1998
+    Cf_he = ((1.0 / mbars_to_bars)**2) * 1.03562010226e-10  # noqa (dB/km)/((GHz x kPa)^2)->db/km((GHz bars)^2)  #eqn 10 Rosenkranz,1998
     Cf_h2 = ((1.0 / mbars_to_bars)**2) * 5.07722009423e-11
-    Cs1 = 3.1e-07 * pow(Theta, 12.0)          # equation 5 (correction applied from ^+6,^-6) Rosenkranz,1998 ==> updated per Paul's Dec 2012 e-mail
-    Cs2 = 0.0     # 2.10003048186e-26*pow(P_h2o/mbars_to_bars,6.76418487001)*pow(Theta,0.0435525417274) ==> updated per Paul's Dec 2012 e-mail
-    P_f = P_he + P_h2
+    Cs1 = 3.1e-07 * pow(Theta, 12.0)   # noqa equation 5 (correction applied from ^+6,^-6) Rosenkranz,1998 ==> updated per Paul's Dec 2012 e-mail
+    Cs2 = 0.0     # noqa 2.10003048186e-26*pow(P_h2o/mbars_to_bars,6.76418487001)*pow(Theta,0.0435525417274) ==> updated per Paul's Dec 2012 e-mail
+    # P_f = P_he + P_h2
 
     # Continuum Terms Foreign, and self
-    # Cf=((1/mbars_to_bars)^2) * 5.43e-10; %  (dB/km)/((GHz x kPa)^2)->db/km((GHz bars)^2)  %eqn 10 Rosenkranz,1998
-    # Cs=((1/mbars_to_bars)^2)* 1.8e-8*Theta.^(4.5);    %equation 5 (correction applied from ^+6,^-6) Rosenkranz,1998
+    # noqa Cf=((1/mbars_to_bars)^2) * 5.43e-10; %  (dB/km)/((GHz x kPa)^2)->db/km((GHz bars)^2)  %eqn 10 Rosenkranz,1998
+    # noqa Cs=((1/mbars_to_bars)^2)* 1.8e-8*Theta.^(4.5);    %equation 5 (correction applied from ^+6,^-6) Rosenkranz,1998
 
     # Foreign_Continuum=Cf.*P_f.*P_h2o.*f.^2*Theta^3; %foreign continuum term from Eqn 6, Rosenkranz
     # Self_Continuum=Cs*P_h2o^2.*f.^2*Theta^3; %self continuum term from Eqn 6, Rosenkranz
 
     farr = np.array(f)
-    Foreign_Continuum_he = Cf_he * P_he * P_h2o * (farr**2) * pow(Theta, 3.0)   # foreign continuum term from Eqn 6, Rosenkranz
+    Foreign_Continuum_he = Cf_he * P_he * P_h2o * (farr**2) * pow(Theta, 3.0)   # noqa foreign continuum term from Eqn 6, Rosenkranz
     Foreign_Continuum_h2 = Cf_h2 * P_h2 * P_h2o * (farr**2) * pow(Theta, 3.0)
     Foreign_Continuum = Foreign_Continuum_he + Foreign_Continuum_h2
-    Self_Continuum = Cs1 * ((P_h2o / mbars_to_bars)**2) * (farr**2.0) + Cs2 * (farr**2.0)  # *power(Theta,3) #self continuum term from Eqn 6, Rosenkranz
+    Self_Continuum = Cs1 * ((P_h2o / mbars_to_bars)**2) * (farr**2.0) + Cs2 * (farr**2.0)  # noqa *power(Theta,3) #self continuum term from Eqn 6, Rosenkranz
 
     alpha_h2o = line_contribution + inv_km_to_dB * Foreign_Continuum + inv_km_to_dB * Self_Continuum
     # alpha_h2o = inv_km_to_dB*Self_Continuum
@@ -118,7 +128,8 @@ def alpha(f, T, P, X, P_dict, other_dict, **kwargs):
 
 
 def vvwlinecontribution_modified(f, fo, df, shift, S):
-    """Taken from http://users.ece.gatech.edu/~psteffes/palpapers/karpowicz_data/water_model/vvwlineshape_modified.m
+    """Taken from http://users.ece.gatech.edu/~psteffes/palpapers/karpowicz_data/
+       water_model/vvwlineshape_modified.m
        This function determines the Van,Velck,Wiesskopf (VVW) lineshape over
        a range of freqencies which are user defined as is the frequency step
        the resulting vector is passed to this subroutine as f.
@@ -166,8 +177,7 @@ def vvwlinecontribution_modified(f, fo, df, shift, S):
     A = np.square(np.divide(f_matrix, fo_matrix)) / np.pi
     B = np.divide(df_matrix, np.square(f_matrix - fo_matrix - shift_matrix) + np.square(df_matrix))
     C = np.divide(df_matrix, np.square(f_matrix + fo_matrix + shift_matrix) + np.square(df_matrix))
-    cut_off = 750.0
-
+    # cut_off = 750.0
     # filter1=np.abs(f_matrix-fo_matrix-shift_matrix) <=cut_off
     # filter2=np.abs(f_matrix+fo_matrix+shift_matrix) <=cut_off
 

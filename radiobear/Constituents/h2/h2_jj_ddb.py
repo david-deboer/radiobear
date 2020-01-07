@@ -1,7 +1,7 @@
 # Some constants
+from radiobear.Constituents import parameters
 coef = 3.9522E-14     # coefficient from
 T0 = 273.0            # reference temperature in K
-from radiobear.Constituents import parameters
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
@@ -29,7 +29,8 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
             print('INVALID H2STATE')
             return 0.0
         cf = coef * f2 * P_h2 * pre
-        a = cf * (P_h2 * pow(th, 3.12) + 1.382 * P_he * pow(th, 2.24) + 9.322 * P_ch4 * pow(th, 3.34))
+        a = cf * (P_h2 * pow(th, 3.12) + 1.382 * P_he * pow(th, 2.24) + 9.322 *
+                  P_ch4 * pow(th, 3.34))
         if par.units == 'dBperkm':
             a *= 434294.5
         alpha_h2.append(a)

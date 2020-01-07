@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
 from radiobear.Constituents import parameters
@@ -112,9 +111,9 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
             D[Interp] = D[Spilker] + (D[Spilker] - D[Joiner]) / flfh
         delta = D[use] * P_nh3
 
-        gamma = np.power((T0 / T), n_dvl) * (GH2[use] * P_h2 + GHe[use] * P_he + G0 * GNH3[use] * P_nh3)
+        gamma = np.power((T0 / T), n_dvl) * (GH2[use] * P_h2 + GHe[use] * P_he + G0 * GNH3[use] * P_nh3)  # noqa
         g2 = gamma**2
-        zeta = np.power((T0 / T), n_dvl) * (ZH2[use] * P_h2 + ZHe[use] * P_he + G0 * ZNH3[use] * P_nh3)
+        zeta = np.power((T0 / T), n_dvl) * (ZH2[use] * P_h2 + ZHe[use] * P_he + G0 * ZNH3[use] * P_nh3)  # noqa
         z2 = zeta**2
 
         num = (gamma - zeta) * f2 + (gamma + zeta) * (np.power(f0 + delta, 2.0) + g2 - z2)

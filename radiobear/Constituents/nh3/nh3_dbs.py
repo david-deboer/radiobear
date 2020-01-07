@@ -36,7 +36,6 @@
 # %       updated to Bellotti results DDB Aug 2016
 # %       updated per Bellotti erratum DDB Nov 2016 (Icarus 284 (2017) 491-492)
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-from __future__ import absolute_import, division, print_function
 import numpy as np
 import os.path
 from radiobear.Constituents import parameters
@@ -108,7 +107,7 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     Io = data['Io']
     Eo = data['Eo']
     gammaNH3o = data['gammaNH3o']
-    H2HeBroad = data['H2HeBroad']
+    # H2HeBroad = data['H2HeBroad']
     fo_rot = data['fo_rot']
     Io_rot = data['Io_rot']
     Eo_rot = data['Eo_rot']
@@ -121,9 +120,9 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
 
     # %% Computing partial pressures, temperature factor, and coefficient for ammonia
     # % Compute the mixing ratios of  of H2, He, and NH2
-    H2mr = P_h2 / P
-    Hemr = P_he / P
-    NH3mr = P_nh3 / P
+    # H2mr = P_h2 / P
+    # Hemr = P_he / P
+    # NH3mr = P_nh3 / P
     # % Compute the temperature factor
     Tdiv = To / T
     # %  Coefficient for symmetric top molecule
@@ -183,9 +182,10 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     # % Coupling parameter
     zeta = zH2 * Tdiv**Z_H2 + zHe * Tdiv**Z_He + zNH3 * (295.0 / T)**Z_NH3
 
-    zetasize = np.size(fo)
+    # zetasize = np.size(fo)
     pst = delt  # % answer in GHz
-    # %Coupling element, pressure shift and dnu or gamma are in GHz, need to convert brlineshape to inverse cm which is done below
+    # %Coupling element, pressure shift and dnu or gamma are in GHz, need to convert brlineshape
+    # to inverse cm which is done below
     n = np.size(freq)
     m = np.size(fo)
     fmat = np.matrix(freq)
@@ -260,7 +260,7 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     Cc = 4.0 * np.multiply(np.square(f_matrix), np.square(dnu_matrix))
     F_rot = np.divide(Aa, Bb + Cc)
     Fbr_rot = (1 / GHztoinv_cm) * F_rot
-    alpha_rot = np.multiply(Con * coef * (P_nh3 / To) * ((To / T)**(eta + 2.0)) * STmat_rot * nones, Fbr_rot)
+    alpha_rot = np.multiply(Con * coef * (P_nh3 / To) * ((To / T)**(eta + 2.0)) * STmat_rot * nones, Fbr_rot)  # noqa
 
     # %% Computing the opacity due to v2 roto-vibrational lines
     # % Computing the absorption contributed by the v2 rotovibrational lines
@@ -297,14 +297,15 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     Cc = 4.0 * np.multiply(np.square(f_matrix), np.square(dnu_matrix))
     F_v2 = np.divide(Aa, Bb + Cc)
     Fbr_v2 = (1.0 / GHztoinv_cm) * F_v2
-    alpha_v2 = np.multiply(Con * coef * (P_nh3 / To) * ((To / T)**(eta + 2.0)) * STmat_v2 * nones, Fbr_v2)
+    alpha_v2 = np.multiply(Con * coef * (P_nh3 / To) * ((To / T)**(eta + 2.0)) * STmat_v2 * nones, Fbr_v2)  # noqa
 
     # %% Computing the total opacity
-    alpha_opdep = np.sum(np.transpose(alpha_inversion), 1) + np.sum(np.transpose(alpha_rot), 1) + np.sum(np.transpose(alpha_v2), 1)
+    alpha_opdep = (np.sum(np.transpose(alpha_inversion), 1) + np.sum(np.transpose(alpha_rot), 1) +
+                   np.sum(np.transpose(alpha_v2), 1))
     alpha_opdep = np.array(np.transpose(alpha_opdep))
     if par.units == 'dBperkm':
         alpha_opdep *= OpticaldepthstodB
-    alpha_nh3_temp = np.ndarray.tolist(np.ndarray.flatten(alpha_opdep))
+    # alpha_nh3_temp = np.ndarray.tolist(np.ndarray.flatten(alpha_opdep))
     alpha_nh3 = np.ndarray.flatten(alpha_opdep)
     ltz = np.where(alpha_nh3 < 0.0)
     alpha_nh3[ltz] = 1.0E-8

@@ -1,7 +1,5 @@
 import clouds_idp as cl
 import matplotlib.pyplot as plt
-import cmath
-import math
 import numpy as np
 
 freqs = []

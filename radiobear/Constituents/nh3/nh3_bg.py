@@ -1,4 +1,3 @@
-from __future__ import print_function
 import math
 import os.path
 import numpy as np
@@ -46,7 +45,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     ZH2 = 1.920
     ZHe = 0.300
     ZNH3 = 0.490
-    C = 1.0075 + (0.0308 + 0.552 * P_h2 / T) * P_h2 / T
+    # C = 1.0075 + (0.0308 + 0.552 * P_h2 / T) * P_h2 / T
     D = -0.45
     n_dvl = 2.0 / 3.0
     n_int = 3.0 / 2.0

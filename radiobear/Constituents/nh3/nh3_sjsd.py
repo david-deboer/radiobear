@@ -1,7 +1,6 @@
 from radiobear.Constituents.nh3 import nh3_sjs
 from radiobear.Constituents.nh3 import nh3_kd
 import numpy as np
-from radiobear.Constituents import parameters
 
 
 def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):

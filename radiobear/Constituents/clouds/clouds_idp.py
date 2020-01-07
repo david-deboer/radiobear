@@ -1,6 +1,4 @@
-from __future__ import absolute_import, division, print_function
 import numpy as np
-import cmath
 from radiobear.Constituents import parameters
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
@@ -25,22 +23,22 @@ def alpha(freq, T, P, cloud, cloud_dict, other_dict, **kwargs):
             alpha += acloud(k, fraction, e)
         if 'nh4sh_p' in other_dict.keys() and other_dict['nh4sh_p'] > 0.0:
             fraction = cloud[cloud_dict['NH4SH']] / 1.2
-            nImke = 1.7 - 0.05j
-            nDeBoer = 1.74 - 0.001j
+            # nImke = 1.7 - 0.05j
+            # nDeBoer = 1.74 - 0.001j
             n = 1.7 - 0.005j
             e = n**2
             alpha += acloud(k, fraction, e)
         if 'nh3ice_p' in other_dict.keys() and other_dict['nh3ice_p'] > 0.0:
             fraction = cloud[cloud_dict['NH3']] / 1.6
-            nImke = 1.3 - 0.05j
-            nDeBoer = 1.3 - 0.005j
+            # nImke = 1.3 - 0.05j
+            # nDeBoer = 1.3 - 0.005j
             n = 1.3 - 0.0001j
             e = n**2
             alpha += acloud(k, fraction, e)
         if 'h2sice_p' in other_dict.keys() and other_dict['h2sice_p'] > 0.0:
             fraction = cloud[cloud_dict['H2S']] / 1.5
-            nImke = 1.3 - 0.01j
-            nDeBoer = 1.15 - 0.001j
+            # nImke = 1.3 - 0.01j
+            # nDeBoer = 1.15 - 0.001j
             n = 1.15 - 0.0001j
             e = n**2
             alpha += acloud(k, fraction, e)
@@ -75,7 +73,7 @@ def water(freq, T):
     T_Celsius = T - 273.0
     freqHz = freq * 1.0E9
     if T_Celsius >= 0.0:
-        RelT = 1.1109E-10 - T_Celsius * 3.824E-12 + (T_Celsius**2) * 6.938E-14 - (T_Celsius**3) * 5.096E-16
+        RelT = 1.1109E-10 - T_Celsius * 3.824E-12 + (T_Celsius**2) * 6.938E-14 - (T_Celsius**3) * 5.096E-16  # noqa
         E0 = 88.045 - 0.4147 * T_Celsius + (T_Celsius**2) * 6.295E-4 + (T_Celsius**3) * 1.075E-5
         if E0 < 0.0:
             E0 = 0.0
@@ -98,5 +96,6 @@ def water(freq, T):
         DX = X0 + DLF * (X1 - X0)
         E2 = 10.0**DX
     dielectricConstant = E1 - E2 * 1.0j
-    refractiveIndex = cmath.sqrt(dielectricConstant)
+    # import cmath
+    # refractiveIndex = cmath.sqrt(dielectricConstant)
     return dielectricConstant

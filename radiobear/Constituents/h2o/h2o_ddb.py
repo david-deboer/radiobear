@@ -1,4 +1,3 @@
-from __future__ import print_function
 import math
 import os.path
 from radiobear.Constituents import parameters
@@ -61,7 +60,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
 
     P_h2 = P*X[P_dict['H2']]
     P_he = P*X[P_dict['HE']]
-    P_h2o= P*X[P_dict['H2O']]
+    P_h2o = P*X[P_dict['H2O']]
     n_int = 3.0/2.0
     rho = 1.0E12*AMU_H2O*P_h2o/(R*T)
     Pa = 0.81*P_h2 + 0.35*P_he
@@ -71,17 +70,17 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
         f2 = f**2
         alpha = 0.0
         for i in range(nlin):
-            gamma = pow((T0/T),x_H2[i])*GH2[i]*P_h2
-            gamma+= pow((T0/T),x_He[i])*GHe[i]*P_he
-            gamma+= pow((T0/T),x_H2O[i])*GH2O[i]*P_h2o
+            gamma = pow((T0/T), x_H2[i])*GH2[i]*P_h2
+            gamma += pow((T0/T), x_He[i])*GHe[i]*P_he
+            gamma += pow((T0/T), x_H2O[i])*GH2O[i]*P_h2o
             g2 = gamma**2
             ITG = A[i]*math.exp(-Ei[i]/T)
-            shape = gamma/( (f0[i]**2 - f2)**2 + 4.0*f2*g2)
+            shape = gamma/((f0[i]**2 - f2)**2 + 4.0*f2*g2)
             alpha += shape*ITG
-        GR1971 = 1.08E-11*rho*pow((T0/T),2.1)*Pa*f2
-        a = 2.0*f2*rho*pow((T0/T),n_int)*alpha/434294.5 + GR1971/434294.5
-        if par.units=='dBperkm':
-            a*=434294.5
+        GR1971 = 1.08E-11*rho*pow((T0/T), 2.1)*Pa*f2
+        a = 2.0*f2*rho*pow((T0/T), n_int)*alpha/434294.5 + GR1971/434294.5
+        if par.units == 'dBperkm':
+            a *= 434294.5
         alpha_h2o.append(a)
 
     return alpha_h2o

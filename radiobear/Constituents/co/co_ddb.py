@@ -1,4 +1,3 @@
-from __future__ import absolute_import, division, print_function
 import os.path
 import numpy as np
 from radiobear.Constituents import parameters
@@ -24,8 +23,10 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     # ##Voigt coefficients from Janssen p67
     par = parameters.setpar(kwargs)
     PLimits = [0.001, 0.1]
-    avoigt = [122.60793178, 214.38238869, 181.92853309, 93.15558046, 30.18014220, 5.91262621, 0.56418958, 0.0]
-    bvoigt = [122.60793178, 352.73062511, 457.33447878, 348.70391772, 170.35400182, 53.99290691, 10.47985711, 1.0]
+    avoigt = [122.60793178, 214.38238869, 181.92853309, 93.15558046, 30.18014220,
+              5.91262621, 0.56418958, 0.0]
+    bvoigt = [122.60793178, 352.73062511, 457.33447878, 348.70391772, 170.35400182,
+              53.99290691, 10.47985711, 1.0]
 
     # Read in data if needed
     global data
