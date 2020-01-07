@@ -17,35 +17,18 @@ zHat = np.array([0.0, 0.0, 1.0])
 
 
 class Ray:
-    def __init__(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None,
-                 tip=None, rotate=None, rNorm=None):
-        self.ds = ds
-        self.layer4ds = layer4ds
-        self.r4ds = r4ds
-        self.P4ds = P4ds
-        self.rNorm = rNorm
-        self.tip = tip
-        self.rotate = rotate
-        self.doppler = doppler
+    allowed_parameters = ['ds', 'layer4ds', 'r4ds', 'P4ds', 'doppler', 'tip', 'rotate', 'rNorm']
 
-    def update(self, ds=None, layer4ds=None, r4ds=None, P4ds=None, doppler=None, tip=None,
-               rotate=None, rNorm=None):
-        if ds is not None:
-            self.ds = ds
-        if layer4ds is not None:
-            self.layer4ds = layer4ds
-        if r4ds is not None:
-            self.r4ds = r4ds
-        if P4ds is not None:
-            self.P4ds = P4ds
-        if rNorm is not None:
-            self.rNorm = rNorm
-        if tip is not None:
-            self.tip = tip
-        if rotate is not None:
-            self.rotate = rotate
-        if doppler is not None:
-            self.doppler = doppler
+    def __init__(self):
+        for k in self.allowed_parameters:
+            setattr(self, k, None)
+
+    def update(self, **kwargs):
+        for k, v, in kwargs.items():
+            if k in self.allowed_parameters:
+                setattr(self, k, v)
+            else:
+                raise ValueError('{} not allowed Ray parameter'.format(k))
 
 
 def computeAspect(Q, f=1.0):
@@ -277,13 +260,13 @@ def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
 
     # Get rid of the first entry, which was just used to make indexing in loop consistent
     del ds[0], layer4ds[0], r4ds[0], P4ds[0]
-    dsmu = []
-    for i in range(min(len(ds), len(r4ds)) - 1):
-        if abs(r4ds[i] - r4ds[i + 1]) < 1E-6:
-            dsmuappend = 0.001
-        else:
-            dsmuappend = ds[i] / (r4ds[i] - r4ds[i + 1])
-        dsmu.append(dsmuappend)
+    # dsmu = []
+    # for i in range(min(len(ds), len(r4ds)) - 1):
+    #     if abs(r4ds[i] - r4ds[i + 1]) < 1E-6:
+    #         dsmuappend = 0.001
+    #     else:
+    #         dsmuappend = ds[i] / (r4ds[i] - r4ds[i + 1])
+    #     dsmu.append(dsmuappend)
     path.update(ds=ds, layer4ds=layer4ds, r4ds=r4ds, P4ds=P4ds, doppler=doppler,
                 tip=tip, rotate=rotate, rNorm=rNorm)
 
