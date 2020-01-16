@@ -1,5 +1,5 @@
-from radiobear.Constituents.nh3 import nh3_sjs
-from radiobear.Constituents.nh3 import nh3_kd
+from radiobear.constituents.nh3 import nh3_sjs
+from radiobear.constituents.nh3 import nh3_kd
 import numpy as np
 
 

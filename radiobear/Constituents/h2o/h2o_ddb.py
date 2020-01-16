@@ -1,6 +1,6 @@
 import math
 import os.path
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 
 # Some constants
 T0 = 300.0           # reference temperature in K

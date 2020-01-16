@@ -1,7 +1,7 @@
 import math
 import os.path
 import numpy as np
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 
 # Some constants
 coef = 7.244E+21     # coefficient from GEISA_PP.TEX eq. 14

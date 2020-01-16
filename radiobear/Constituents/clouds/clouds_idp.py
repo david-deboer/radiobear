@@ -1,5 +1,5 @@
 import numpy as np
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 GHz = 29.9792458     # conversion from cm^-1 to GHz
 
 

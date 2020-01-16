@@ -1,4 +1,4 @@
-import ph3_jh
+from radiobear.constituents import ph3_jh
 import matplotlib.pyplot as plt
 import numpy as np
 

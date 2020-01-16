@@ -38,7 +38,7 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 import numpy as np
 import os.path
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 
 # %% Declaring Constants
 GHztoinv_cm = 1 / 29.9792458     # % for converting GHz to inverse cm

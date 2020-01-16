@@ -1,5 +1,5 @@
 import numpy as np
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 
 
 mbars_to_bars = 0.001

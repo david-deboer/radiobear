@@ -38,7 +38,7 @@ import math
 import numpy as np
 import os.path
 import traceback
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 
 # Declare data arrays
 fo = []

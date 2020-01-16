@@ -3,5 +3,5 @@ include radiobear/Jupiter/*.*
 include radiobear/Saturn/*.*
 include radiobear/Uranus/*.*
 include radiobear/Neptune/*.*
-include radiobear/Constituents/h2o/*.lin
-recursive-include radiobear/Constituents *.npz
+include radiobear/constituents/h2o/*.lin
+recursive-include radiobear/constituents *.npz

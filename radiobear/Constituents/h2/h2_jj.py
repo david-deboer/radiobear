@@ -1,4 +1,4 @@
-from radiobear.Constituents import parameters
+from radiobear.constituents import parameters
 # Some constants
 coef = 3.9522E-14     # coefficient from
 T0 = 273.0            # reference temperature in K

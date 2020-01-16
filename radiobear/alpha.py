@@ -32,7 +32,7 @@ class Alpha:
             config = pcfg.planetConfig('x', configFile=config)
             config.update_config(**kwargs)
         self.config = config
-        self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'Constituents')
+        self.constituentsAreAt = os.path.join(os.path.dirname(__file__), 'constituents')
         self.idnum = idnum
         self.reset_layers()
         self.alphafile = os.path.join(self.config.scratch_directory,
