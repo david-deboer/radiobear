@@ -27,7 +27,7 @@ class Atmosphere(atm_base.AtmosphereBase):
         log : None or str
             Log setup
         """
-        super(Atmosphere, self).__init__(planet=planet, config=config, log=log, **kwargs)
+        super().__init__(planet=planet, config=config, log=log, **kwargs)
         self.verbose = verbose
         if self.verbose:
             print('\n---Atmosphere of {}---'.format(planet))

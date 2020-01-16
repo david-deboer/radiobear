@@ -31,7 +31,7 @@ class Planet(planet_base.PlanetBase):
                  **kwargs):
         self.load_formal = load_formal
         self.verbose = verbose
-        super(Planet, self).__init__(name=name, config_file=config_file)
+        super().__init__(name=name, config_file=config_file)
 
         # initialize and setup up modules/etc
         self.setup_config(**kwargs)
