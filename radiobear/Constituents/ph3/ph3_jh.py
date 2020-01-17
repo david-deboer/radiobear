@@ -88,7 +88,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     zeta = 0.0
     z2 = zeta**2
     delta = 0.0
-    gamma = np.power((T0 / T), n_dvl) * (GH2 * P_h2 + GHe * P_he) * WgtFGB + np.power((T0 / T), 1.0) * GPH3 * P_ph3 * WgtSB
+    gamma = np.power((T0 / T), n_dvl) * (GH2 * P_h2 + GHe * P_he) * WgtFGB + np.power((T0 / T), 1.0) * GPH3 * P_ph3 * WgtSB  # noqa
     g2 = gamma**2
     ITG = I0 * WgtI0 * np.exp(-((1.0 / T) - (1.0 / T0)) * E * hck)
 

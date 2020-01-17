@@ -20,6 +20,13 @@ processingUnits = {'GHz': ['GHz', 'Hz', 'kHz', 'MHz'],
                    'mpersec2': ['mpersec2', 'cmpersec2']}
 
 
+def rb_path(add_path=None):
+    rb_path = os.path.dirname(__file__)
+    if add_path is not None:
+        rb_path = os.path.join(rb_path, add_path)
+    return rb_path
+
+
 def isanynum(x):
     if isinstance(x, bool):
         return False
