@@ -21,15 +21,15 @@
             "unit": null,
             "help": "This dictionary sets which absoprtion formalisms to use",
             "default": {
-                "Jupiter": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                "Jupiter": {"clouds": "clouds_idp", "co": null, "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                            "hcn": null, "nh3": "nh3_hs_sjs", "ph3": "ph3_jh"},
+                "Saturn": {"clouds": "clouds_idp", "co": null, "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
                             "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
-                "Saturn": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
-                            "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
-                "Uranus": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                "Uranus": {"clouds": "clouds_idp", "co": null, "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
                             "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
                 "Neptune": {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
                             "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"},
-                "X":  {"clouds": "clouds_idp", "co": "co_ddb", "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
+                "X":  {"clouds": "clouds_idp", "co": null, "h2": "h2_jj_ddb", "h2o": "h2o_bk", "h2s": "h2s_ddb",
                        "hcn": null, "nh3": "nh3_dbs_sjs", "ph3": "ph3_jh"}
             }
         },

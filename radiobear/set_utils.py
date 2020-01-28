@@ -135,3 +135,19 @@ def set_freq(freqs, freqUnit='GHz'):
         freqs[i] = utils.convert_unit(freqs[i], freqUnit)
 
     return freqs, freqUnit
+
+
+def proc_string(srq):
+    if ',' in srq:
+        return [float(x) for x in srq.split(',')]
+    if ':' in srq:
+        start, stop, step = [float(x) for x in srq.split(':')]
+        return list(np.arange(start, stop + step / 2.0, step))
+    if ';' in srq:
+        start, stop, step = [float(x) for x in srq.split(';')]
+        return list(np.logspace(np.log10(start), np.log10(stop), step))
+    try:
+        x = float(srq)
+        return [x]
+    except ValueError:
+        return list(np.loadtxt(srq))

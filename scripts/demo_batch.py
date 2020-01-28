@@ -9,14 +9,17 @@ j.run('1:10:1', get_alpha='file', save_alpha='memory')
 
 nlayers = np.shape(j.atmos[0].gas)[1]
 
-scale_ver = {}
-scale_ver['const'] = np.arange(0.5, 2.1, 0.5)
-scale_ver['ramp'] = ['array of nlayers', 'another array of nlayers']  # but has to be of length atm
-scale_ver['NH3'] = [{'NH3': 'array of nlayers'}, {'NH3': 'another array of nlayers'}]
+#scale_ver = {}
+#scale_ver['const'] = np.arange(0.5, 2.1, 0.5)
+#scale_ver['ramp'] = ['array of nlayers', 'another array of nlayers']  # but has to be of length atm
+#scale_ver['NH3'] = [{'NH3': 'array of nlayers'}, {'NH3': 'another array of nlayers'}]
 
-use_scale = 'const'
-print('Using test scale {}'.format(use_scale))
-for i, scale in enumerate(scale_ver[use_scale]):
-    print("Scale Version {}  ({})".format(i, type(scale)))
-    cd = j.run('1:10:1', scale=scale, get_alpha='memory')
-    print(cd)
+scale = {'NH3': [0.5] * nlayers, 'H2O': [2.0] * nlayers}
+
+# use_scale = 'const'
+#print('Using test scale {}'.format(use_scale))
+#for i, scale in enumerate(scale_ver[use_scale]):
+
+#print("Scale Version {}  ({})".format(i, type(scale)))
+cd = j.run('1:10:1', scale=scale, get_alpha='memory')
+print(cd)
