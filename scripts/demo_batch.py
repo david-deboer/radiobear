@@ -11,7 +11,7 @@ nlayers = np.shape(j.atmos[0].gas)[1]
 
 scale_ver = {}
 scale_ver['const'] = np.arange(0.5, 2.1, 0.5)
-scale_ver['ramp'] = ['array of nlayers', 'another array of nlayers']
+scale_ver['ramp'] = ['array of nlayers', 'another array of nlayers']  # but has to be of length atm
 scale_ver['NH3'] = [{'NH3': 'array of nlayers'}, {'NH3': 'another array of nlayers'}]
 
 use_scale = 'const'

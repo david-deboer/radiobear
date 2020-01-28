@@ -23,15 +23,12 @@ Installing:
 [*NB: python setup.py install does not work.]
 
 Before you start edit the config file to be what you want:
-1. Nearly all of the parameters are set within this configuration file
+1. All of the parameters may be set within this configuration file
 2. Default name is `config.par` in each of the planet sub-directories
 3. You may use different files, just call planet with `config='filename'`, which must reside within <planet_name>
-4. The defaults are set in `default_config.json`, which also sets up which parameters are contained within the config
-
-Note that the defaults are in default_config.json and default_state.json.  The two files roughly break out different
-"types", but work identically.
-
-Note that you may also set any config parameter at runtime by setting `par=val`
+4. The defaults are set in `default_config.json` and `default_state.json`, which also sets up which parameters are contained within the config.
+5. You can also set them when you make the Planet instance
+6. You can also set them at any time using the `update_config` method
 
 
 Here is an example, from working area:
@@ -44,8 +41,6 @@ Here is an example, from working area:
 time-stamped data file is written to Output
 
 run log file is written to Logs
-
-'plot' is a keyword (see below)
 
 `catch_data` is an instance of `DataReturn`, which holds the data you probably want.
 
