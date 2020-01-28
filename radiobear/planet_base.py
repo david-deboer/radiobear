@@ -51,11 +51,10 @@ class PlanetBase:
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
             print('Reading config file:  ', self.config_file)
-            print("\t'print({}.config)' to see config parameters."
+            print("\t'{}.config.show()' to see config parameters."
                   .format(self.planet[0].lower()))
         self.config = pcfg.planetConfig(self.planet, configFile=self.config_file)
         self.config.update_config(**kwargs)
-        self.config.show()
         sys.path.insert(0, self.config.path)
 
     def setup_log(self):

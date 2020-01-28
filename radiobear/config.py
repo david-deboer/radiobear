@@ -183,11 +183,13 @@ class planetConfig:
                 continue
             setattr(self, tok, set_single_val(v))
 
-    def show(self):
+    def show(self, print_it=True):
         """Returns string containing configuration"""
         s = 'Run parameters:\n'
         keys = list(self.toks.keys())
         keys.sort()
         for key in keys:
             s += '\t{:20s}:  {}\n'.format(key, str(getattr(self, self.toks[key])))
+        if print_it:
+            print(s)
         return s

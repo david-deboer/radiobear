@@ -49,11 +49,7 @@ def set_b(b, block=[1, 1], **kwargs):
         else:
             b = b.split('<')
             angle_b = 0.0 if len(b) == 1 else utils.d2r(float(b[1]))
-            if ',' in b[0]:
-                mag_b = [float(x) for x in b[0].split(',')]
-            elif ':' in b[0]:
-                mag_b = [float(x) for x in b[0].split(':')]
-                mag_b = np.arange(mag_b[0], mag_b[1] + mag_b[2] / 2.0, mag_b[2])
+            mag_b = proc_string(b[0])
             ab = kwargs['Rpol'] / kwargs['Req']
             rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
             return_value.b = []
@@ -116,18 +112,10 @@ def set_freq(freqs, freqUnit='GHz'):
         pass
     elif isinstance(freqs, np.ndarray):
         freqs = list(freqs)
-    elif isinstance(freqs, str) and ',' in freqs:
-        freqs = [float(x) for x in freqs.split(',')]
+    elif isinstance(freqs, str):
+        freqs = proc_string(freqs)
     elif utils.isanynum(freqs):
         freqs = [float(freqs)]
-    elif isinstance(freqs, str) and ':' in freqs:
-        fstart, fstop, fstep = [float(x) for x in freqs.split(':')]
-        freqs = list(np.arange(fstart, fstop + fstep / 2.0, fstep))
-    elif isinstance(freqs, str) and ';' in freqs:
-        fstart, fstop, nstep = [float(x) for x in freqs.split(';')]
-        freqs = list(np.logspace(np.log10(fstart), np.log10(fstop), nstep))
-    elif isinstance(freqs, str):
-        freqs = list(np.loadtxt(freqs))
     else:
         raise ValueError('Invalid format for frequency request')
 

@@ -44,7 +44,7 @@ class Planet(planet_base.PlanetBase):
 
         self.log.add(self.planet, False)
         self.log.add(config_file, False)
-        pars = self.config.show()
+        pars = self.config.show(print_it=False)
         self.log.add(pars, False)
 
         # run atmosphere
