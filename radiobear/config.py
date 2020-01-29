@@ -101,7 +101,7 @@ class planetConfig:
                     data = data[0].split(',')
                 val = [set_single_val(x) for x in data]
             elif isinstance(preval, dict):
-                val = {}
+                val = preval
                 for i, v in enumerate(data):
                     if ':' in v:
                         frml = v.split(':')
