@@ -216,15 +216,9 @@ class Alpha:
     def get_layer_scale(self, scale, N):
         layer_scale = []
         if isinstance(scale, dict):
-            nvalid = 0
             for k, v in scale.items():
                 if k not in self.ordered_constituents:
-                    if self.verbose:
-                        print("{} not found as constituent for alpha, so ignoring.".format(k))
-                else:
-                    nvalid += 1
-                if not nvalid:
-                    raise ValueError("No valid scale constituents found.")
+                    raise ValueError("{} not found as constituent for alpha".format(k))
                 if len(v) != N:
                     raise ValueError("Incorrect scale for {}:  N {} vs {}".format(k, len(v), N))
             for lyr in range(N):

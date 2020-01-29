@@ -211,17 +211,6 @@ class PlanetBase:
         it will write the profiles to file or memory.
         """
         for i, atm in enumerate(atmos):
-            if scale:
-                if isinstance(scale, bool) and scale:
-                    print("read self.scale_by and act")
-                elif isinstance(scale, str):
-                    print("read in file for scale")
-                elif isinstance(scale, (list, dict)) or utils.isanynum(scale):
-                    pass
-                else:
-                    scale = False
-            else:
-                scale = False
             self.alpha[i].reset_layers()
             self.alpha[i].get_layers(freqs=freqs,
                                      atm=atm,

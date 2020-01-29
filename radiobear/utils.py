@@ -28,7 +28,7 @@ def rb_path(add_path=None):
 
 
 def isanynum(x):
-    if isinstance(x, bool):
+    if isinstance(x, bool) or isinstance(x, dict) or isinstance(x, list):
         return False
     try:
         y = float(x)  # noqa

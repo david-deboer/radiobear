@@ -54,7 +54,7 @@ def set_b(b, block=[1, 1], **kwargs):
             rab = ab / np.sqrt(np.power(np.sin(angle_b), 2.0) + np.power(ab * np.cos(angle_b), 2.0))
             return_value.b = []
             for v in mag_b:
-                if v < 0.99 * rab:
+                if v < 0.995 * rab:
                     return_value.b.append([v * np.cos(angle_b), v * np.sin(angle_b)])
             return_value.data_type = 'profile'
         return return_value
