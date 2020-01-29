@@ -7,7 +7,7 @@
 # Format expected by setup.py and doc/source/conf.py: string of form "X.Y.Z"
 _version_major = 2
 _version_minor = 0
-_version_micro = 0
+_version_micro = 1
 _version_extra = ''
 
 # Construct full version string from these.
@@ -24,5 +24,6 @@ VERSION = __version__
 version_notes = {'1.0': 'First version of radioBEAR from pyplanet.',
                  '1.1': 'General clean-up from transition.',
                  '1.2': 'Make multiple atm/alpha lists and file/memory support.',
-                 '2.0': 'Remove state variables and python2.7 support'
+                 '2.0': 'Remove state variables and python2.7 support',
+                 '2.0.1': 'Added nh3_hs, fixed scale and other minor fixes'
                  }
