@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Chemistry parameters."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -9,6 +10,7 @@ AMU = 1.66056E-24       # [g]
 
 
 def NULL(T=None, f=None):
+    """NULL return."""
     return 0.0
 
 
@@ -29,7 +31,11 @@ specific_heat = {'H2': 3.5, 'HE': 2.50, 'H2O': 4.00, 'NH3': 4.46, 'H2S': 4.01,
 
 
 def REFR_H2O(T, f=1.0):
-    # Janssen p218--or is the h2o cloud really almost an ocean,see liquid water p298 UFM*/
+    """
+    Water refractivity.
+
+    Janssen p218--or is the h2o cloud really almost an ocean,see liquid water p298 UFM
+    """
     if T is None:
         T = 100.0
     return (245.0 + 1.28E6 / T)
@@ -40,7 +46,8 @@ refractivity = {'H2': 124.43, 'HE': 35.832, 'H2O': REFR_H2O, 'H2S': 2247.0, 'NH3
                 'CH4': 413.0, 'NULL': NULL}
 
 
-def NH3_over_NH3_ice(T):  # Briggs and Sackett
+def NH3_over_NH3_ice(T):
+    """Briggs and Sackett."""
     a1 = -4122.0
     a2 = 27.8632
     a3 = -1.8163
@@ -50,7 +57,8 @@ def NH3_over_NH3_ice(T):  # Briggs and Sackett
     return np.exp(sp)
 
 
-def NH3_over_liquid_NH3(T):  # Briggs and Sackett
+def NH3_over_liquid_NH3(T):
+    """Briggs and Sackett."""
     a1 = -4409.3512
     a2 = 63.0487
     a3 = -8.4598
@@ -60,7 +68,8 @@ def NH3_over_liquid_NH3(T):  # Briggs and Sackett
     return np.exp(sp)
 
 
-def H2S_over_H2S_ice(T):  # Allen, Giauque/Blue
+def H2S_over_H2S_ice(T):
+    """Allen, Giauque/Blue."""
     a1 = -2920.6
     a2 = 14.156
     a3 = 0.0
@@ -70,7 +79,8 @@ def H2S_over_H2S_ice(T):  # Allen, Giauque/Blue
     return np.exp(sp)
 
 
-def H2S_over_liquid_H2S(T):  # Allen, Giauque/Blue
+def H2S_over_liquid_H2S(T):
+    """Allen, Giauque/Blue."""
     a1 = -2434.62
     a2 = 11.4718
     a3 = 0.0
@@ -80,7 +90,8 @@ def H2S_over_liquid_H2S(T):  # Allen, Giauque/Blue
     return np.exp(sp)
 
 
-def H2O_over_ice(T):  # Briggs and Sackett
+def H2O_over_ice(T):
+    """Briggs and Sackett."""
     a1 = -5631.1206
     a2 = -22.1791
     a3 = 8.2312
@@ -90,7 +101,8 @@ def H2O_over_ice(T):  # Briggs and Sackett
     return np.exp(sp)
 
 
-def H2O_over_water(T):  # Briggs and Sackett
+def H2O_over_water(T):
+    """Briggs and Sackett."""
     a1 = -2313.0338
     a2 = -177.848
     a3 = 38.053682
@@ -100,7 +112,8 @@ def H2O_over_water(T):  # Briggs and Sackett
     return np.exp(sp)
 
 
-def CH4_over_CH4_ice(T):  # dePater and Massie
+def CH4_over_CH4_ice(T):
+    """dePater and Massie."""  # noqa
     a1 = -1168.1
     a2 = 10.710
     a3 = 0.0
@@ -110,7 +123,8 @@ def CH4_over_CH4_ice(T):  # dePater and Massie
     return np.exp(sp)
 
 
-def CH4_over_liquid_CH4(T):  # dePater and Massie
+def CH4_over_liquid_CH4(T):
+    """dePater and Massie."""  # noqa
     a1 = -1032.5
     a2 = 9.216
     a3 = 0.0
@@ -120,7 +134,8 @@ def CH4_over_liquid_CH4(T):  # dePater and Massie
     return np.exp(sp)
 
 
-def NH4SH(T):  # Lewis
+def NH4SH(T):
+    """Lewis."""
     a1 = -10834.0
     a2 = 34.151
     a3 = 0.0
@@ -130,7 +145,8 @@ def NH4SH(T):  # Lewis
     return np.exp(sp)
 
 
-def PH3_over_PH3_ice(T):  # Orton/Kaminski
+def PH3_over_PH3_ice(T):
+    """Orton/Kaminski."""
     a1 = -1830.0
     a2 = 9.8225
     a3 = 0.0
@@ -150,7 +166,10 @@ Psat_all = {'H2S': {'ice': H2S_over_H2S_ice, 'liquid': H2S_over_liquid_H2S},
 
 
 class ConstituentProperties:
+    """Class computing constituent properties."""
+
     def __init__(self, constituent):
+        """Initialize for constituent."""
         self.constituent = constituent.upper()
         self.chkey = {'amu': 'NULL', 'triple_point': 'NULL', 'cp': 'NULL', 'solar': 'NULL',
                       'psat': 'NULL', 'refractivity': 'NULL'}
@@ -180,6 +199,7 @@ class ConstituentProperties:
         self.refractivity_func = refractivity[self.chkey['refractivity']]
 
     def Psat(self, T):
+        """Compute saturation pressure."""
         k = 'all'
         if len(self.Psat_func.keys()) > 1:
             if T < self.triple_point:
@@ -189,6 +209,7 @@ class ConstituentProperties:
         return self.Psat_func[k](T)
 
     def refractivity(self, T=None, f=None):
+        """Compute refractivity."""
         if type(self.refractivity_func) == float:
             return self.refractivity_func
         return self.refractivity_func(T=T, f=f)

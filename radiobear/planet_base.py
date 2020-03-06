@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Planet base class."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import numpy as np
@@ -22,9 +23,11 @@ class PlanetBase:
         config_file : str
             Config file name.  Uses <planet>/<config_file>
     """
+
     planet_list = ['Jupiter', 'Saturn', 'Neptune', 'Uranus']
 
     def __init__(self, name, config_file='config.par'):
+        """Initialize planet."""
         self.planet = name.capitalize()
         self.config_file = config_file
 
@@ -44,9 +47,7 @@ class PlanetBase:
             return
 
     def setup_config(self, **kwargs):
-        """
-        Instantiates and reads the config file
-        """
+        """Instantiate and read the config file."""
         from . import config as pcfg
         self.config_file = os.path.join(self.planet, self.config_file)
         if self.verbose:
@@ -58,9 +59,7 @@ class PlanetBase:
         sys.path.insert(0, self.config.path)
 
     def setup_log(self):
-        """
-        Sets up self.log if self.write_log_file is True
-        """
+        """Set up self.log if self.write_log_file is True."""
         from . import logging
         if self.config.write_log_file:
             runStart = datetime.datetime.now()
@@ -72,16 +71,16 @@ class PlanetBase:
             self.log = None
 
     def setup_data_return(self):
-        """
-        Instantiates and logs the data_return class
-        """
+        """Instantiate and log the data_return class."""
         from . import data_handling
         self.data_return = data_handling.Data()
         self.data_return.set('log', self.log)
 
     def setup_atm(self):
         """
-        Instantiates atmosphere.  Attributes are:
+        Instantiate atmosphere.
+
+        Attributes are:
             self.atmos[].gas, self.atmos[].cloud and self.atmos[].property
         """
         from . import atmosphere
@@ -97,7 +96,9 @@ class PlanetBase:
 
     def setup_alpha(self):
         """
-        Instantiates absorption modules.  To change absorption, edit files under /constituents'
+        Instantiate absorption modules.
+
+        To change absorption, edit files under /constituents'
         """
         from . import alpha
         N = len(self.atmos)
@@ -107,21 +108,19 @@ class PlanetBase:
                                           load_formal=self.load_formal, verbose=self.verbose))
 
     def setup_bright(self):
-        """
-        Instantiates brightness module.
-        """
+        """Instantiate brightness module."""
         from . import brightness
         self.bright = brightness.Brightness(config=self.config, log=self.log, verbose=self.verbose)
 
     def setup_fIO(self):
-        """
-        Instantiates fileIO class
-        """
+        """Instantiate fileIO class."""
         from . import fileIO
         self.fIO = fileIO.FileIO(directory=self.config.output_directory)
 
     def set_bright_plots(self):
         """
+        Set brightness plots.
+
         If config.plot_bright is True, reads in brightness plotting modules.
         """
         if self.config.plot_bright:
@@ -132,6 +131,8 @@ class PlanetBase:
 
     def set_atm_plots(self, atmos):
         """
+        Set atmosphere plots.
+
         If config.plot_atm is True, reads in atmosphere plotting modules.
         """
         if self.config.plot_atm:
@@ -142,7 +143,9 @@ class PlanetBase:
 
     def set_freqs(self, freqs, freqUnit='GHz'):
         """
-        Sets the frequencies to use.  Sets self.freqs and self.freqUnit.
+        Set the frequencies to use.
+
+        Sets self.freqs and self.freqUnit.
 
         Parameters
         ----------
@@ -158,7 +161,9 @@ class PlanetBase:
 
     def set_b(self, b=[0.0, 0.0], block=[1, 1]):
         """
-        Sets the "impact parameter".  Sets self.b, self.block, self.data_type, self.imSize
+        Set the "impact parameter".
+
+        Sets self.b, self.block, self.data_type, self.imSize
 
         Parameter
         ---------
@@ -176,9 +181,7 @@ class PlanetBase:
         self.data_return.set('b', self.b)
 
     def map_b_to_atm(self, b):
-        """
-        Given the b index and value, returns the appropriate atmosphere index
-        """
+        """Given the b index and value, returns the appropriate atmosphere index."""
         if isinstance(b, str):
             return 0
         if self.config.bmapmodule is None or self.config.bmapmodule == 'nobmap':
@@ -190,9 +193,7 @@ class PlanetBase:
         return self.bmapModule.bmap(b=b)
 
     def set_image(self):
-        """
-        Returns the Namespace pertaining to data_type == image
-        """
+        """Return the Namespace pertaining to data_type == image."""
         block_postfix = '_'
         if self.data_type != 'image':
             return Namespace(true=False, block=block_postfix, imrow=[])
@@ -207,8 +208,9 @@ class PlanetBase:
 
     def alpha_layers(self, freqs, atmos, scale=False, get_alpha='calc', save_alpha='none'):
         """
-        Computes the layer absorption for all atmospheres.  If save_alpha is set,
-        it will write the profiles to file or memory.
+        Compute the layer absorption for all atmospheres.
+
+        If save_alpha is set, it will write the profiles to file or memory.
         """
         for i, atm in enumerate(atmos):
             self.alpha[i].reset_layers()
@@ -219,9 +221,7 @@ class PlanetBase:
                                      save_alpha=save_alpha)
 
     def init_run(self):
-        """
-        Initializes class variables for computing brightness temperature
-        """
+        """Initialize class variables for computing brightness temperature."""
         self.Tb = []
         self.rNorm = None
         self.tip = None
@@ -230,6 +230,7 @@ class PlanetBase:
             print('data_type = {}'.format(self.data_type))
 
     def atm_run(self, atm_run_type='std'):
+        """Run standard atmosphere pipeline."""
         for atm in self.atmos:
             getattr(atm, atm_run_type)()
             atmplt = self.set_atm_plots(atmos=atm)
@@ -242,7 +243,7 @@ class PlanetBase:
 
     def bright_run(self, b, freqs, atm, alpha, is_img, brtplt):
         """
-        Computes the brightness temperature for that "b" and updates self.Tb.
+        Compute the brightness temperature for that "b" and updates self.Tb.
 
         Parameters
         ----------
@@ -282,7 +283,7 @@ class PlanetBase:
 
     def populate_data_return(self, run_start, run_stop):
         """
-        Populates the data_return instance with the run data.
+        Populats the data_return instance with the run data.
 
         Parameters
         ----------
@@ -299,6 +300,7 @@ class PlanetBase:
         self.data_return.set('logfile', self.log.logfile)
 
     def check_reuse(self, freqs, scale, get_alpha, save_alpha, reuse_override='check'):
+        """Check whether to reuse parameters."""
         if reuse_override == 'true':
             return True
         if reuse_override == 'false':
@@ -344,7 +346,7 @@ class PlanetBase:
 
     def set_header(self, missed_planet, run_start, run_stop):
         """
-        Populates the header dictionary.
+        Populate the header dictionary.
 
         Parameters
         ----------

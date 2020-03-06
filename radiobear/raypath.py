@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Ray tracing."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import numpy as np
@@ -17,13 +18,17 @@ zHat = np.array([0.0, 0.0, 1.0])
 
 
 class Ray:
+    """Class to hold ray parameters."""
+
     allowed_parameters = ['ds', 'layer4ds', 'r4ds', 'P4ds', 'doppler', 'tip', 'rotate', 'rNorm']
 
     def __init__(self):
+        """Initialize."""
         for k in self.allowed_parameters:
             setattr(self, k, None)
 
     def update(self, **kwargs):
+        """Update."""
         for k, v, in kwargs.items():
             if k in self.allowed_parameters:
                 setattr(self, k, v)
@@ -32,7 +37,7 @@ class Ray:
 
 
 def computeAspect(Q, f=1.0):
-    """Convert the orientation vector [posAng,lat_planetographic] to the rotation angles"""
+    """Convert the orientation vector [posAng,lat_planetographic] to the rotation angles."""
     tip = -Q[0] * np.pi / 180.0   # 'tip' to north
     # 'rotate' the sub-earth planetographic latitude
     rotate = -np.arctan(np.tan(Q[1] * np.pi / 180.0) * (1.0 - f)**2)
@@ -40,19 +45,20 @@ def computeAspect(Q, f=1.0):
 
 
 def rotate2planet(rotate, tip, b):
-    """separate out to keep use consistent!"""
+    """Separate out to keep use consistent."""
     # out_vec = shape.rotZ(tip,shape.rotX(rotate,b))  # the first way, which is seemingly incorrect
     out_vec = shape.rotX(rotate, shape.rotZ(tip, b))
     return out_vec
 
 
 def rotate2obs(rotate, tip, b):
-    """This should be opposite to rotate2planet..."""
+    """Opposite to rotate2planet."""
     out_vec = shape.rotZ(tip, shape.rotX(rotate, b))
     return out_vec
 
 
 def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
+    """Find if at the edge of the planet."""
     tmp = (b[0]**2 + b[1]**2)
     try:
         zQ_Trial = np.arange(np.sqrt(1.0 - tmp) * 1.01, 0.0, -0.005)
@@ -100,10 +106,15 @@ def findEdge(atm, b, rNorm, tip, rotate, gtype, printdot=False):
 
 
 def compute_ds(atm, b, orientation=None, gtype=None, verbose=False):
-    """Computes the path length through the atmosphere given:
-            b = impact parameter (fractional distance to outer edge at that
-            latitude in observer's coordinates) orientation = position angle of
-            the planet [0]='tip', [1]='subearth latitude' """
+    """
+    Compute the path length through the atmosphere.
+
+    Parameters
+    ----------
+    b = impact parameter (fractional distance to outer edge at that
+    latitude in observer's coordinates) orientation = position angle of
+    the planet [0]='tip', [1]='subearth latitude'
+    """
     if gtype is None:
         gtype = atm.config.gtype
     if orientation is None:

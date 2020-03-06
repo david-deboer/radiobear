@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Class to hold/view data."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -9,17 +10,21 @@ from radiobear import utils
 
 class Data:
     """
-    This holds the data that one may wish to use as output.  Data are stored as numpy arrays
+    This holds the data that one may wish to use as output.
+
+    Data are stored as numpy arrays
     """
 
     allowed_parameters = ['f', 'freqUnit', 'b', 'Tb', 'header', 'start', 'stop',
                           'log', 'type', 'logfile']
 
     def __init__(self):
+        """Initialize allowed_parameters to None."""
         for a in self.allowed_parameters:
             setattr(self, a, None)
 
     def __repr__(self):
+        """Display."""
         s = ''
         for i, b in enumerate(self.b):
             bstr = 'b = {}:'.format(b)
@@ -31,6 +36,7 @@ class Data:
         return s
 
     def set(self, par, val):
+        """Set allowed_parameters."""
         if par not in self.allowed_parameters:
             print("{} not in valid data return list.".format(par))
             return
@@ -43,6 +49,7 @@ class Data:
             setattr(self, par, val)
 
     def show(self, include=['header', 'start', 'stop', 'f', 'b', 'Tb', 'log'], indent=1):
+        """Show data."""
         tab = indent * '\t'
         for v in include:
             if v == 'log':
@@ -58,6 +65,7 @@ class Data:
                 print("{}<<<{}>>>  {}".format(tab, v, getattr(self, v)))
 
     def show_header(self, indent=1):
+        """Show data header."""
         tab = indent * '\t'
         print('{}<<<Header>>>'.format(tab))
         tab1 = (indent + 1) * '\t'
@@ -66,6 +74,7 @@ class Data:
         print()
 
     def show_log(self, indent=1):
+        """Show log."""
         tab = indent * '\t'
         if self.log is not None:
             self.log.close()

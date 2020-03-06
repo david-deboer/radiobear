@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Absorption calculations."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import os
@@ -10,10 +11,13 @@ from . import logging
 
 
 class Alpha:
+    """Read in absorption formalisms and compute layer absorption."""
+
     def __init__(self, idnum=0, config=None, log=None, load_formal=True, verbose=True, **kwargs):
         """
-        Reads in absorption formalisms and computes layer absorption.  Note that they are all in GHz
+        Initialize class.
 
+        Note that freq are all in GHz.
         Parameters
         ----------
         idnum : int
@@ -43,6 +47,7 @@ class Alpha:
         self.memory = Namespace()
 
     def setup_formalisms(self):
+        """Read in and setup formalism methods."""
         # Get possible constituents
         s = 'Reading in absorption modules from ' + self.constituentsAreAt + '\n'
         self.log.add(s, self.verbose)
@@ -93,6 +98,7 @@ class Alpha:
                     self.other_dict[absorber][oc] = getattr(self.config, oc)
 
     def reset_layers(self):
+        """Reset class parameters."""
         self.P = None
         self.freqs = None
         self.layers = None
@@ -122,7 +128,7 @@ class Alpha:
 
     def read_alpha_data(self, save_type):
         """
-        Reads the saved_fields into self.
+        Read the saved_fields into self.
 
         Parameters
         ----------
@@ -140,10 +146,14 @@ class Alpha:
 
     def total_layer_alpha(self, absorb, lscale):
         """
-        Takes the layer absorption profile and scale-sums it.
+        Take the layer absorption profile and scale-sums it.
 
         Parameters
         ----------
+        absorb : numpy array
+                 layer absorptions
+        lscale : number or dictionary
+                 layer scale values
         """
         totalAbsorption = np.zeros_like(self.freqs)
         Nfreq = len(self.freqs)
@@ -178,8 +188,11 @@ class Alpha:
         return totalAbsorption
 
     def get_alpha_from_calc(self, freqs, T, P, gas, gas_dict, cloud, cloud_dict, units='invcm'):
-        """This gets the total absoprtion coefficient from gas.  It assumes the correct
-           frequency units, but maybe should correct that."""
+        """
+        Get the total absoprtion coefficient from gas.
+
+        It assumes the correct frequency units, but maybe should correct that.
+        """
         absorb = []
         print_meta = self.verbose == 'loud'
         for c in self.ordered_constituents:
@@ -199,9 +212,11 @@ class Alpha:
         return absorb
 
     def get_single_layer(self, freqs, layer, atm, lscale, units='invcm'):
-        """This is a wrapper to get the absorption coefficient, either from
-           calculating from formalisms or reading from saved data"""
+        """
+        Get the absorption coefficient for a layer.
 
+        Either calculate from formalisms or read from saved data
+        """
         if self._get_alpha_memfil:
             absorb = self.alpha_data[layer]
         else:
@@ -214,6 +229,7 @@ class Alpha:
         return self.total_layer_alpha(absorb=absorb, lscale=lscale)
 
     def get_layer_scale(self, scale, N):
+        """Get scale for a layer."""
         layer_scale = []
         if isinstance(scale, dict):
             for k, v in scale.items():

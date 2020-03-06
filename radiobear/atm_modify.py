@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Modify atmosphere."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import sys
@@ -6,7 +7,7 @@ import os
 
 
 def tweakAtm(self):
-    """Tweaks the atmosphere data..."""
+    """Tweak the atmosphere data."""
     # Import tweakmodule
     __import__(self.config.tweakmodule)
     tweakModule = sys.modules[self.config.tweakmodule]
@@ -29,9 +30,7 @@ def tweakAtm(self):
 
 
 def scaleAtm(self, scale_info='Scratch/scale.dat'):
-    """
-    This is a built-in tweak module.
-    """
+    """Built-in tweak module."""
     if isinstance(scale_info, str):
         import alpha
         col, scale_info = alpha.read_scalefile(scale_info)

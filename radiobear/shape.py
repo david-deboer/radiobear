@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Shape."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import numpy as np
@@ -10,9 +11,15 @@ _Z = 2
 
 
 class Shape:
-    """Calculates radius and normal to planet.  Types are:
-            gravity, reference, sphere/circle, ellipse"""
+    """
+    Calculate radius and normal to planet.
+
+    Types are:
+            gravity, reference, sphere/circle, ellipse
+    """
+
     def __init__(self, gtype='ellipse'):
+        """Initialize."""
         self.gtype = gtype
         self.gamma = 0.0
         self.pclat = 0.0
@@ -37,6 +44,7 @@ class Shape:
         self.saveShape = False
 
     def __str__(self):
+        """Return string."""
         s = '-------------------------Geoid---------------------------\n'
         s += ('type:  {}, gamma = {:.2f} deg, lat = {:.2f} deg, lng = {:.2f}\n'
               .format(self.gtype, u.r2d(self.gamma), u.r2d(self.pclat), u.r2d(self.delta_lng)))
@@ -49,6 +57,7 @@ class Shape:
         return s
 
     def printShort(self):
+        """Print short version."""
         s = ('{}:  gamma = {:.2f}, lat = {:.2f}, lng = {:.2f}, |r|={:.2f} km\n'
              .format(self.gtype, u.r2d(self.gamma), u.r2d(self.pclat),
                      u.r2d(self.delta_lng), self.rmag))
@@ -56,6 +65,7 @@ class Shape:
         return s
 
     def print_a_step(self):
+        """Print a step."""
         s = '\ttype:  {}, gamma = {:.2f} deg, '.format(self.gtype, u.r2d(self.gamma))
         s += 'lat = {:.2f} deg, lng = {:.2f}, '.format(u.r2d(self.pclat), u.r2d(self.delta_lng))
         s += '|g| = {:.2f}\n'.format(self.gmag * 1000.0)
@@ -67,6 +77,7 @@ class Shape:
 
     # ##---------------------------General handling function-------------------------------
     def calcShape(self, planet, r, pclat=90.0, delta_lng=0.0, gtype=None, latstep='default'):
+        """Calculate shape."""
         # set/reset gtype and latstep (ellipse doesn't need latstep)
         if gtype is None:
             gtype = self.gtype
@@ -77,11 +88,11 @@ class Shape:
             self.gravcalc_latstep = float(latstep)
 
         if gtype == 'gravity':
-            r = self.__calcGeoid(planet, r, pclat=pclat, delta_lng=delta_lng)
+            r = self._calcGeoid(planet, r, pclat=pclat, delta_lng=delta_lng)
         elif gtype == 'reference':
-            r = self.__calcFromReference(planet, r, pclat=pclat, delta_lng=delta_lng)
+            r = self._calcFromReference(planet, r, pclat=pclat, delta_lng=delta_lng)
         elif gtype == 'ellipse' or gtype == 'circle' or gtype == 'sphere':
-            r = self.__calcEllipse(planet, r, pclat=pclat, delta_lng=delta_lng)
+            r = self._calcEllipse(planet, r, pclat=pclat, delta_lng=delta_lng)
         else:
             print(gtype + ' not a valid planet shape')
             r = None
@@ -89,7 +100,7 @@ class Shape:
 
     # ##---------------------Below are the specific shape handlers----------------------
     # ##'reference' - fits a geoid at the reference pressure and scales from there
-    def __calcFromReference(self, planet, r, pclat=90.0, delta_lng=0.0):
+    def _calcFromReference(self, planet, r, pclat=90.0, delta_lng=0.0):
         if isinstance(self.referenceGeoid, bool):
             print('Calculating reference geoid at P_ref={}'.format(planet.config.p_ref))
             self.referenceRadius = planet.config.Req
@@ -127,8 +138,8 @@ class Shape:
         return self.rmag
 
     # ##'gravity' - does the full thing, but is very time-consuming
-    def __calcGeoid(self, planet, r, pclat, delta_lng):
-        """Starts at equatorial radius and moves north or south to compute geoid at pclat"""
+    def _calcGeoid(self, planet, r, pclat, delta_lng):
+        """Start at equatorial radius and moves north or south to compute geoid at pclat."""
         self.calcCounter += 1
         print('Geoid calc counter: ', self.calcCounter)
 
@@ -148,7 +159,7 @@ class Shape:
             radlatv = u.d2r(latv)
             vw = np.interp(latv, planet.config.vwlat, planet.config.vwdat) / 1000.0
             self.omega = planet.config.omega_m + vw / (r * np.cos(radlatv))
-            self.__gravity__(latv, delta_lng, r, GM, self.omega, planet.config.Jn, planet.config.RJ)
+            self._gravity(latv, delta_lng, r, GM, self.omega, planet.config.Jn, planet.config.RJ)
             dlat = u.d2r(latstep)
             dr_vec = r * dlat * self.t
             r_vec = self.r + dr_vec
@@ -160,7 +171,7 @@ class Shape:
         del pclatSteps
         return self.rmag
 
-    def __gravity__(self, pclat, delta_lng, r, GM, omega, Jn, RJ):
+    def _gravity(self, pclat, delta_lng, r, GM, omega, Jn, RJ):
         self.g_static = GM / r**2
         lat = u.d2r(pclat)
         lng = u.d2r(delta_lng)
@@ -209,7 +220,7 @@ class Shape:
         self.gmag = gt
 
     # ## 'ellipse' or 'circle' or 'sphere' - simply does the equivalent ellipse or circle
-    def __calcEllipse(self, planet, r, pclat, delta_lng):
+    def _calcEllipse(self, planet, r, pclat, delta_lng):
         a = r
         if self.gtype == 'ellipse':
             b = (planet.config.Rpol / planet.config.Req) * r
@@ -258,12 +269,13 @@ class Shape:
             self.saveShape.append(list(self.r))
             pclat -= plot_latstep
             if pclat > 0.0:
-                self.__calcEllipse(planet, r, pclat, delta_lng)
+                self._calcEllipse(planet, r, pclat, delta_lng)
 
         return self.rmag
 
 
 def rotX(x, V):
+    """Rotate about X."""
     Rx = np.array([[1.0, 0.0, 0.0],
                    [0.0, np.cos(x), -np.sin(x)],
                    [0.0, np.sin(x), np.cos(x)]])
@@ -271,6 +283,7 @@ def rotX(x, V):
 
 
 def rotY(y, V):
+    """Rotate about Y."""
     Ry = np.array([[np.cos(y), 0.0, np.sin(y)],
                    [0.0, 1.0, 0.0],
                    [-np.sin(y), 0.0, np.cos(y)]])
@@ -278,6 +291,7 @@ def rotY(y, V):
 
 
 def rotZ(z, V):
+    """Rotate about Z."""
     Rz = np.array([[np.cos(z), -np.sin(z), 0.0],
                    [np.sin(z), np.cos(z), 0.0],
                    [0.0, 0.0, 1.0]])

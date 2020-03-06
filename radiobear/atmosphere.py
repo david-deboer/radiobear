@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Atmosphere class on top of base."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -6,6 +7,8 @@ from . import atm_base
 
 
 class Atmosphere(atm_base.AtmosphereBase):
+    """Atmosphere class on top of base."""
+
     def __init__(self, planet, idnum=0, config='config.par', log=None, verbose=False, **kwargs):
         """
         Reads/computes the atmosphere to be used.
@@ -51,7 +54,8 @@ class Atmosphere(atm_base.AtmosphereBase):
 
     def simple(self, **kwwargs):
         """
-        This is the simple pipeline, that uses the files as-is.
+        Compute simple pipeline, that uses the files as-is.
+
         kwargs just catches any values that may needed for std below.
         """
         self.readGas()
@@ -61,9 +65,9 @@ class Atmosphere(atm_base.AtmosphereBase):
 
     def std(self, Pmin=None, Pmax=None, regridType=None, gasType=None, cloudType=None,
             otherType=None, tweak=True):
+        """Compute the standard pipeline."""
         from . import regrid
         from . import atm_modify
-        """This is the standard pipeline"""
         # ##Set run defaults
         if Pmin is None:
             Pmin = self.config.pmin

@@ -1,6 +1,8 @@
 # -*- mode: python; coding: utf-8 -*-
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
+
+"""Utilities."""
 import os
 import numpy as np
 
@@ -21,6 +23,7 @@ processingUnits = {'GHz': ['GHz', 'Hz', 'kHz', 'MHz'],
 
 
 def rb_path(add_path=None):
+    """Radiobear path."""
     rb_path = os.path.dirname(__file__)
     if add_path is not None:
         rb_path = os.path.join(rb_path, add_path)
@@ -28,6 +31,7 @@ def rb_path(add_path=None):
 
 
 def isanynum(x):
+    """Determine if any number type."""
     if isinstance(x, bool) or isinstance(x, dict) or isinstance(x, list):
         return False
     try:
@@ -38,10 +42,12 @@ def isanynum(x):
 
 
 def get_location_for_radiobear_setup():
+    """Get location for radiobear."""
     return os.path.dirname(__file__)
 
 
 def proc_unit(supplied_unit):
+    """Process a unit."""
     proc_unit = None
     for proc, units in processingUnits.items():
         if supplied_unit in units:
@@ -51,6 +57,7 @@ def proc_unit(supplied_unit):
 
 
 def convert_unit(v, supplied_unit):
+    """Convert units."""
     if supplied_unit is None:
         return v
     converted = v
@@ -76,22 +83,27 @@ rfBands = {'HF': [0.003, 0.03], 'VHF': [0.03, 0.3], 'UHF': [0.3, 1.0], 'L': [1.0
 
 
 def timer(dt):
+    """Timer."""
     return dt.seconds + dt.microseconds / 1e6
 
 
 def r2d(a):
+    """Radians to degrees."""
     return a * 180.0 / np.pi
 
 
 def d2r(a):
+    """Degress to radians."""
     return a * np.pi / 180.0
 
 
 def r2asec(a):
+    """Radians to arcseconds."""
     return 3600.0 * r2d(a)
 
 
 def getRFband(freq, unit='GHz'):
+    """Get RF band values."""
     freq = freq * Units[unit] / Units['GHz']
     for bnd in rfBands:
         if rfBands[bnd][0] <= freq < rfBands[bnd][1]:
@@ -100,6 +112,7 @@ def getRFband(freq, unit='GHz'):
 
 
 def invertDictionary(dic):
+    """Invert a dictionary."""
     e = {}
     for d in dic.keys():
         e[dic[d]] = d
@@ -109,7 +122,7 @@ def invertDictionary(dic):
 
 
 def ls(directory='Output', tag='dat', show=True, returnList=False):
-    """Generates file list for plotTB and writeWavel"""
+    """Generate file list for plotTB and writeWavel."""
     filelist = os.listdir(directory)
     files = []
     i = 0
@@ -125,6 +138,7 @@ def ls(directory='Output', tag='dat', show=True, returnList=False):
 
 
 def b_type(b):
+    """Determine type of b parameter."""
     if isinstance(b, str):
         return b.lower()
     if isinstance(b[0], str):
@@ -137,6 +151,7 @@ def b_type(b):
 
 
 def get_data_from(line):
+    """Get data from line."""
     if line[0] in commentChars or len(line) < 4:
         return None
     data = line.split()
@@ -148,7 +163,10 @@ def get_data_from(line):
 
 
 def get_expected_number_of_entries(fp):
-    """Ad hoc function to guess the number of file entries expected
+    """
+    Get expected number of entries per line.
+
+    Ad hoc function to guess the number of file entries expected
     """
     enoe = {}
     for line in fp:
@@ -164,6 +182,7 @@ def get_expected_number_of_entries(fp):
 
 
 def bang():
+    """Show files."""
     from . import plotting
     files = ls(show=False, returnList=True)
     for f in files:

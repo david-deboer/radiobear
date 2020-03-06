@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Utilities."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -10,7 +11,9 @@ from . import utils
 
 def set_b(b, block=[1, 1], **kwargs):
     """
-    Process b request.  Sets data_type ('image', 'spectrum', 'profile'), and imSize
+    Process b request.
+
+    Sets data_type ('image', 'spectrum', 'profile'), and imSize
 
        Parameters
        ----------
@@ -28,7 +31,7 @@ def set_b(b, block=[1, 1], **kwargs):
        -------
        Namespace
            contains b, block, data_type, imSize
-       """
+    """
     # Deal with strings
     return_value = Namespace(b=None, data_type=None, block=block, imSize=None)
     if isinstance(b, str):
@@ -88,6 +91,7 @@ def set_b(b, block=[1, 1], **kwargs):
 def set_freq(freqs, freqUnit='GHz'):
     """
     Process frequency request.
+
     Return a list converted from freqUnit to processingFreqUnit and reassigns freqUnit procUnit.
 
     Parameters
@@ -126,6 +130,7 @@ def set_freq(freqs, freqUnit='GHz'):
 
 
 def proc_string(srq):
+    """Process the request string."""
     if ',' in srq:
         return [float(x) for x in srq.split(',')]
     if ':' in srq:

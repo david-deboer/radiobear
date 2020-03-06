@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Regrid atmosphere."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 from scipy.interpolate import interp1d
@@ -8,13 +9,15 @@ import os.path
 
 
 def regrid(atm, regridType=None, Pmin=None, Pmax=None):
-    """This puts atm and cloud on the same grid used later for calculations.
-       It has three different regimes:
+    """
+    Put atm and cloud on the same grid used later for calculations.
+
+    It has three different regimes:
         1 - interpolating within given points:  currently linear -- moving to:
             P,T,z are assumed to follow given adiabat
         2 - extrapolating outward:  project last slope out for everything
         3 - extrapolating inward:  uses a dry adiabat
-       It has two regridTypes:
+    It has two regridTypes:
         1 - pressure grid points in file
             format: 'filename' (string)
                 where
@@ -23,7 +26,6 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
             format:  'number'
                     where 'number' is number of steps within range (int)
     """
-
     # set regridType/regrid
     if regridType is None:
         regridType = atm.config.regridType
@@ -82,6 +84,7 @@ def regrid(atm, regridType=None, Pmin=None, Pmax=None):
 
 
 def read_grid_points_from_file(filename):
+    """Read grid points from file."""
     Pgrid = np.loadtxt(filename)
     if not np.all(np.diff(Pgrid) > 0.0):
         print('Warning in regrid:  P not increasing - flipping around and trying again')
@@ -92,7 +95,7 @@ def read_grid_points_from_file(filename):
 
 
 def interpolate(gctype, gas_or_cloud, fillval, atm, Pgrid):
-    # ## Interpolate gas/cloud onto the grid - currently both linear
+    """Interpolate gas/cloud onto the grid - currently both linear."""
     berr = False
     interpType = 'linear'
 
@@ -116,7 +119,7 @@ def interpolate(gctype, gas_or_cloud, fillval, atm, Pgrid):
 
 
 def extrapolate(gas, fillval, atm):
-    """First extrapolate in, then the rest of the fillvals get extrapolated out"""
+    """Extrapolate in, then the rest of the fillvals get extrapolated out."""
     # extrapolate constituents in as fixed mixing ratios
     for yvar in atm.config.C:
         if yvar in ['Z', 'P', 'T', 'DZ']:
@@ -155,13 +158,13 @@ def extrapolate(gas, fillval, atm):
         for yvar in atm.config.C:
             if yvar in ['P', 'DZ']:
                 continue
-            gas[atm.config.C[yvar]] = extrapolate_outward(gas[atm.config.C['P']],
-                                                          gas[atm.config.C[yvar]], fillval)
+            gas[atm.config.C[yvar]] = _extrapolate_outward(gas[atm.config.C['P']],
+                                                           gas[atm.config.C[yvar]], fillval)
 
     return gas
 
 
-def extrapolate_outward(x, y, fillval):
+def _extrapolate_outward(x, y, fillval):
     for i in range(len(y)):
         if y[i] != fillval:
             break

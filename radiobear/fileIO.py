@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""FileIO."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -8,7 +9,10 @@ from . import data_handling
 
 
 class FileIO(object):
+    """File input/output class."""
+
     def __init__(self, directory='Output', scratch_spec='Scratch/specoutputline.dat'):
+        """Initialize."""
         self.directory = directory
         self.scratch_spec = scratch_spec
 
@@ -37,6 +41,7 @@ class FileIO(object):
         return output_file
 
     def writeSpectrum(self, fp, xaxis):
+        """Write spectrum file."""
         fp_lineoutput = open(self.scratch_spec, 'w')
         if xaxis.startswith('wave'):
             s = '# cm   K@b  \t'
@@ -63,6 +68,7 @@ class FileIO(object):
         fp_lineoutput.close()
 
     def writeProfile(self, fp, xaxis):
+        """Write profile file."""
         if xaxis.startswith('wave'):
             s = '# b  K@cm  \t'
         else:
@@ -86,6 +92,7 @@ class FileIO(object):
             fp.write(s)
 
     def writeImage(self, fp):
+        """Write image file."""
         for data in self.data.Tb:
             s = ''
             for d in data:
@@ -94,13 +101,14 @@ class FileIO(object):
             fp.write(s)
 
     def writeHeader(self, header, fp):
+        """Write header."""
         alpha_header = sorted(header.keys())
         for hdr in alpha_header:
             fp.write(header[hdr] + '\n')
 
     def flist(self, files=None, tag=None):
         """
-        This generates the list of filenames to be opened.
+        Generate the list of filenames to be opened.
 
         Parameters:
         ------------
@@ -144,6 +152,7 @@ class FileIO(object):
         return ret_files
 
     def show(self, property='all'):
+        """Show properties."""
         data_dict = vars(self.data)
         if isinstance(property, str):
             if property == 'all':
@@ -162,7 +171,7 @@ class FileIO(object):
 
     def read(self, fn=None, tag='dat', file_type='spectrum'):
         """
-        Reads brightness temperature file(s):
+        Read brightness temperature file(s).
 
         Parameters:
         ------------
@@ -291,12 +300,13 @@ class FileIO(object):
         self.data[filename].y = np.array(y)
 
     def set_header_attr(self, filename):
+        """Set header attribute."""
         for key in self.starred_header_keys:
             if key in self.data[filename].allowed_parameters:
                 self.data[filename].set(key, self.data[filename].header[key])
 
     def read_header(self, header_text):
-        """Reads the radiobear header"""
+        """Read the radiobear header."""
         _header = {}
         self.starred_header_keys = []
         for hdr in header_text:

@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Planet class."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import datetime
@@ -26,9 +27,11 @@ class Planet(planet_base.PlanetBase):
         kwargs
             E.g. 'plot_atm', etc (and other config parameters)
     """
+
     def __init__(self, name, config_file='config.par', run_atm=True,
                  load_formal=True, verbose=True,
                  **kwargs):
+        """Initialize planet."""
         self.load_formal = load_formal
         self.verbose = verbose
         super().__init__(name=name, config_file=config_file)
@@ -55,7 +58,7 @@ class Planet(planet_base.PlanetBase):
     def run(self, freqs, b='disc', scale=False, get_alpha='calc', save_alpha='none',
             freqUnit='GHz', block=[1, 1], reuse_override='check'):
         """
-        Runs the model to produce the brightness temperature, weighting functions.
+        Run the model to produce the brightness temperature, weighting functions.
 
         Changes in the top line (excluding b) with re-run alpha_layers.
 

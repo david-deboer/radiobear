@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Compute brightness at given ray."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import numpy as np
@@ -10,10 +11,14 @@ from . import logging
 
 
 class Brightness():
+    """Brightness class."""
 
     def __init__(self, config=None, log=None, verbose=True, **kwargs):
-        """This calculates the brightness temperature of the planets.
-           It must be used with atmosphere and alpha"""
+        """
+        Calculate the brightness temperature of the planets.
+
+        It must be used with atmosphere and alpha
+        """
         self.verbose = verbose
         self.log = logging.setup(log)
         if config is None or isinstance(config, str):
@@ -23,8 +28,7 @@ class Brightness():
         self.config = config
 
     def single(self, b, freqs, atm, alpha, orientation=None, taulimit=20.0):
-        """This computes the brightness temperature along one ray path"""
-
+        """Compute the brightness temperature along one ray path."""
         disc_average = utils.b_type(b).startswith('dis')
         if disc_average:
             b = [0.0, 0.0]
@@ -122,6 +126,7 @@ class Brightness():
         return self.Tb
 
     def savertm(self, tag=None, path=None):
+        """Save all rtm profiles by type."""
         if tag is None:
             filename = None
         else:
@@ -144,6 +149,7 @@ class Brightness():
         self.saveTblayer(filename, path)
 
     def saveit(self):
+        """Save all in file."""
         for i, f in enumerate(self.freqs):
             filename = 'pawtt_{:.3f}.out'.format(f)
             fp = open(filename, 'w')
@@ -158,6 +164,7 @@ class Brightness():
             fp.close()
 
     def saveAlpha(self, filename=None, path='.'):
+        """Save alpha profile."""
         if filename is None:
             filename = 'alpha.out'
         filename = os.path.join(path, filename)
@@ -176,6 +183,7 @@ class Brightness():
         s = ('{} ({} x {})').format(filename, i + 1, j + 1)
 
     def saveWeight(self, norm=False, filename=None, path='.'):
+        """Save weighting function profile."""
         if filename is None:
             filename = 'wgt.out'
         fp = open(filename, 'w')
@@ -200,6 +208,7 @@ class Brightness():
         return s
 
     def saveTau(self, filename=None, path='.'):
+        """Save opacity profile."""
         if filename is None:
             filename = 'tau.out'
         os.path.join(path, filename)
@@ -219,6 +228,7 @@ class Brightness():
         return s
 
     def saveTblayer(self, filename=None, path='.'):
+        """Save layer brightness temperature profile."""
         if filename is None:
             filename = 'tblayer.out'
         os.path.join(path, filename)

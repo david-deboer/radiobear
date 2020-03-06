@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Base class for atmosphere."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 import numpy as np
@@ -12,10 +13,10 @@ from . import logging
 
 
 class AtmosphereBase:
+    """Base class attributes for atmosphere."""
+
     def __init__(self, planet, config=None, log=None, **kwargs):
-        """
-        Atmosphere base class
-        """
+        """Initialize atmosphere base class."""
         self.planet = planet.capitalize()
         self.log = logging.setup(log)
 
@@ -36,7 +37,7 @@ class AtmosphereBase:
             sys.path.insert(0, config.path)
 
     def readGas(self):
-        """Reads gas profile file as self.gas"""
+        """Read gas profile file as self.gas."""
         gasFile = os.path.join(self.config.path, self.config.gasFile[self.idnum])
 
         self.gas = []
@@ -76,8 +77,7 @@ class AtmosphereBase:
         self._renorm_z('gas')
 
     def readCloud(self):
-        """Reads in cloud data if we have it..."""
-
+        """Read in cloud data if we have it."""
         Cldict = self.config.Cl
         cloudFile = os.path.join(self.config.path, self.config.cloudFile[self.idnum])
 
@@ -117,7 +117,7 @@ class AtmosphereBase:
         self._renorm_z('cloud')
 
     def computeProp(self):
-        """This module computes derived atmospheric properties (makes self.property)"""
+        """Compute derived atmospheric properties (makes self.property)."""
         self.chem = {}
         for key in self.config.C:
             if key in ['P', 'T', 'Z', 'DZ']:
@@ -193,8 +193,11 @@ class AtmosphereBase:
         self.property = np.array(self.property)
 
     def is_present(self, c, tiny=1.0E-30):
-        """This checks to see if a constituent is there and sets 0.0 or negative values to tiny.
-           This is generally for log plotting."""
+        """
+        Check to see if a constituent is there and sets 0.0 or negative values to tiny.
+
+        This is generally for log plotting.
+        """
         v = [tiny if x <= tiny else x for x in c]
         present = bool(len(np.where(np.array(v) > tiny)[0]))
         return present, v

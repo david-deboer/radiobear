@@ -1,4 +1,5 @@
 # -*- mode: python; coding: utf-8 -*-
+"""Read in configuration."""
 # Copyright 2018 David DeBoer
 # Licensed under the 2-clause BSD license.
 
@@ -9,6 +10,7 @@ import os.path
 
 def set_single_val(val, unit=None,
                    special={'true': True, 'false': False, 'none': None, 'null': None}):
+    """Set a single value from config input."""
     if isinstance(val, str):
         if val.lower() in special.keys():
             val = special[str(val).lower()]
@@ -35,11 +37,10 @@ default_config_files = [os.path.join(os.path.dirname(__file__), 'default_config.
 
 
 class planetConfig:
-    """
-    Initializes, reads in, updates and displays the configuration.
-    """
+    """Initializes, reads in, updates and displays the configuration."""
+
     def __init__(self, planet, configFile):
-        """reads in config file"""
+        """Read in config file."""
         planet = planet.capitalize()
         self.planet = planet
         self.filename = configFile
@@ -59,11 +60,15 @@ class planetConfig:
         self.setConfig(configFile)
 
     def __str__(self):
+        """Return string."""
         return self.show()
 
     def setConfig(self, configFile):
-        """Reads in config files and updates after defaults set in __init__.
-        These are all shown in print(<instance>)"""
+        """
+        Read in config files and update after defaults set in __init__.
+
+        These are all shown in print(<instance>)
+        """
         if configFile is None:
             print('Config file not provided.  Using defaults.')
             return 0
@@ -184,7 +189,7 @@ class planetConfig:
             setattr(self, tok, set_single_val(v))
 
     def show(self, print_it=True):
-        """Returns string containing configuration"""
+        """Return string containing configuration."""
         s = 'Run parameters:\n'
         keys = list(self.toks.keys())
         keys.sort()

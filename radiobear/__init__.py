@@ -1,4 +1,4 @@
-# -*- mode: python; coding: utf-8 -*-
+# -*- mode: python; coding: utf-8 -*-  # noqa
 # Copyright 2019 David DeBoer
 # Licensed under the 2-clause BSD license.
 
