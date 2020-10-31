@@ -111,13 +111,12 @@ def getRFband(freq, unit='GHz'):
     return None
 
 
-def invertDictionary(dic):
+def invertDictionary(dic, reverse=False):
     """Invert a dictionary."""
     e = {}
     for d in dic.keys():
         e[dic[d]] = d
-    sk = list(e.keys())
-    sk.sort()
+    sk = sorted(list(e.keys()), reverse=reverse)
     return e, sk
 
 
@@ -154,9 +153,8 @@ def get_data_from(line):
     """Get data from line."""
     if line[0] in commentChars or len(line) < 4:
         return None
-    data = line.split()
     try:
-        cval = [float(x) for x in data]
+        cval = [float(x) for x in line.split()]
     except ValueError:
         cval = None
     return cval
@@ -166,7 +164,9 @@ def get_expected_number_of_entries(fp):
     """
     Get expected number of entries per line.
 
-    Ad hoc function to guess the number of file entries expected
+    Get the number of float entries per line and return the most numerous
+    length value.  If more than half aren't the maximum value a ValueError
+    if raised.
     """
     enoe = {}
     for line in fp:
@@ -174,11 +174,12 @@ def get_expected_number_of_entries(fp):
         if cval is not None:
             enoe[len(cval)] = enoe.setdefault(len(cval), 0) + 1
     fp.seek(0)
-    vm = [-1, 0]
-    for v in enoe.items():
-        if v[1] > vm[1]:
-            vm = v
-    return v[0]
+    invdict, sortedkeys = invertDictionary(enoe, reverse=True)
+
+    if len(sortedkeys) > 1:
+        if 2 * sum(sortedkeys[1:]) > sortedkeys[0]:
+            raise ValueError("Not enough data lines in file: {}".format(sortedkeys))
+    return invdict[sortedkeys[0]]
 
 
 def bang():

@@ -45,6 +45,7 @@ class AtmosphereBase:
         value_sorted_Cdict_keys = sorted(Cdict, key=lambda k: Cdict[k])
         for k in value_sorted_Cdict_keys:
             self.gas.append([])
+
         self.nConstituent = len(Cdict)
         with open(gasFile, "r") as fp:
             expected_number = utils.get_expected_number_of_entries(fp)
