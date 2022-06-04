@@ -41,11 +41,12 @@ class Planet(planet_base.PlanetBase):
         self.scale = None
         self.get_alpha = None
         self.freqs = None
-
-        self.log.add(self.planet, False)
-        self.log.add(config_file, False)
+        if self.config.write_log_file:
+            self.log.add(self.planet, False)
+            self.log.add(config_file, False)
         pars = self.config.show(print_it=False)
-        self.log.add(pars, False)
+        if self.config.write_log_file:
+            self.log.add(pars, False)
 
         # run atmosphere
         if run_atm:
@@ -103,7 +104,8 @@ class Planet(planet_base.PlanetBase):
                                                                utils.proc_unit(freqUnit))
             else:
                 s = '{} at {} {}'.format(self.planet, freqs[0], utils.proc_unit(freqUnit))
-            self.log.add(s, self.verbose)
+            if self.config.write_log_file:
+                self.log.add(s, self.verbose)
             self.alpha_layers(freqs=self.freqs, atmos=self.atmos,
                               scale=scale, get_alpha=get_alpha, save_alpha=save_alpha)
             D_timer = datetime.datetime.now()
@@ -116,7 +118,8 @@ class Planet(planet_base.PlanetBase):
         #  Loop over b values
         self.init_run()
         runStart = datetime.datetime.now()
-        self.log.add('Run start ' + str(runStart), False)
+        if self.config.write_log_file:
+            self.log.add('Run start ' + str(runStart), False)
         for i, bv in enumerate(self.b):
             # Figure out which alpha to use for this b.  For now only one.
             j = self.map_b_to_atm(bv)
@@ -128,7 +131,8 @@ class Planet(planet_base.PlanetBase):
         runStop = datetime.datetime.now()
         missed_planet = self.rNorm is None
         self.set_header(missed_planet, runStart, runStop)
-        self.log.add('Run stop ' + str(runStop), False)
+        if self.config.write_log_file:
+            self.log.add('Run stop ' + str(runStop), False)
         self.populate_data_return(runStart, runStop)
         if self.verbose:
             print("RT calc took {:.1f} s".format(utils.timer(runStop - runStart)))

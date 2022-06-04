@@ -74,7 +74,7 @@
             "unit": null,
             "help": "atmospheric constituent file - column order set by C",
             "default": {
-                "Jupiter": ["jupiter.paulSolar"],
+                "Jupiter": ["jupiter.junogas"],
                 "Saturn": ["saturn.Solar"],
                 "Uranus": ["uranus.paul10xsolar_wet.dat"],
                 "Neptune": ["neptune.paulCO_cloud21_fletcher_best_dry"],
@@ -110,7 +110,7 @@
             "unit": null,
             "help": "atmospheric cloud file - column order set by Cl",
             "default": {
-                "Jupiter": ["jupiter.paulclSolar"],
+                "Jupiter": ["jupiter.junoclouds"],
                 "Saturn": ["saturn.clSolar"],
                 "Uranus": ["uranus.cloud10xsolar_wet.dat"],
                 "Neptune": ["nepcloud_CO.cloud21_fletcher_best_dry"],
@@ -242,7 +242,7 @@
             "unit": "degrees",
             "help": "position angle and sub-earth latitude (planetographic)",
             "default": {
-                "Jupiter": [3.12, 0.0],
+                "Jupiter": [0.0, 0.0],
                 "Saturn": [0.0, 0.0],
                 "Uranus": [0.0, 0.0],
                 "Neptune": [348.8274, -28.97],

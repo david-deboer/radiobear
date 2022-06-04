@@ -137,7 +137,7 @@ def __alpha__(freq, T, P, X, P_dict, other_dict, par):
     all_over_f_split = np.all([x > f_split for x in freq])
     all_under_f_split = np.all([x <= f_split for x in freq])
     if all_under_f_split:
-        gnu_H2 = 1.6940
+        gnu_H2 = 1.640
         gnu_He = 0.75
         gnu_NH3 = 0.852
         GAMMA_H2 = 0.7756

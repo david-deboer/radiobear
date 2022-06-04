@@ -5,10 +5,10 @@
             "unit": null,
             "help": "",
             "default": {
-                "Jupiter": true,
-                "Saturn": true,
-                "Uranus": true,
-                "Neptune": true,
+                "Jupiter": false,
+                "Saturn": false,
+                "Uranus": false,
+                "Neptune": false,
                 "X": true
             }
         },
@@ -17,10 +17,10 @@
             "unit": null,
             "help": "",
             "default": {
-                "Jupiter": true,
-                "Saturn": true,
-                "Uranus": true,
-                "Neptune": true,
+                "Jupiter": false,
+                "Saturn": false,
+                "Uranus": false,
+                "Neptune": false,
                 "X": true
             }
         },

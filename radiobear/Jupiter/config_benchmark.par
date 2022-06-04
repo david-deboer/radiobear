@@ -8,10 +8,10 @@
 #
 #---------------------------------ATMOSPHERE-------------------------------------#
 ### gas data
-gasfile jupiter.juno_gas
+gasfile jupiter.benchmark_gas
 constituents Z T P H2 HE CH4 NH3 H2O H2S SOLN OTHER PH3 CO CO13 HCN DZ
 ### cloud data
-cloudfile jupiter.juno_cloud
+cloudfile jupiter.benchmark_nocloud
 clouds Z T P SOLN H2O NH4SH NH3 H2S CH4 AR PH3 DZ
 ### other data, tweak and regrid
 tweakmodule JupiterNoTweak
