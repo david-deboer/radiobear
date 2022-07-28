@@ -112,6 +112,8 @@ def model_stochastic(self, mix=[0.3,-0.3,0.3,-0.3,0.3,-0.3,0.3,-1], P_n=[100,40,
     rb.atm_modify.model_stochastic(j, plotting=True,mixing_mode='constant')
 
 
+
+
     References
     ------------
     Moeckel et al., 2022 - Ammonia Abundance Derived from VLA and Juno observations 
@@ -126,8 +128,12 @@ def model_stochastic(self, mix=[0.3,-0.3,0.3,-0.3,0.3,-0.3,0.3,-1], P_n=[100,40,
     4/2/21 CM, updated H2S reference value to be consistent with Solar abundances
     7/12/22 CM, Rewrote the function to fit within radiobear 
     '''
-
+    # Check that input is consistent 
     assert len(mix)==len(P_n)-1 
+    # Check that pressure is ascending 
+    assert np.all(np.diff(P_n) < 0 )
+    # Check that pressure nodes are sorted  
+
     P = self.atmos[0].gas[self.atmos[0].config.C['P']]
 
     T = self.atmos[0].gas[self.atmos[0].config.C['T']]
@@ -186,11 +192,11 @@ def model_stochastic(self, mix=[0.3,-0.3,0.3,-0.3,0.3,-0.3,0.3,-1], P_n=[100,40,
             h2o_prof[int(idx_n[i]):int(idx_n[i-1])] = h2o_prof[int(idx_n[i-1])] - (np.log(P_n[i-1]) - np.log(P[int(idx_n[i]):int(idx_n[i-1])]))*mix[i-1]*O2H 
 
 
-    # Loop between 0.2 and 10 bar for condensation 
-    i_s =  int(np.where(P>0.2)[0][0]) # first index for the pressure node 
-    i_f =  int(np.where(P>10)[0][0]) # last index for the pressure node 
+    # Loop between 0.2 and 10 bar for condensation (Note this only works for Jupiter)
+    # i_s =  int(np.where(P>0.2)[0][0]) # first index for the pressure node 
+    # i_f =  int(np.where(P>10)[0][0]) # last index for the pressure node 
 
-    for i in range(i_s,i_f):
+    for i in range(len(P)):
         # Calculate the saturation pressure for the relevant gases at the given pressure 
         # --------------------------------------------------------------
         # NH3 
@@ -259,247 +265,222 @@ def model_stochastic(self, mix=[0.3,-0.3,0.3,-0.3,0.3,-0.3,0.3,-1], P_n=[100,40,
     return None
 
 
-    #def nh3_profile(j, deep_nh3=340.56e-6, deep_h2s=None, deep_h2o=None, rh_nh3 = 0.42, rh_nh4sh = 0.08, nh3_h2o = 0.03, dnh3dlP= 50e-6 , Pt_vm=15.5, Pb_vm=50,  adiabat='dry',  plotting=False, scalefactor=False, figsize=(5,5)):
+#def nh3_profile(j, deep_nh3=340.56e-6, deep_h2s=None, deep_h2o=None, rh_nh3 = 0.42, rh_nh4sh = 0.08, nh3_h2o = 0.03, dnh3dlP= 50e-6 , Pt_vm=15.5, Pb_vm=50,  adiabat='dry',  plotting=False, scalefactor=False, figsize=(5,5)):
 
-    # def model_tceq(self,deep_nh3=2.30, deep_h2s=2.30, deep_h2o=2.30, rh_nh3 = 0.42, rh_nh4sh = 0.08, nh3_h2o = 0.03, dnh3dlP= 0.3 , Pt_vm=15.5, Pb_vm=50,)
-    #     ''' 
-    #     # Atmospheric structure based on modified thermo-chemical equilibrium models 
+def model_tceq(self,deep_nh3 = 2.30, deep_h2s = 2.30, deep_h2o = 2.30, rh_nh3 = 0.42, rh_nh4sh = 0.08, nh3_h2o = 0.03, rh_h2o = 1.0, dnh3dlP = 0.3, Pt_vm = 15.5, Pb_vm = 30, P_stra=0.2, plotting = False, adiabat = 'dry'):
+    ''' 
+    # Atmospheric structure based on modified thermo-chemical equilibrium models 
 
 
-    #     Parameters
-    #     ----------
-    #     j : x class 
-    #         [-] Radio bear instance of a planet 
+    Parameters
+    ----------
+    j : x class 
+        [-] Radio bear instance of a planet 
 
-    #     Keyword Arguments
-    #     ----------
+    Keyword Arguments
+    ----------
 
-    #     list all here 
+    list all here 
 
-    #     Returns
-    #     -------
-    #     Modifys the ammonia, h2s profile in the planet instance j 
+    Returns
+    -------
+    Modifys the ammonia, h2s profile in the planet instance j 
 
+    
+    Warnings
+    -------
+    
+    
+    Example
+    -------
+    import numpy as np 
+    import radiobear as rb  
+
+    j = rb.planet.Planet('jupiter', plot_atm=False, plot_bright=False,verbose=False) 
+
+    j.atmos[0].cloud[j.atmos[0].config.Cl['SOLN']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['SOLN']])
+    j.atmos[0].cloud[j.atmos[0].config.Cl['H2O']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['H2O']])
+    j.atmos[0].cloud[j.atmos[0].config.Cl['NH4SH']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['NH4SH']])
+    j.atmos[0].cloud[j.atmos[0].config.Cl['NH3']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['NH3']])
+
+    rb.atm_modify.model_tceq(j, plotting=True)
+
+
+    References
+    ------------
+    
+    Todo
+    ----- 
+
+    Notes
+    -------
+    12/16/19, CM, initial comit 
+    4/2/2021 CM, updated H2S reference value to be consistent with Solar abundances 
+    '''
+
+    P = self.atmos[0].gas[self.atmos[0].config.C['P']]
+    T = self.atmos[0].gas[self.atmos[0].config.C['T']]
+
+    # Import the difference between dry and wet adiabat 
+
+    # if adiabat.lower() == 'dry':
+    #     T = TPprofile(P,adiabat='dry', updated=True)
+    # elif adiabat.lower() == 'wet':
+    #     T = TPprofile(P,adiabat='wet', updated=True)
+    # elif adiabat>0 and adiabat < 1.5: 
+
+    #     Td  = TPprofile(adiabat='dry') 
+    #     Tw  = TPprofile(adiabat='wet') 
+    #     T = Tw + (Td-Tw)*adiabat 
+    # else:
+    #     try: 
+    #         T = j.atmos[0].gas[j.atmos[0].config.C['T']]
+    #     except TypeError: 
+    #         T = j.atmos.gas[j.atmos.config.C['T']]
+
+    
+    nh3_prof = np.copy(self.atmos[0].gas[self.atmos[0].config.C['NH3']])
+    h2s_prof = np.copy(self.atmos[0].gas[self.atmos[0].config.C['H2S']])
+    h2o_prof = np.copy(self.atmos[0].gas[self.atmos[0].config.C['H2O']])
+
+    # Adjust deep_nh3 for ammonia 
+    deep_nh3 *=(1-nh3_h2o)*N2H
+    deep_h2s *= S2H 
+    # Deep NH3 is the well mixed ammonia at depth! For calculation mid and deep are the same
+    mid_nh3 = (deep_nh3 - (np.log(Pb_vm)-np.log(Pt_vm))*dnh3dlP*N2H)
+    
+    # Compute H2S based on reference value and how much ammonia is depleted at the top of the atmosphere
+    mid_h2s = deep_h2s * mid_nh3/deep_nh3
+
+
+    # Temporary solution for water clouds 
+    rh_nh4sh_nh3 = 1.0
+    rh_nh4sh_h2s = 1.0
+
+    # Set the stratosphere abudance to 1e-13 
+    idx_stratosphere = np.where(P > 0.2)[0][0]
+    nh3_prof[0:idx_stratosphere] = 1e-13 
+
+    for i in range(idx_stratosphere,len(P)):
+
+        # Calculate the saturation pressure for the relevant gases 
+        # --------------------------------------------------------------
+        # Ammonia 
+        psat_nh3 = chemistry.ConstituentProperties('NH3').Psat(T[i])
+        pp_nh3= P[i] * mid_nh3
+
+        # H2S 
+        psat_h2s = chemistry.ConstituentProperties('H2S').Psat(T[i])
+        pp_h2s= P[i] * mid_h2s
+
+        # NH4SH 
+        psat_nh4sh = chemistry.ConstituentProperties('NH4SH').Psat(T[i])
+        # Modify the saturation pressure by the relative humidity 
+        psat_nh4sh /= rh_nh4sh
+
+        # H2O profile 
+        psat_h2O = chemistry.ConstituentProperties('H2O').Psat(T[i])
+        pp_h2o = P[i] * mid_h2s
+
+        # Calculate the fraction of depletion due to clouds (See Tollefson Thesis, Section 5.3) 
+        # --------------------------------------------------------------
+        a = 1 
+        b = -(1+mid_nh3/mid_h2s)
+        c =  mid_nh3/mid_h2s - psat_nh4sh/(mid_h2s*P[i])**2
+
+
+        z = (-b - np.sqrt(b**2 - 4*a*c))/(2*a)
+
+        pp_h2s = mid_h2s*P[i]
+        pp_nh3 = mid_nh3*P[i]
         
-    #     Warnings
-    #     -------
-        
-        
-    #     Example
-    #     -------
+        if z<0:
+            z = 0 
 
-    #     import radiobear as rb  
-    #     import Retrieval  as rr 
+        # Make the NH3 clouds, abundance is set by the abundance left after the NH4SH clouds 
+        # --------------------------------------------------------------
+        cpp_nh3 = (mid_nh3 -  z*mid_h2s)*P[i]
 
-    #     j = rb.planet.Planet('jupiter', plot_atm=False, plot_bright=False,verbose=False) 
+        # The relative humidity determines if over or undersaturate, and then changes the saturation pressure accordingly 
+        if  cpp_nh3 > psat_nh3*rh_nh3:
+            nh3_prof[i] = rh_nh3 * psat_nh3/P[i]
+        else:
+            # If we are ouyt
+            nh3_prof[i] = mid_nh3
+            h2s_prof[i] = deep_h2s
 
-    #     j.atmos[0].cloud[j.atmos[0].config.Cl['SOLN']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['SOLN']])
-    #     j.atmos[0].cloud[j.atmos[0].config.Cl['H2O']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['H2O']])
-    #     j.atmos[0].cloud[j.atmos[0].config.Cl['NH4SH']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['NH4SH']])
-    #     j.atmos[0].cloud[j.atmos[0].config.Cl['NH3']] = np.zeros_like(j.atmos[0].cloud[j.atmos[0].config.Cl['NH3']])
-
-    #     rr.nh3_profile(j, deep_h2s = 1, plotting=True)
-
-    #     References
-    #     ------------
-        
-    #     Todo
-    #     ----- 
-
-    #     Notes
-    #     -------
-    #     12/16/19, CM, initial comit 
-    #     4/2/2021 CM, updated H2S reference value to be consistent with Solar abundances 
-    #     '''
+        #  NH4SH cloud, if partial pressure exceeds reaction pressure  
+                # Make the NH3 clouds, abundance is set by the abundance left after the NH4SH clouds 
+        # --------------------------------------------------------------
+        if pp_h2s * pp_nh3 > psat_nh4sh and  cpp_nh3 < psat_nh3*rh_nh3:
+            # print('We are making clouds at Pressure {:2.2f}'.format(P[i]))
+            # print('nh3 ', nh3_prof[i],'z ',  z)
+            nh3_prof[i] = rh_nh4sh_nh3 * (mid_nh3 - z*mid_h2s)
+            h2s_prof[i] = rh_nh4sh_h2s * (mid_h2s - z*mid_h2s)
 
 
+    # Mixing regime 
+    idx_bottom  = np.where(P < Pb_vm)[0][-1]
+    idx_top     = np.where(P > Pt_vm)[0][0]
+    nh3_prof[idx_top:idx_bottom] = nh3_prof[idx_top] + dnh3dlP*(np.log(P[idx_top:idx_bottom])-np.log(P[idx_top]))*N2H
+    nh3_prof[idx_bottom:] = deep_nh3
 
-    #     P = j.atmos[0].gas[j.atmos[0].config.C['P']]
-    #     T = j.atmos[0].gas[j.atmos[0].config.C['T']]
+    # If it drops below 0, send a warning 
+    if np.any(nh3_prof<0): 
+        print("Warning - Abundance dropped below 0. Forcing 0")
+        nh3_prof[nh3_prof<0] = 0 
 
-    #     # Import the difference between dry and wet adiabat 
+    # --------------------------------------------------------------
+    # Water abundance 
 
-    #     # if adiabat.lower() == 'dry':
-    #     #     T = TPprofile(P,adiabat='dry', updated=True)
-    #     # elif adiabat.lower() == 'wet':
-    #     #     T = TPprofile(P,adiabat='wet', updated=True)
-    #     # elif adiabat>0 and adiabat < 1.5: 
-
-    #     #     Td  = TPprofile(adiabat='dry') 
-    #     #     Tw  = TPprofile(adiabat='wet') 
-    #     #     T = Tw + (Td-Tw)*adiabat 
-    #     # else:
-    #     #     try: 
-    #     #         T = j.atmos[0].gas[j.atmos[0].config.C['T']]
-    #     #     except TypeError: 
-    #     #         T = j.atmos.gas[j.atmos.config.C['T']]
-
-        
-    #     nh3_prof = np.copy(j.atmos[0].gas[j.atmos[0].config.C['NH3']])
-    #     h2s_prof = np.copy(j.atmos[0].gas[j.atmos[0].config.C['H2S']])
-    #     h2o_prof = np.copy(j.atmos[0].gas[j.atmos[0].config.C['H2O']])
-
-    #     # Adjust deep_nh3 for ammonia 
-    #     deep_nh3 *=(1-nh3_h2o)
-    #     # Deep NH3 is the well mixed ammonia at depth! For calculation mid and deep are the same
-    #     mid_nh3 = deep_nh3 - (np.log(Pb_vm)-np.log(Pt_vm))*dnh3dlP 
-
-    #     # Enrich H2S similar to NH3 
-    #     N_enrich = deep_nh3/N2H 
-    #     if deep_h2s is not None: 
-    #         H2S_ref = S2H*deep_h2s
-    #     else: 
-    #         H2S_ref = S2H*N_enrich
-
-    #     # Compute H2S based on reference value and how much ammonia is depleted at the top of the atmosphere
-    #     mid_h2s = H2S_ref * mid_nh3/deep_nh3
-
-
-    #     # Temporary solution for water clouds 
-    #     rh_nh4sh_nh3 = 1.0
-    #     rh_nh4sh_h2s = 1.0
-
-    #     # Loop starts with the bottom pressure, but code is written from top to bottom
-    #     for i in range(len(P)):
-    #         # Set the ammonia abundance in the stratosphere to zero 
-    #         if P[i] < 0.3:
-    #             nh3_prof[i] = 1e-13
-    #             continue  
-
-    #         # Calculate the saturation pressure for the relevant gases 
-    #         # --------------------------------------------------------------
-    #         # Ammonia 
-    #         psat_nh3 = rb.chemistry.ConstituentProperties('NH3').Psat(T[i])
-    #         pp_nh3= P[i] * mid_nh3
-
-    #         # H2S 
-    #         psat_h2s = rb.chemistry.ConstituentProperties('H2S').Psat(T[i])
-    #         pp_h2s= P[i] * mid_h2s
-
-    #         # NH4SH 
-    #         psat_nh4sh = rb.chemistry.ConstituentProperties('NH4SH').Psat(T[i])
-    #         # Modify the saturation pressure by the relative humidity 
-    #         psat_nh4sh /= rh_nh4sh
-
-    #         # H2O profile 
-    #         psat_h2O = rb.chemistry.ConstituentProperties('H2O').Psat(T[i])
-    #         pp_h2o = P[i] * mid_h2s
-
-    #         # Calculate the fraction of depletion due to clouds (See Tollefson Thesis, Section 5.3) 
-    #         # --------------------------------------------------------------
-    #         a = 1 
-    #         b = -(1+mid_nh3/mid_h2s)
-    #         c =  mid_nh3/mid_h2s - psat_nh4sh/(mid_h2s*P[i])**2
-
-
-    #         z = (-b - np.sqrt(b**2 - 4*a*c))/(2*a)
-
-    #         pp_h2s = mid_h2s*P[i]
-    #         pp_nh3 = mid_nh3*P[i]
-            
-    #         if z<0:
-    #             z = 0 
-
-    #         # Make the NH3 clouds, abundance is set by the abundance left after the NH4SH clouds 
-    #         # --------------------------------------------------------------
-    #         cpp_nh3 = (mid_nh3 -  z*mid_h2s)*P[i]
-
-    #         # The relative humidity determines if over or undersaturate, and then changes the saturation pressure accordingly 
-    #         if  cpp_nh3 > psat_nh3*rh_nh3:
-    #             nh3_prof[i] = rh_nh3 * psat_nh3/P[i]
-    #         else:
-    #             # If we are ouyt
-    #             nh3_prof[i] = mid_nh3
-    #             h2s_prof[i] = mid_h2s
-
-    #         #  NH4SH cloud, if partial pressure exceeds reaction pressure  
-    #                 # Make the NH3 clouds, abundance is set by the abundance left after the NH4SH clouds 
-    #         # --------------------------------------------------------------
-    #         if pp_h2s * pp_nh3 > psat_nh4sh and  cpp_nh3 < psat_nh3*rh_nh3:
-    #             # print('We are making clouds at Pressure {:2.2f}'.format(P[i]))
-    #             # print('nh3 ', nh3_prof[i],'z ',  z)
-    #             nh3_prof[i] = rh_nh4sh_nh3 * (mid_nh3 - z*mid_h2s)
-    #             h2s_prof[i] = rh_nh4sh_h2s * (mid_h2s - z*mid_h2s)
+    # Set the stratosphere abudance to 1e-13 
+    idx_cloudtop = np.where(P > 0.2)[0][0]
+    h2o_prof[0:idx_cloudtop] = 1e-13 
+    for i in range(len(P)): 
+        # Caclulate if water should condense out  
+        # H2O profile 
+        psat_h2o = chemistry.ConstituentProperties('H2O').Psat(T[i])
+        pp_h2o = P[i] * deep_h2o*O2H 
+        # Make the water clouds 
+        if  pp_h2o > psat_h2o*rh_h2o:
+            h2o_prof[i] = rh_h2o * psat_h2o/P[i]
+            P_h2o = P[i] # Save pressure at which the water vapor is condensing out 
+        else: 
+            h2o_prof[i] = deep_h2o*O2H 
 
 
 
-    #     for i in range(len(P)):
-    #         if P[i]>Pt_vm and P[i] < Pb_vm: 
-    #             nh3_prof[i] = nh3_prof[i] + dnh3dlP*(np.log(P[i])-np.log(Pt_vm))
-    #         if P[i]>Pb_vm:
-    #             nh3_prof[i] = deep_nh3
+    # --------------------------------------------------------------
+    # make H2O cloud, only triggers once and introduces a step function  
+    idx_h2o = np.argmax(P>P_h2o)
+    nh3_prof[idx_h2o:] += nh3_prof[idx_h2o]*nh3_h2o 
 
 
-    #     # --------------------------------------------------------------
-    #     # Deep water 
-    #     if deep_h2o is not None:
-    #         deep_h2o = deep_h2o*O2H  
-    #     else:
-    #         deep_h2o = N_enrich*O2H  
-
-    #     rh_h2o = 1    
-    #     for i in range(len(P)-1, 0, -1): 
-    #         # Caclulate if water should condense out  
-    #         # H2O profile 
-    #         psat_h2o = rb.chemistry.ConstituentProperties('H2O').Psat(T[i])
-    #         pp_h2o = P[i] * deep_h2o
-    #         # Make the water clouds 
-    #         if  pp_h2o > psat_h2o*rh_h2o:
-    #             h2o_prof[i] = rh_h2o * psat_h2o/P[i]
-    #         else: 
-    #             h2o_prof[i] = deep_h2o
-    #             P_h2o = P[i]
-
-    #     # --------------------------------------------------------------
-    #     # make H2O cloud, only triggers once and introduces a step function  
-    #     idx_h2o = np.argmax(P>P_h2o)
-    #     nh3_prof[idx_h2o:] += nh3_prof[idx_h2o]*nh3_h2o
+    if plotting: 
+        fig,ax = plt.subplots(figsize=(9,9)) 
+        ax.plot(self.atmos[0].gas[self.atmos[0].config.C['NH3']]/N2H,P,color='gray', label=r'NH$_3$')
+        ax.plot(self.atmos[0].gas[self.atmos[0].config.C['H2S']]/S2H,P,color='yellow', label=r'H$_2$S')
+        ax.plot(self.atmos[0].gas[self.atmos[0].config.C['H2O']]/O2H,P,color='navy', label=r'H$_2$O')    
 
 
+        ax.plot(nh3_prof/N2H,P,linestyle='--',color='gray', label=r'Modified NH$_3$')
+        ax.plot(h2s_prof/S2H,P,linestyle='--',color='yellow', label=r'Modified H$_2$S')
+        ax.plot(h2o_prof/O2H,P,linestyle='--',color='navy', label=r'Modified H$_2$O')
 
-    #     if plotting: 
-    #         fig,ax = plt.subplots(figsize=(10,10)) 
-    #         try: 
-    #             plt.plot(j.atmos[0].gas[j.atmos[0].config.C['NH3']]*1e6,P,label=r'NH$_3$')
-    #             plt.plot(j.atmos[0].gas[j.atmos[0].config.C['H2S']]*1e6,P,label=r'H$_2$S')
-    #             plt.plot(j.atmos[0].gas[j.atmos[0].config.C['H2O']]*1e6,P,label=r'H$_2$O')    
-    #         except TypeError: 
-    #             plt.plot(j.atmos.gas[j.atmos.config.C['NH3']]*1e6,P,label=r'NH$_3$')
-    #             plt.plot(j.atmos.gas[j.atmos.config.C['H2S']]*1e6,P,label=r'H$_2$S')
-    #             plt.plot(j.atmos.gas[j.atmos.config.C['H2O']]*1e6,P,label=r'H$_2$O')    
+        ax.set_yscale('log')
+        ax.invert_yaxis()
+        ax.set_ylim([Pb_vm,0.1])
 
+        ax.set_ylabel('P [bar]')
+        ax.set_xlabel('Abundance [solar]')
+        plt.legend()
+        plt.show()
 
-    #         plt.plot(nh3_prof*1e6,P,label=r'Modified NH$_3$')
-    #         plt.plot(h2s_prof*1e6,P,label=r'Modified H$_2$S')
-    #         plt.plot(h2o_prof*1e6,P,label=r'Modified H$_2$O')
+    # Updates the ammonia abundance 
+    self.atmos[0].gas[self.atmos[0].config.C['NH3']] = np.copy(nh3_prof)
+    self.atmos[0].gas[self.atmos[0].config.C['H2S']] = np.copy(h2s_prof)
+    self.atmos[0].gas[self.atmos[0].config.C['T']]   = np.copy(T)
+    self.atmos[0].gas[self.atmos[0].config.C['H2O']] = np.copy(h2o_prof)
 
-    #         plt.yscale('log')
-    #         ax.invert_yaxis()
-    #         plt.ylim([Pb_vm,0.1])
+    return None
 
-    #         plt.ylabel('P [bar]')
-    #         plt.xlabel('NH3 [ppm]')
-    #         plt.legend()
-    #         plt.show()
-
-
-    #     if scalefactor: 
-    #             # Scalefactor 
-    #         sf = nh3_prof/j.atmos[0].gas[j.atmos[0].config.C['NH3']]
-    #         return sf
-
-    #     else: 
-    #         # Updates the ammonia abundance 
-    #         try: 
-    #             j.atmos[0].gas[j.atmos[0].config.C['NH3']] = np.copy(nh3_prof)
-    #             j.atmos[0].gas[j.atmos[0].config.C['H2S']] = np.copy(h2s_prof)
-    #             j.atmos[0].gas[j.atmos[0].config.C['T']] = np.copy(T)
-    #             j.atmos[0].gas[j.atmos[0].config.C['H2O']] = np.copy(h2o_prof)
-
-            
-    #         except TypeError: 
-    #             j.atmos.gas[j.atmos.config.C['NH3']] = nh3_prof
-    #             j.atmos.gas[j.atmos.config.C['H2S']] = h2s_prof
-    #             j.atmos.gas[j.atmos.config.C['T']] = T
-
-    #     return None
