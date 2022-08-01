@@ -33,6 +33,11 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     if data is None:
         readInputFiles(par)
 
+    try:
+        coshape = other_dict['coshape']
+    except KeyError:
+        coshape = 'voigt'
+
     P_h2 = P * X[P_dict['H2']]
     P_he = P * X[P_dict['HE']]
     P_co = P * X[P_dict['CO']]
@@ -60,7 +65,7 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
     for f in freq:
         f2 = f**2
         shape_Voigt = np.zeros(len(f0))
-        if P <= PLimits[1] or par.voigt or par.diff:
+        if P <= PLimits[1] or coshape == 'voigt' or coshape == 'diff':
             # ##Doppler broadening Janssen p59
             betaD = 4.3e-7 * np.sqrt(T / 28.0) * f
             # ##Voigt Janssen p67
@@ -73,16 +78,16 @@ def alpha(freq, T, P, X, P_dict, other_dict, **kwargs):
             val = num / den
             shape_Voigt = GHz * (1.0 / (np.sqrt(np.pi) * betaD)) * val.real
         shape_VVW = np.zeros(len(f0))
-        if P >= PLimits[0] or par.vvw or par.diff:
+        if P >= PLimits[0] or coshape == 'vvw' or coshape == 'diff':
             num = (gamma - zeta) * f2 + (gamma + zeta) * (np.power(f0 + delta, 2.0) + g2 - z2)
             den = np.power((f2 - np.power(f0 + delta, 2.0) - g2 + z2), 2.0) + 4.0 * f2 * g2
             shape_VVW = GHz * 2.0 * np.power(f / f0, 2.0) * num / (np.pi * den)
         shape = w * shape_VVW + (1.0 - w) * shape_Voigt
-        if par.voigt:
+        if coshape == 'voigt':
             alpha_co.append(np.sum(shape_Voigt))
-        elif par.vvw:
+        elif coshape == 'vvw':
             alpha_co.append(np.sum(shape_VVW))
-        elif par.diff:
+        elif coshape == 'diff':
             alpha_co.append(np.sum(shape_Voigt - shape_VVW))
         else:
             alpha_co.append(np.sum(shape * ITG))

@@ -90,12 +90,16 @@ class Alpha:
         other_to_copy = {}
         other_to_copy['h2'] = ['h2state', 'h2newset']
         other_to_copy['clouds'] = ['water_p', 'ice_p', 'nh4sh_p', 'nh3ice_p', 'h2sice_p', 'ch4_p']
+        other_to_copy['co'] = ['coshape']
         self.other_dict = {}
         for absorber in self.ordered_constituents:
             self.other_dict[absorber] = {}
             if absorber in other_to_copy.keys():
                 for oc in other_to_copy[absorber]:
-                    self.other_dict[absorber][oc] = getattr(self.config, oc)
+                    try:
+                        self.other_dict[absorber][oc] = getattr(self.config, oc)
+                    except AttributeError:
+                        print("The config for {} has no attribute {}".format(absorber, oc))
 
     def reset_layers(self):
         """Reset class parameters."""
