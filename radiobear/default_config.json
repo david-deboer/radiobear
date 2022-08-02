@@ -333,6 +333,18 @@
                 "X": "none"
             }
         },
+        "coshape": {
+            "name": "coshape",
+            "unit": null,
+            "help": "lineshape type for co:  voight, vvs, diff or std",
+            "default": {
+                "Jupiter": "voigt",
+                "Saturn": "voigt",
+                "Uranus": "voigt",
+                "Neptune": "voigt",
+                "X" " "
+            }
+        },
         "h2state": {
             "name": "h2state",
             "unit": null,
