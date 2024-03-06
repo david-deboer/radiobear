@@ -297,7 +297,8 @@ class PlanetBase:
         self.data_return.set('Tb', self.Tb)
         self.data_return.set('type', self.data_type)
         self.data_return.set('header', self.header)
-        self.data_return.set('logfile', self.log.logfile)
+        if self.config.write_log_file:
+            self.data_return.set('logfile', self.log.logfile)
 
     def check_reuse(self, freqs, scale, get_alpha, save_alpha, reuse_override='check'):
         """Check whether to reuse parameters."""
@@ -378,6 +379,7 @@ class PlanetBase:
         self.header['radii'] = '# radii:  {:.1f}  {:.1f}  km'.format(self.config.Req,
                                                                      self.config.Rpol)
         self.header['distance'] = '# distance:  {} km'.format(self.config.distance)
-        self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
+        if self.config.write_log_file:
+            self.header['log-file:'] = '#* logfile: {}'.format(self.log.logfile)
         self.header['start'] = "#* start: {:%Y-%m-%d %H:%M:%S}".format(run_start)
         self.header['stop'] = "#* stop: {:%Y-%m-%d %H:%M:%S}".format(run_stop)
